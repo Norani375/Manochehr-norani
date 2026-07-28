@@ -1,0 +1,6 @@
+{
+  "name": "چارت تشکیلاتی شرکت صرافی برکت‌الله غفوری",
+  "description": "چارت سازمانی رسمی شرکت صرافی و خدمات پولی برکت‌الله غفوری مناسب برای ارائه به د افغانستان بانک (DAB)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,660 @@
+
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { 
+  Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network
+} from 'lucide-react';
+import DabGuaranteeForm from '@/components/DabGuaranteeForm';
+import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
+import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
+
+interface PersonnelNode {
+  key: string;
+  title: string;
+  name: string;
+  id: string;
+  category: 'president' | 'board' | 'operations' | 'compliance' | 'branch';
+  description?: string;
+}
+
+const DEFAULT_ORG_DATA: PersonnelNode[] = [
+  {
+    key: 'president',
+    title: 'رئیس شرکت',
+    name: 'برکت‌الله ولد عبدالغفور',
+    id: '55522',
+    category: 'president'
+  },
+  {
+    key: 'board_head',
+    title: 'رئیس هیئت نظار',
+    name: 'بسم‌الله شیرزی ولد دوستمحمد',
+    id: '45188',
+    category: 'board'
+  },
+  {
+    key: 'board_member_1',
+    title: 'عضو هیئت نظار',
+    name: 'برکت‌الله ولد عبدالغفور',
+    id: '55522',
+    category: 'board'
+  },
+  {
+    key: 'board_member_2',
+    title: 'عضو هیئت نظار',
+    name: 'عظیم‌الله رحمانی ولد محمد آجان',
+    id: '35806',
+    category: 'board'
+  },
+  {
+    key: 'operations_manager',
+    title: 'مدیر بخش عملیاتی',
+    name: 'صالح‌محمد ولد عبدالرحیم',
+    id: '48424',
+    category: 'operations'
+  },
+  {
+    key: 'compliance_officer',
+    title: 'مسئول پیروی از قوانین (Compliance)',
+    name: 'محمد فهیم ولد محمد امان',
+    id: '97484',
+    category: 'compliance',
+    description: 'مستقیماً زیر نظر هیئت نظار جهت انطباق با قوانین بانکی و مالی (AML/CFT)'
+  },
+  {
+    key: 'branch_takhar',
+    title: 'نماینده ولایت تخار',
+    name: 'رحمت‌الله ولد محمدمراد',
+    id: '16532',
+    category: 'branch'
+  },
+  {
+    key: 'branch_kabul',
+    title: 'نماینده کابل',
+    name: 'اجمل ولد نورآغا',
+    id: '46338',
+    category: 'branch'
+  },
+  {
+    key: 'branch_imam_sahib',
+    title: 'نماینده ولسوالی امام‌صاحب',
+    name: 'محمدیوسف ولد عبدالمجید',
+    id: '98680',
+    category: 'branch'
+  },
+  {
+    key: 'branch_kishm',
+    title: 'نماینده کشم، ولایت بدخشان',
+    name: 'عتیق‌الله ولد شمس‌الدین',
+    id: '7252',
+    category: 'branch'
+  }
+];
+
+export default function OrgChartPage() {
+  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal'>('org-chart');
+  const [personnel, setPersonnel] = useState<PersonnelNode[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('bg_org_chart_data');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to load org chart from storage', e);
+      }
+    }
+    return DEFAULT_ORG_DATA;
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingNode, setEditingNode] = useState<PersonnelNode | null>(null);
+
+  // Save to local storage
+  const savePersonnel = (newData: PersonnelNode[]) => {
+    setPersonnel(newData);
+    try {
+      localStorage.setItem('bg_org_chart_data', JSON.stringify(newData));
+    } catch (e) {
+      console.error('Failed to save org chart to storage', e);
+    }
+  };
+
+  const handleReset = () => {
+    if (confirm('آیا مطمئن هستید که می‌خواهید تمام اطلاعات چارت را به حالت اولیه بازگردانید؟')) {
+      savePersonnel(DEFAULT_ORG_DATA);
+    }
+  };
+
+  const handleUpdateNode = (updated: PersonnelNode) => {
+    const nextData = personnel.map(p => p.key === updated.key ? updated : p);
+    savePersonnel(nextData);
+    setEditingNode(null);
+  };
+
+  const handleAddRepresentative = () => {
+    const newKey = `branch_${Date.now()}`;
+    const newNode: PersonnelNode = {
+      key: newKey,
+      title: 'نمایندگی جدید',
+      name: 'نام و ولد جدید',
+      id: '00000',
+      category: 'branch'
+    };
+    savePersonnel([...personnel, newNode]);
+    setEditingNode(newNode);
+  };
+
+  const handleDeleteNode = (key: string) => {
+    if (confirm('آیا از حذف این رکورد اطمینان دارید؟')) {
+      savePersonnel(personnel.filter(p => p.key !== key));
+      if (editingNode?.key === key) setEditingNode(null);
+    }
+  };
+
+  const getNode = (key: string) => personnel.find(p => p.key === key);
+  const getNodesByCategory = (category: 'board' | 'branch') => personnel.filter(p => p.category === category);
+
+  const matchesSearch = (node?: PersonnelNode) => {
+    if (!node || !searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      node.name.toLowerCase().includes(term) ||
+      node.title.toLowerCase().includes(term) ||
+      node.id.includes(term)
+    );
+  };
+
+  // Theme styling helpers
+  const getThemeClasses = () => {
+    switch (theme) {
+      case 'dark':
+        return {
+          bg: 'bg-slate-950 text-slate-100',
+          cardBg: 'bg-slate-900 border-slate-800 text-slate-100',
+          headerBg: 'bg-slate-900 border-slate-800',
+          nodeCardBg: 'bg-slate-900 border-slate-700 text-slate-100',
+          highlight: 'border-blue-500 ring-2 ring-blue-500/30',
+          connector: 'bg-slate-700',
+          subText: 'text-slate-400',
+        };
+      case 'contrast':
+        return {
+          bg: 'bg-white text-black',
+          cardBg: 'bg-white border-2 border-black text-black',
+          headerBg: 'bg-white border-2 border-black',
+          nodeCardBg: 'bg-white border-2 border-black text-black',
+          highlight: 'border-black ring-4 ring-black/20',
+          connector: 'bg-black',
+          subText: 'text-black font-semibold',
+        };
+      case 'light':
+      default:
+        return {
+          bg: 'bg-slate-50 text-slate-900',
+          cardBg: 'bg-white border-slate-200 text-slate-900',
+          headerBg: 'bg-white border-slate-200',
+          nodeCardBg: 'bg-white border-slate-200 text-slate-900',
+          highlight: 'border-blue-500 ring-2 ring-blue-500/20',
+          connector: 'bg-slate-300',
+          subText: 'text-slate-500',
+        };
+    }
+  };
+
+  const themeStyle = getThemeClasses();
+  const president = getNode('president');
+  const boardMembers = getNodesByCategory('board');
+  const operations = getNode('operations_manager');
+  const compliance = getNode('compliance_officer');
+  const branches = getNodesByCategory('branch');
+
+  return (
+    <div className={`min-h-screen ${themeStyle.bg} font-sans p-4 sm:p-8 transition-colors duration-200 print:bg-white print:text-black print:p-0`}>
+      {/* Header / Toolbar */}
+      <div className="max-w-7xl mx-auto mb-8 print:hidden">
+        <div className={`${themeStyle.headerBg} rounded-2xl shadow-sm border p-6 flex flex-col lg:flex-row items-center justify-between gap-4`}>
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-blue-900 text-white rounded-xl shadow-sm">
+              <Building2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">شرکت صرافی و خدمات پولی برکت‌الله غفوری</h1>
+              <p className={`text-sm ${themeStyle.subText}`}>چارت تشکیلاتی رسمی و ساختار سازمانی (قابل ویرایش و آماده چاپ برای د افغانستان بانک)</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+            {/* Search (only for org chart) */}
+            {activeTab === 'org-chart' && (
+              <div className="relative flex-1 sm:w-64 min-w-[200px]">
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="جستجو نام، سمت یا ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`w-full pr-9 pl-4 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 ${
+                    theme === 'dark' ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'
+                  }`}
+                />
+              </div>
+            )}
+
+            {/* Mode Edit Toggle (only for org chart) */}
+            {activeTab === 'org-chart' && (
+              <button
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer border ${
+                  isEditMode 
+                    ? 'bg-amber-500 text-white border-amber-600 shadow-sm' 
+                    : theme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <Edit3 className="w-4 h-4" />
+                {isEditMode ? 'خروج از حالت ویرایش' : 'ویرایش چارت'}
+              </button>
+            )}
+
+            {/* Reset Button (only for org chart) */}
+            {activeTab === 'org-chart' && (
+              <button
+                onClick={handleReset}
+                title="بازنشانی اطلاعات"
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  theme === 'dark' ? 'bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 hover:bg-slate-200 text-slate-600'
+                }`}
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Theme Switcher */}
+            <div className={`flex items-center border rounded-xl p-1 ${theme === 'dark' ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>
+              <button
+                onClick={() => setTheme('light')}
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${theme === 'light' ? 'bg-white shadow-xs text-blue-900 font-bold' : 'text-slate-500'}`}
+                title="تم روشن"
+              >
+                <Sun className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setTheme('dark')}
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${theme === 'dark' ? 'bg-slate-700 text-amber-400 font-bold' : 'text-slate-500'}`}
+                title="تم تاریک"
+              >
+                <Moon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setTheme('contrast')}
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${theme === 'contrast' ? 'bg-black text-white font-bold' : 'text-slate-500'}`}
+                title="کنتراست بالا (مخصوص چاپ)"
+              >
+                <Contrast className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Print Button */}
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-5 py-2 rounded-xl font-medium text-sm shadow-sm transition-all cursor-pointer whitespace-nowrap"
+            >
+              <Printer className="w-4 h-4" />
+              چاپ (PDF)
+            </button>
+          </div>
+        </div>
+
+        {/* View Switcher Tabs Bar */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-6 print:hidden">
+          <button
+            onClick={() => setActiveTab('org-chart')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer border ${
+              activeTab === 'org-chart'
+                ? 'bg-blue-900 text-white border-blue-950 shadow-md scale-102'
+                : theme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Network className="w-4 h-4" />
+            چارت تشکیلاتی شرکت
+          </button>
+
+          <button
+            onClick={() => setActiveTab('guarantee-form')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer border ${
+              activeTab === 'guarantee-form'
+                ? 'bg-blue-900 text-white border-blue-950 shadow-md scale-102'
+                : theme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            فورم تضمین سر سهمدار
+          </button>
+
+          <button
+            onClick={() => setActiveTab('branch-renewal')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer border ${
+              activeTab === 'branch-renewal'
+                ? 'bg-blue-900 text-white border-blue-950 shadow-md scale-102'
+                : theme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Building2 className="w-4 h-4" />
+            فورم تمدید نمایندگی (د افغانستان بانک)
+          </button>
+
+          <button
+            onClick={() => setActiveTab('license-renewal')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer border ${
+              activeTab === 'license-renewal'
+                ? 'bg-blue-900 text-white border-blue-950 shadow-md scale-102'
+                : theme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            فورم تمدید جواز شرکت (د افغانستان بانک)
+          </button>
+        </div>
+      </div>
+
+      {/* Conditional Content Rendering */}
+      {activeTab === 'guarantee-form' ? (
+        <DabGuaranteeForm />
+      ) : activeTab === 'branch-renewal' ? (
+        <DabBranchRenewalForm />
+      ) : activeTab === 'license-renewal' ? (
+        <DabLicenseRenewalForm />
+      ) : (
+        <>
+          {/* Org Chart Layout Canvas */}
+      <div className="max-w-7xl mx-auto overflow-x-auto pb-12 print:overflow-visible">
+        <div className="min-w-[950px] flex flex-col items-center py-6 px-4">
+          
+          {/* Level 1: President */}
+          {president && (
+            <div className="flex flex-col items-center relative group">
+              <div 
+                onClick={() => isEditMode && setEditingNode(president)}
+                className={`bg-gradient-to-br from-blue-900 to-blue-950 text-white rounded-2xl p-5 shadow-lg border-2 border-blue-800 w-80 text-center relative transition-all ${
+                  isEditMode ? 'cursor-pointer hover:ring-4 hover:ring-amber-400/50 hover:scale-102' : ''
+                } ${matchesSearch(president) ? 'ring-2 ring-blue-400' : ''}`}
+              >
+                {isEditMode && (
+                  <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1.5 rounded-lg shadow-sm">
+                    <Edit3 className="w-3.5 h-3.5" />
+                  </div>
+                )}
+                <div className="absolute top-3 left-3 bg-blue-800/80 text-blue-200 text-xs px-2.5 py-1 rounded-full font-mono">
+                  ID: {president.id}
+                </div>
+                <div className="inline-flex p-2 bg-blue-800/50 rounded-xl mb-2 text-blue-200">
+                  <Award className="w-6 h-6" />
+                </div>
+                <div className="text-xs uppercase tracking-wider text-blue-300 font-semibold mb-1">{president.title}</div>
+                <div className="text-lg font-bold mb-1">{president.name}</div>
+                <div className="text-xs text-blue-200/80">شماره پرسنلی: {president.id}</div>
+              </div>
+
+              {/* Vertical connector */}
+              <div className={`h-10 w-0.5 ${themeStyle.connector} my-1`}></div>
+            </div>
+          )}
+
+          {/* Level 2: Board of Supervisors Box */}
+          <div className="flex flex-col items-center relative w-full max-w-4xl">
+            <div className={`${themeStyle.cardBg} rounded-2xl p-6 shadow-md border w-full`}>
+              <div className="text-center mb-6">
+                <span className={`inline-flex items-center gap-2 border px-4 py-1.5 rounded-full text-sm font-bold ${
+                  theme === 'dark' ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-100 border-slate-200 text-slate-800'
+                }`}>
+                  <ShieldCheck className="w-4 h-4 text-blue-600" />
+                  هیئت نظار (شورای نظارت عالی)
+                </span>
+              </div>
+
+              {/* Board Members Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {boardMembers.map((member) => (
+                  <div 
+                    key={member.key}
+                    onClick={() => isEditMode && setEditingNode(member)}
+                    className={`${themeStyle.nodeCardBg} rounded-xl p-4 shadow-sm border relative transition-all ${
+                      isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
+                    } ${matchesSearch(member) ? themeStyle.highlight : ''}`}
+                  >
+                    {isEditMode && (
+                      <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded">
+                        <Edit3 className="w-3 h-3" />
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-[11px] px-2 py-0.5 rounded font-mono ${theme === 'dark' ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>
+                        ID: {member.id}
+                      </span>
+                      <UserCheck className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="text-xs font-semibold text-blue-600 mb-1">{member.title}</div>
+                    <div className="text-sm font-bold mb-1">{member.name}</div>
+                    <div className={`text-[11px] ${themeStyle.subText}`}>شماره پرسنلی: {member.id}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Vertical Connector Down to Sub-units */}
+              <div className="relative flex justify-center">
+                <div className={`w-0.5 h-8 ${themeStyle.connector}`}></div>
+              </div>
+
+              {/* Level 3: Operations Manager & Compliance Officer */}
+              <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
+                
+                {/* Left Side: Operations Manager & Regional Reps */}
+                <div className="flex flex-col items-center">
+                  {operations && (
+                    <div 
+                      onClick={() => isEditMode && setEditingNode(operations)}
+                      className={`bg-slate-900 text-white rounded-xl p-4 shadow-md w-full max-w-xs text-center relative transition-all ${
+                        isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
+                      } ${matchesSearch(operations) ? 'ring-2 ring-blue-500' : ''}`}
+                    >
+                      {isEditMode && (
+                        <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded">
+                          <Edit3 className="w-3 h-3" />
+                        </div>
+                      )}
+                      <div className="absolute top-2 left-2 bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded font-mono">
+                        ID: {operations.id}
+                      </div>
+                      <div className="inline-flex p-1.5 bg-slate-800 rounded-lg mb-2 text-slate-200">
+                        <Briefcase className="w-4 h-4" />
+                      </div>
+                      <div className="text-xs font-semibold text-blue-300 mb-1">{operations.title}</div>
+                      <div className="text-sm font-bold mb-1">{operations.name}</div>
+                      <div className="text-[11px] text-slate-400">شماره پرسنلی: {operations.id}</div>
+                    </div>
+                  )}
+
+                  {/* Vertical connector to branches */}
+                  <div className={`w-0.5 h-8 ${themeStyle.connector} my-1`}></div>
+
+                  {/* 4+ Regional Representatives */}
+                  <div className="w-full">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`text-xs font-bold ${themeStyle.subText}`}>نمایندگی‌های ولایتی و محلی</span>
+                      {isEditMode && (
+                        <button
+                          onClick={handleAddRepresentative}
+                          className="flex items-center gap-1 text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          افزودن نمایندگی
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {branches.map((branch) => (
+                        <div 
+                          key={branch.key}
+                          onClick={() => isEditMode && setEditingNode(branch)}
+                          className={`${themeStyle.nodeCardBg} rounded-xl p-3 border text-center shadow-xs relative transition-all ${
+                            isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
+                          } ${matchesSearch(branch) ? themeStyle.highlight : ''}`}
+                        >
+                          {isEditMode && (
+                            <div className="absolute top-1.5 right-1.5 bg-amber-500 text-slate-950 p-1 rounded">
+                              <Edit3 className="w-2.5 h-2.5" />
+                            </div>
+                          )}
+                          <div className={`text-[10px] px-1.5 py-0.5 rounded font-mono inline-block mb-1 ${
+                            theme === 'dark' ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-700'
+                          }`}>
+                            {branch.id}
+                          </div>
+                          <div className="text-xs font-semibold text-blue-600 mb-0.5">{branch.title}</div>
+                          <div className="text-xs font-bold mb-0.5">{branch.name}</div>
+                          <div className={`text-[10px] ${themeStyle.subText}`}>پرسنلی: {branch.id}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Compliance Officer */}
+                <div className="flex flex-col items-center justify-start">
+                  {compliance && (
+                    <div 
+                      onClick={() => isEditMode && setEditingNode(compliance)}
+                      className={`bg-slate-900 text-white rounded-xl p-4 shadow-md w-full max-w-xs text-center relative transition-all ${
+                        isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
+                      } ${matchesSearch(compliance) ? 'ring-2 ring-blue-500' : ''}`}
+                    >
+                      {isEditMode && (
+                        <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded">
+                          <Edit3 className="w-3 h-3" />
+                        </div>
+                      )}
+                      <div className="absolute top-2 left-2 bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded font-mono">
+                        ID: {compliance.id}
+                      </div>
+                      <div className="inline-flex p-1.5 bg-slate-800 rounded-lg mb-2 text-slate-200">
+                        <Shield className="w-4 h-4" />
+                      </div>
+                      <div className="text-xs font-semibold text-blue-300 mb-1">{compliance.title}</div>
+                      <div className="text-sm font-bold mb-1">{compliance.name}</div>
+                      <div className="text-[11px] text-slate-400">شماره پرسنلی: {compliance.id}</div>
+                    </div>
+                  )}
+                  <div className={`text-xs ${themeStyle.subText} mt-4 text-center max-w-xs`}>
+                    {compliance?.description || 'مستقیماً زیر نظر هیئت نظار جهت انطباق با قوانین بانکی و مالی (AML/CFT)'}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Edit Modal Dialog */}
+      {editingNode && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 print:hidden">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 text-slate-900 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-5 h-5 text-blue-900" />
+                <h3 className="font-bold text-lg">ویرایش اطلاعات بخش سازمانی</h3>
+              </div>
+              <button 
+                onClick={() => setEditingNode(null)} 
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleUpdateNode(editingNode);
+            }} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">عنوان / سمت سازمانی</label>
+                <input
+                  type="text"
+                  value={editingNode.title}
+                  onChange={(e) => setEditingNode({ ...editingNode, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">نام کامل و نام پدر (ولد)</label>
+                <input
+                  type="text"
+                  value={editingNode.name}
+                  onChange={(e) => setEditingNode({ ...editingNode, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">شماره پرسنلی / کد شناسه</label>
+                <input
+                  type="text"
+                  value={editingNode.id}
+                  onChange={(e) => setEditingNode({ ...editingNode, id: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-mono"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-6">
+                {editingNode.category === 'branch' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteNode(editingNode.key)}
+                    className="flex items-center gap-1 text-red-600 hover:text-red-700 text-xs font-bold px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    حذف نمایندگی
+                  </button>
+                ) : <div />}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingNode(null)}
+                    className="px-4 py-2 border border-slate-300 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
+                  >
+                    انصراف
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center gap-1.5 px-5 py-2 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-sm font-medium shadow-sm cursor-pointer"
+                  >
+                    <Check className="w-4 h-4" />
+                    ذخیره تغییرات
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+        </>
+      )}
+
+      {/* Footer Info / Summary stats */}
+      <div className={`max-w-7xl mx-auto mt-8 border-t pt-6 flex flex-col sm:flex-row items-center justify-between text-xs ${themeStyle.subText} print:hidden ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
+        <div>مجموع پرسنل ثبت‌شده در چارت: {personnel.length} نفر | نسخه رسمی استاندارد برای د افغانستان بانک (DAB)</div>
+        <div className="mt-2 sm:mt-0">شرکت صرافی و خدمات پولی برکت‌الله غفوری © تمامی حقوق محفوظ است.</div>
+      </div>
+    </div>
+  );
+}
+
+
