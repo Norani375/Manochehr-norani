@@ -4,11 +4,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
 import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
+import CompanyLogoModal from '@/components/CompanyLogoModal';
 
 interface PersonnelNode {
   key: string;
@@ -110,6 +111,33 @@ export default function OrgChartPage() {
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingNode, setEditingNode] = useState<PersonnelNode | null>(null);
+
+  // Logo state
+  const [customLogo, setCustomLogo] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('custom_company_logo');
+    }
+    return null;
+  });
+  const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleLogoUpdate = () => {
+      setCustomLogo(localStorage.getItem('custom_company_logo'));
+    };
+    window.addEventListener('custom_logo_updated', handleLogoUpdate);
+    return () => window.removeEventListener('custom_logo_updated', handleLogoUpdate);
+  }, []);
+
+  const handleSaveLogo = (logoDataUrl: string | null) => {
+    setCustomLogo(logoDataUrl);
+    if (logoDataUrl) {
+      localStorage.setItem('custom_company_logo', logoDataUrl);
+    } else {
+      localStorage.removeItem('custom_company_logo');
+    }
+    window.dispatchEvent(new Event('custom_logo_updated'));
+  };
 
   // Save to local storage
   const savePersonnel = (newData: PersonnelNode[]) => {
@@ -216,16 +244,60 @@ export default function OrgChartPage() {
       <div className="max-w-7xl mx-auto mb-8 print:hidden">
         <div className={`${themeStyle.headerBg} rounded-2xl shadow-sm border p-6 flex flex-col lg:flex-row items-center justify-between gap-4`}>
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-900 text-white rounded-xl shadow-sm">
-              <Building2 className="w-6 h-6" />
-            </div>
+            {customLogo ? (
+              <div 
+                onClick={() => setIsLogoModalOpen(true)}
+                className="relative group cursor-pointer shrink-0"
+                title="کلیک کنید جهت تغییر یا مدیریت لوگوی اختصاصی شرکت"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={customLogo} 
+                  alt="Company Logo" 
+                  className="w-14 h-14 object-contain rounded-2xl border-2 border-blue-900 bg-white p-1 shadow-sm transition-all group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-blue-950/70 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[11px] font-bold">
+                  تغییر
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsLogoModalOpen(true)}
+                className="p-3 bg-blue-900 hover:bg-blue-800 text-white rounded-2xl shadow-sm cursor-pointer transition-all shrink-0"
+                title="آپلود لوگوی اختصاصی شرکت"
+              >
+                <Building2 className="w-6 h-6" />
+              </button>
+            )}
+
             <div>
-              <h1 className="text-2xl font-bold">شرکت صرافی و خدمات پولی برکت‌الله غفوری</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold">شرکت صرافی و خدمات پولی برکت‌الله غفوری</h1>
+                {customLogo && (
+                  <span className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800 hidden sm:inline-block">
+                    لوگوی اختصاصی
+                  </span>
+                )}
+              </div>
               <p className={`text-sm ${themeStyle.subText}`}>چارت تشکیلاتی رسمی و ساختار سازمانی (قابل ویرایش و آماده چاپ برای د افغانستان بانک)</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+            {/* Custom Logo Uploader Button */}
+            <button
+              type="button"
+              onClick={() => setIsLogoModalOpen(true)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer border ${
+                customLogo 
+                  ? 'bg-blue-900 text-white border-blue-950 shadow-sm hover:bg-blue-800' 
+                  : theme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              <ImageIcon className="w-4 h-4 text-blue-400" />
+              {customLogo ? 'مدیریت لوگو' : 'آپلود لوگوی شرکت'}
+            </button>
             {/* Search (only for org chart) */}
             {activeTab === 'org-chart' && (
               <div className="relative flex-1 sm:w-64 min-w-[200px]">
@@ -360,16 +432,46 @@ export default function OrgChartPage() {
 
       {/* Conditional Content Rendering */}
       {activeTab === 'guarantee-form' ? (
-        <DabGuaranteeForm />
+        <DabGuaranteeForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
       ) : activeTab === 'branch-renewal' ? (
-        <DabBranchRenewalForm />
+        <DabBranchRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
       ) : activeTab === 'license-renewal' ? (
-        <DabLicenseRenewalForm />
+        <DabLicenseRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
       ) : (
         <>
           {/* Org Chart Layout Canvas */}
       <div className="max-w-7xl mx-auto overflow-x-auto pb-12 print:overflow-visible">
         <div className="min-w-[950px] flex flex-col items-center py-6 px-4">
+          
+          {/* Printable Official Header Banner with Custom Logo */}
+          <div className="w-full max-w-4xl mb-6 p-4 sm:p-6 bg-white border-2 border-slate-900 rounded-2xl shadow-sm flex items-center justify-between gap-4 text-slate-900 text-right dir-rtl">
+            <div className="flex items-center gap-4">
+              {customLogo ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={customLogo}
+                  alt="Company Logo"
+                  className="w-20 h-20 object-contain border border-slate-300 rounded-xl p-1 bg-white shadow-xs shrink-0"
+                />
+              ) : (
+                <div className="w-16 h-16 bg-blue-900 text-white rounded-xl flex items-center justify-center font-bold shrink-0">
+                  <Building2 className="w-8 h-8" />
+                </div>
+              )}
+              <div>
+                <h2 className="text-xl font-extrabold text-blue-950">شرکت صرافی و خدمات پولی برکت‌الله غفوری</h2>
+                <p className="text-xs text-slate-700 font-bold mt-1">چارت تشکیلاتی و ساختار سازمانی رسمی - د افغانستان بانک</p>
+                <p className="text-[11px] text-slate-500 font-mono mt-0.5">شماره جواز: 884/DAB | مرکز صرافی شهزاده کابل</p>
+              </div>
+            </div>
+
+            <div className="hidden sm:flex flex-col items-center justify-center text-center text-xs text-slate-600 border-r pr-5 border-slate-300">
+              <span className="font-bold text-slate-900 mb-1">محل مهر و امضاء</span>
+              <div className="w-24 h-12 border border-dashed border-slate-400 rounded-lg flex items-center justify-center text-[10px] text-slate-400">
+                مهر رسمی شرکت
+              </div>
+            </div>
+          </div>
           
           {/* Level 1: President */}
           {president && (
@@ -653,6 +755,14 @@ export default function OrgChartPage() {
         <div>مجموع پرسنل ثبت‌شده در چارت: {personnel.length} نفر | نسخه رسمی استاندارد برای د افغانستان بانک (DAB)</div>
         <div className="mt-2 sm:mt-0">شرکت صرافی و خدمات پولی برکت‌الله غفوری © تمامی حقوق محفوظ است.</div>
       </div>
+
+      {/* Company Logo Upload Modal */}
+      <CompanyLogoModal
+        isOpen={isLogoModalOpen}
+        onClose={() => setIsLogoModalOpen(false)}
+        logoUrl={customLogo}
+        onSaveLogo={handleSaveLogo}
+      />
     </div>
   );
 }

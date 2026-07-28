@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square } from 'lucide-react';
+import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon } from 'lucide-react';
 
 export interface BranchRenewalData {
   // Section 1: Company details
@@ -90,7 +90,24 @@ const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
   supervisorDate: '',
 };
 
-export default function DabBranchRenewalForm() {
+export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoModal }: { customLogo?: string | null; onOpenLogoModal?: () => void } = {}) {
+  const [localLogo, setLocalLogo] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('custom_company_logo');
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    const handleLogoUpdate = () => {
+      setLocalLogo(localStorage.getItem('custom_company_logo'));
+    };
+    window.addEventListener('custom_logo_updated', handleLogoUpdate);
+    return () => window.removeEventListener('custom_logo_updated', handleLogoUpdate);
+  }, []);
+
+  const customLogo = propLogo !== undefined ? propLogo : localLogo;
+
   const [data, setData] = useState<BranchRenewalData>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -143,6 +160,17 @@ export default function DabBranchRenewalForm() {
         </div>
 
         <div className="flex items-center gap-3">
+          {onOpenLogoModal && (
+            <button
+              type="button"
+              onClick={onOpenLogoModal}
+              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border border-slate-300"
+            >
+              <ImageIcon className="w-4 h-4 text-blue-900" />
+              {customLogo ? 'تغییر لوگوی شرکت' : 'آپلود لوگوی شرکت'}
+            </button>
+          )}
+
           <button
             onClick={handleSave}
             className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
@@ -173,7 +201,17 @@ export default function DabBranchRenewalForm() {
       <div id="dab-branch-renewal-canvas" className="bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0">
         
         {/* Header */}
-        <div className="text-center mb-6 pb-4 border-b-2 border-slate-900">
+        <div className="relative text-center mb-6 pb-4 border-b-2 border-slate-900">
+          {customLogo && (
+            <div className="absolute right-0 top-0 hidden sm:block print:block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={customLogo}
+                alt="Company Logo"
+                className="w-20 h-20 object-contain border border-slate-300 rounded-xl p-1 bg-white shadow-xs"
+              />
+            </div>
+          )}
           <h1 className="text-lg font-extrabold text-slate-900 mb-1">د افغانستان بانک</h1>
           <h2 className="text-base font-bold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
           <h3 className="text-sm font-semibold text-slate-700 mb-2">مدیریت جواز دهی</h3>
