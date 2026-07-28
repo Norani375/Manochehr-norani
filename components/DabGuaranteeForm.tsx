@@ -103,35 +103,32 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
 };
 
 export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal, onExportPdf }: { customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
-  const [localLogo, setLocalLogo] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('custom_company_logo');
-    }
-    return null;
-  });
+  const [localLogo, setLocalLogo] = useState<string | null>(null);
+  const [formData, setFormData] = useState<GuaranteeFormData>(DEFAULT_FORM_DATA);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setLocalLogo(localStorage.getItem('custom_company_logo'));
+      try {
+        const saved = localStorage.getItem('dab_guarantee_form_data');
+        if (saved) setFormData(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to load DAB guarantee form from storage', e);
+      }
+    }, 0);
+
     const handleLogoUpdate = () => {
       setLocalLogo(localStorage.getItem('custom_company_logo'));
     };
     window.addEventListener('custom_logo_updated', handleLogoUpdate);
-    return () => window.removeEventListener('custom_logo_updated', handleLogoUpdate);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('custom_logo_updated', handleLogoUpdate);
+    };
   }, []);
 
   const customLogo = propLogo !== undefined ? propLogo : localLogo;
-
-  const [formData, setFormData] = useState<GuaranteeFormData>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('dab_guarantee_form_data');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to load DAB guarantee form from storage', e);
-      }
-    }
-    return DEFAULT_FORM_DATA;
-  });
-  const [isSaved, setIsSaved] = useState(false);
 
   const handleSave = () => {
     try {

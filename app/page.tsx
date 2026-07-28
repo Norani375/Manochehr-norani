@@ -97,38 +97,43 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
 
 export default function OrgChartPage() {
   const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal'>('org-chart');
-  const [personnel, setPersonnel] = useState<PersonnelNode[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('bg_org_chart_data');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to load org chart from storage', e);
-      }
-    }
-    return DEFAULT_ORG_DATA;
-  });
+  const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingNode, setEditingNode] = useState<PersonnelNode | null>(null);
 
   // Logo state
-  const [customLogo, setCustomLogo] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('custom_company_logo');
-    }
-    return null;
-  });
+  const [customLogo, setCustomLogo] = useState<string | null>(null);
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
+  // Load persisted state after hydration mount
   useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const savedPersonnel = localStorage.getItem('bg_org_chart_data');
+        if (savedPersonnel) {
+          setPersonnel(JSON.parse(savedPersonnel));
+        }
+      } catch (e) {
+        console.error('Failed to load org chart from storage', e);
+      }
+
+      const savedLogo = localStorage.getItem('custom_company_logo');
+      if (savedLogo) {
+        setCustomLogo(savedLogo);
+      }
+    }, 0);
+
     const handleLogoUpdate = () => {
       setCustomLogo(localStorage.getItem('custom_company_logo'));
     };
     window.addEventListener('custom_logo_updated', handleLogoUpdate);
-    return () => window.removeEventListener('custom_logo_updated', handleLogoUpdate);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('custom_logo_updated', handleLogoUpdate);
+    };
   }, []);
 
   const handleSaveLogo = (logoDataUrl: string | null) => {
