@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon } from 'lucide-react';
+import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon, Download } from 'lucide-react';
 
 export interface BranchRenewalData {
   // Section 1: Company details
@@ -90,7 +90,7 @@ const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
   supervisorDate: '',
 };
 
-export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoModal }: { customLogo?: string | null; onOpenLogoModal?: () => void } = {}) {
+export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoModal, onExportPdf }: { customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('custom_company_logo');
@@ -187,12 +187,23 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
             <RotateCcw className="w-4 h-4" />
           </button>
 
+          {onExportPdf && (
+            <button
+              onClick={onExportPdf}
+              className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
+              title="ذخیره این فرم به عنوان فایل PDF استاندارد"
+            >
+              <Download className="w-4 h-4" />
+              دانلود PDF با کیفیت
+            </button>
+          )}
+
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4" />
-            چاپ فرم (PDF)
+            چاپ فرم
           </button>
         </div>
       </div>

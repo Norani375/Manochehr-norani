@@ -4,12 +4,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
 import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
+import ExportPdfModal from '@/components/ExportPdfModal';
 
 interface PersonnelNode {
   key: string;
@@ -120,6 +121,7 @@ export default function OrgChartPage() {
     return null;
   });
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
   useEffect(() => {
     const handleLogoUpdate = () => {
@@ -137,6 +139,35 @@ export default function OrgChartPage() {
       localStorage.removeItem('custom_company_logo');
     }
     window.dispatchEvent(new Event('custom_logo_updated'));
+  };
+
+  const getPdfExportConfig = () => {
+    switch (activeTab) {
+      case 'guarantee-form':
+        return {
+          targetId: 'dab-official-form',
+          title: 'فورم تعهدنامه و تضمین سر سهمدار (د افغانستان بانک)',
+          filename: 'فورم_تضمین_سر_سهمدار_برکت_الله_غفوری_DAB.pdf',
+        };
+      case 'branch-renewal':
+        return {
+          targetId: 'dab-branch-renewal-canvas',
+          title: 'فورم درخواست تمدید نمایندگی (د افغانستان بانک)',
+          filename: 'فورم_تمدید_نمایندگی_برکت_الله_غفوری_DAB.pdf',
+        };
+      case 'license-renewal':
+        return {
+          targetId: 'dab-license-renewal-canvas',
+          title: 'فورم ارزیابی و تمدید جواز شرکت صرافی (د افغانستان بانک)',
+          filename: 'فورم_تمدید_جواز_شرکت_برکت_الله_غفوری_DAB.pdf',
+        };
+      default:
+        return {
+          targetId: 'org-chart-export-canvas',
+          title: 'چارت تشکیلاتی و ساختار سازمانی شرکت صرافی برکت‌الله غفوری',
+          filename: 'چارت_سازمانی_برکت_الله_غفوری_د_افغانستان_بانک.pdf',
+        };
+    }
   };
 
   // Save to local storage
@@ -367,13 +398,25 @@ export default function OrgChartPage() {
               </button>
             </div>
 
+            {/* Export High Quality PDF Button */}
+            <button
+              onClick={() => setIsPdfModalOpen(true)}
+              className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer whitespace-nowrap"
+              title="ذخیره چارت به عنوان فایل PDF استاندارد با کیفیت بالا برای د افغانستان بانک"
+            >
+              <Download className="w-4 h-4" />
+              ذخیره PDF با کیفیت بالا
+            </button>
+
             {/* Print Button */}
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-5 py-2 rounded-xl font-medium text-sm shadow-sm transition-all cursor-pointer whitespace-nowrap"
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all cursor-pointer whitespace-nowrap border ${
+                theme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
+              }`}
             >
               <Printer className="w-4 h-4" />
-              چاپ (PDF)
+              چاپ (مرورگر)
             </button>
           </div>
         </div>
@@ -432,16 +475,16 @@ export default function OrgChartPage() {
 
       {/* Conditional Content Rendering */}
       {activeTab === 'guarantee-form' ? (
-        <DabGuaranteeForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
+        <DabGuaranteeForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
       ) : activeTab === 'branch-renewal' ? (
-        <DabBranchRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
+        <DabBranchRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
       ) : activeTab === 'license-renewal' ? (
-        <DabLicenseRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
+        <DabLicenseRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
       ) : (
         <>
           {/* Org Chart Layout Canvas */}
       <div className="max-w-7xl mx-auto overflow-x-auto pb-12 print:overflow-visible">
-        <div className="min-w-[950px] flex flex-col items-center py-6 px-4">
+        <div id="org-chart-export-canvas" className="min-w-[950px] flex flex-col items-center py-6 px-4 bg-white dark:bg-slate-900 rounded-2xl">
           
           {/* Printable Official Header Banner with Custom Logo */}
           <div className="w-full max-w-4xl mb-6 p-4 sm:p-6 bg-white border-2 border-slate-900 rounded-2xl shadow-sm flex items-center justify-between gap-4 text-slate-900 text-right dir-rtl">
@@ -762,6 +805,15 @@ export default function OrgChartPage() {
         onClose={() => setIsLogoModalOpen(false)}
         logoUrl={customLogo}
         onSaveLogo={handleSaveLogo}
+      />
+
+      {/* High Quality PDF Export Modal */}
+      <ExportPdfModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        targetElementId={getPdfExportConfig().targetId}
+        defaultTitle={getPdfExportConfig().title}
+        defaultFilename={getPdfExportConfig().filename}
       />
     </div>
   );
