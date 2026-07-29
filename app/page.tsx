@@ -4,12 +4,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
 import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
 import DabLicenseRenewalLetter from '@/components/DabLicenseRenewalLetter';
+import MeetingMinutes from '@/components/MeetingMinutes';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
@@ -108,7 +109,7 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
 ];
 
 export default function OrgChartPage() {
-  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter'>('org-chart');
+  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes'>('org-chart');
   const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
@@ -240,6 +241,12 @@ export default function OrgChartPage() {
           targetId: 'dab-license-renewal-letter-canvas',
           title: 'مکتوب رسمی درخواست تمدید جواز فعالیت (د افغانستان بانک)',
           filename: 'مکتوب_تمدید_جواز_برکت_الله_غفوری_DAB.pdf',
+        };
+      case 'meeting-minutes':
+        return {
+          targetId: 'meeting-minutes-canvas',
+          title: 'صورتجلسه مجمع عمومی عادی سالانه شرکت برکت‌الله غفوری',
+          filename: 'صورتجلسه_مجمع_عمومی_برکت_الله_غفوری.pdf',
         };
       default:
         return {
@@ -544,6 +551,21 @@ export default function OrgChartPage() {
                 </div>
                 {activeTab === 'license-renewal-letter' && <ChevronLeft className="w-4 h-4 text-blue-200" />}
               </button>
+
+              <button
+                onClick={() => { setActiveTab('meeting-minutes'); setIsMobileSidebarOpen(false); }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'meeting-minutes'
+                    ? 'bg-blue-600 text-white shadow-md font-black'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <ClipboardList className={`w-4 h-4 ${activeTab === 'meeting-minutes' ? 'text-white' : 'text-orange-400'}`} />
+                  <span>صورتجلسه (Meeting Minutes)</span>
+                </div>
+                {activeTab === 'meeting-minutes' && <ChevronLeft className="w-4 h-4 text-blue-200" />}
+              </button>
             </nav>
           </div>
 
@@ -717,6 +739,8 @@ export default function OrgChartPage() {
         <DabLicenseRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
       ) : activeTab === 'license-renewal-letter' ? (
         <DabLicenseRenewalLetter customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
+      ) : activeTab === 'meeting-minutes' ? (
+        <MeetingMinutes customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
       ) : (
         <>
           {/* Real-time Live Dashboard Stats Widget */}

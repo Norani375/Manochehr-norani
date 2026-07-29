@@ -43,6 +43,24 @@
         }
       },
       "required": ["issueDate"]
+    },
+    "MeetingMinutesData": {
+      "title": "Meeting Minutes Data",
+      "description": "Data for meeting minutes document",
+      "type": "object",
+      "properties": {
+        "meetingData": { "type": "object" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "LicenseRenewalLetterData": {
+      "title": "License Renewal Letter Data",
+      "description": "Data for license renewal letter document",
+      "type": "object",
+      "properties": {
+        "letterData": { "type": "object" },
+        "updatedAt": { "type": "string" }
+      }
     }
   },
   "firestore": {
@@ -57,6 +75,18 @@
         "$ref": "#/entities/CompanyMetadata"
       },
       "description": "Company global settings and document header metadata"
+    },
+    "/settings/meeting_minutes_v1": {
+      "schema": {
+        "$ref": "#/entities/MeetingMinutesData"
+      },
+      "description": "Meeting minutes official records"
+    },
+    "/settings/license_renewal_letter_v2": {
+      "schema": {
+        "$ref": "#/entities/LicenseRenewalLetterData"
+      },
+      "description": "Official license renewal letter data"
     }
   }
 }
