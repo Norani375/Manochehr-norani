@@ -1150,17 +1150,22 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
           </div>
         </div>
 
-        {/* Official DAB Digital Signature Block Component */}
-        <DigitalSignatureBlock
-          documentTitle="فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی"
-          defaultSignatoryName="برکت‌الله ولد عبدالغفور"
-          defaultSignatoryTitle="رئیس شرکت صرافی و خدمات پولی برکت‌الله غفوری"
-          documentCode="DAB/7-0965-REN"
-          customLogo={customLogo}
-          onOpenLogoModal={onOpenLogoModal}
-          storageKey="bg_license_renewal_signature"
-        />
+        <div className="pt-8 mt-6 border-t border-slate-300 flex items-end justify-between px-6">
+          <div className="text-center">
+            <div className="w-24 h-24 border-2 border-dashed border-slate-300 rounded-full flex flex-col items-center justify-center text-slate-400 text-[9px] font-bold p-2 text-center">
+              <span>محل مهر رسمی شرکت</span>
+            </div>
+          </div>
 
+          <div className="text-center space-y-1.5 min-w-[200px]">
+            <div className="font-bold text-slate-700 text-xs">با احترام؛</div>
+            <div className="font-black text-sm text-slate-950">برکت‌الله ولد عبدالغفور</div>
+            <div className="text-xs font-bold text-blue-900">رئیس شرکت صرافی و خدمات پولی برکت‌الله غفوری</div>
+            <div className="pt-6 font-bold text-slate-600 text-[10px] border-t border-slate-300 mt-2">
+              امضاء و شصت
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

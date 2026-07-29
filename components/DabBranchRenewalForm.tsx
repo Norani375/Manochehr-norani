@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon, Download } from 'lucide-react';
-import DigitalSignatureBlock from '@/components/DigitalSignatureBlock';
 
 export interface BranchRenewalData {
   // Section 1: Company details
@@ -896,17 +895,22 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
           </div>
         </div>
 
-        {/* Official DAB Digital Signature Block Component */}
-        <DigitalSignatureBlock
-          documentTitle="فورم تمدید نمایندگی شرکت صرافی و خدمات پولی"
-          defaultSignatoryName={data.repName || "محمد اشرف ولد محمد مراد"}
-          defaultSignatoryTitle={`نماینده باصلاحیت نمایندگی ${data.branchProvince}`}
-          documentCode="DAB/7-0965-BR"
-          customLogo={customLogo}
-          onOpenLogoModal={onOpenLogoModal}
-          storageKey="bg_branch_renewal_signature"
-        />
+        <div className="pt-8 mt-6 border-t border-slate-300 flex items-end justify-between px-6">
+          <div className="text-center">
+            <div className="w-24 h-24 border-2 border-dashed border-slate-300 rounded-full flex flex-col items-center justify-center text-slate-400 text-[9px] font-bold p-2 text-center">
+              <span>محل مهر رسمی شرکت</span>
+            </div>
+          </div>
 
+          <div className="text-center space-y-1.5 min-w-[200px]">
+            <div className="font-bold text-slate-700 text-xs">با احترام؛</div>
+            <div className="font-black text-sm text-slate-950">{data.repName || "محمد اشرف ولد محمد مراد"}</div>
+            <div className="text-xs font-bold text-blue-900">{`نماینده باصلاحیت نمایندگی ${data.branchProvince}`}</div>
+            <div className="pt-6 font-bold text-slate-600 text-[10px] border-t border-slate-300 mt-2">
+              امضاء و شصت
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -13,7 +13,6 @@ import DabLicenseRenewalLetter from '@/components/DabLicenseRenewalLetter';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
-import DigitalSignatureBlock from '@/components/DigitalSignatureBlock';
 import { 
   subscribePersonnel, 
   subscribeSettings, 
@@ -1164,17 +1163,23 @@ export default function OrgChartPage() {
             </div>
           </div>
 
-          {/* Official DAB Digital Signature Block */}
-          <div className="mt-8 pt-6 border-t border-slate-300">
-            <DigitalSignatureBlock
-              documentTitle="چارت تشکیلات رسمی شرکت صرافی و خدمات پولی برکت‌الله غفوری"
-              defaultSignatoryName="برکت‌الله ولد عبدالغفور"
-              defaultSignatoryTitle="رئیس هیئت مدیره و مالک شرکت"
-              documentCode="DAB/7-0965-ORG"
-              customLogo={customLogo}
-              onOpenLogoModal={() => setIsLogoModalOpen(true)}
-              storageKey="bg_org_chart_signature"
-            />
+          {/* Standard Official Signature Area */}
+          <div className="mt-12 pt-8 border-t border-slate-300 flex items-end justify-between px-10">
+            <div className="text-center">
+              <div className="w-28 h-28 border-2 border-dashed border-slate-300 rounded-full flex flex-col items-center justify-center text-slate-400 text-[10px] font-bold p-3 text-center">
+                <span>محل مهر رسمی</span>
+                <span className="text-[9px] mt-1">DAB/7-0965</span>
+              </div>
+            </div>
+
+            <div className="text-center space-y-1.5 min-w-[240px]">
+              <div className="font-bold text-slate-700 text-sm">با احترام؛</div>
+              <div className="font-black text-lg text-slate-950">برکت‌الله ولد عبدالغفور</div>
+              <div className="text-xs font-bold text-blue-900">رئیس هیئت مدیره و مالک شرکت صرافی و خدمات پولی برکت‌الله غفوری</div>
+              <div className="pt-10 font-bold text-slate-600 text-xs border-t border-slate-300 mt-2">
+                امضاء و شصت
+              </div>
+            </div>
           </div>
 
         </div>
