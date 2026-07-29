@@ -85,33 +85,116 @@ function parseOklchValues(match: string): { r: number; g: number; b: number; a: 
   }
 }
 
-export function replaceOklchInString(str: string): string {
-  if (!str || !str.includes('oklch')) return str;
-  return str.replace(/oklch\([^)]+\)/gi, (match) => {
-    const parsed = parseOklchValues(match);
-    if (!parsed) return 'rgb(30, 41, 59)';
-    if (parsed.a < 1) {
-      return `rgba(${parsed.r}, ${parsed.g}, ${parsed.b}, ${parsed.a.toFixed(2)})`;
+/**
+ * Pure JS OKLAB to RGB/RGBA parser and converter.
+ * Converts oklab(L a b [/ A]) or oklab(L, a, b, A) into rgb(r, g, b) or rgba(r, g, b, a).
+ */
+function parseOklabValues(match: string): { r: number; g: number; b: number; a: number } | null {
+  try {
+    const inner = match.replace(/^oklab\(\s*/i, '').replace(/\s*\)$/, '').trim();
+    let parts: string[];
+    let alphaStr: string | null = null;
+
+    if (inner.includes('/')) {
+      const slashParts = inner.split('/');
+      alphaStr = slashParts[1].trim();
+      parts = slashParts[0].trim().split(/[\s,]+/);
+    } else {
+      parts = inner.split(/[\s,]+/);
     }
-    return `rgb(${parsed.r}, ${parsed.g}, ${parsed.b})`;
-  });
+
+    if (parts.length < 3) return null;
+
+    let l = parseFloat(parts[0]);
+    if (parts[0].endsWith('%')) l = l / 100;
+
+    let aLab = parseFloat(parts[1]);
+    if (parts[1].endsWith('%')) aLab = aLab / 100;
+
+    let bLab = parseFloat(parts[2]);
+    if (parts[2].endsWith('%')) bLab = bLab / 100;
+
+    let a = 1;
+    if (alphaStr) {
+      a = parseFloat(alphaStr);
+      if (alphaStr.endsWith('%')) a = a / 100;
+    } else if (parts.length >= 4) {
+      a = parseFloat(parts[3]);
+      if (parts[3].endsWith('%')) a = a / 100;
+    }
+
+    if (isNaN(l) || isNaN(aLab) || isNaN(bLab)) return null;
+
+    const l_ = l + 0.3963377774 * aLab + 0.2158037573 * bLab;
+    const m_ = l - 0.1055613458 * aLab - 0.0638541728 * bLab;
+    const s_ = l - 0.0894841775 * aLab - 1.2914855480 * bLab;
+
+    const l3 = l_ * l_ * l_;
+    const m3 = m_ * m_ * m_;
+    const s3 = s_ * s_ * s_;
+
+    const rLin = +4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3;
+    const gLin = -1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3;
+    const bLin = -0.0041960863 * l3 - 0.7034186147 * m3 + 1.7076147010 * s3;
+
+    const toSrgb = (val: number) => {
+      const clamped = Math.max(0, Math.min(1, val));
+      const srgb = clamped <= 0.0031308 ? 12.92 * clamped : 1.055 * Math.pow(clamped, 1 / 2.4) - 0.055;
+      return Math.round(Math.max(0, Math.min(255, srgb * 255)));
+    };
+
+    return {
+      r: toSrgb(rLin),
+      g: toSrgb(gLin),
+      b: toSrgb(bLin),
+      a: isNaN(a) ? 1 : Math.max(0, Math.min(1, a)),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function replaceOklchInString(str: string): string {
+  if (!str) return str;
+  let res = str;
+  if (res.includes('oklch')) {
+    res = res.replace(/oklch\([^)]+\)/gi, (match) => {
+      const parsed = parseOklchValues(match);
+      if (!parsed) return 'rgb(30, 41, 59)';
+      if (parsed.a < 1) {
+        return `rgba(${parsed.r}, ${parsed.g}, ${parsed.b}, ${parsed.a.toFixed(2)})`;
+      }
+      return `rgb(${parsed.r}, ${parsed.g}, ${parsed.b})`;
+    });
+  }
+  if (res.includes('oklab')) {
+    res = res.replace(/oklab\([^)]+\)/gi, (match) => {
+      const parsed = parseOklabValues(match);
+      if (!parsed) return 'rgb(30, 41, 59)';
+      if (parsed.a < 1) {
+        return `rgba(${parsed.r}, ${parsed.g}, ${parsed.b}, ${parsed.a.toFixed(2)})`;
+      }
+      return `rgb(${parsed.r}, ${parsed.g}, ${parsed.b})`;
+    });
+  }
+  return res;
 }
 
 /**
- * Sanitizes all style tags, inline styles, and computed color properties in a document to remove oklch calls
+ * Sanitizes all style tags, inline styles, and computed color properties in a document to remove oklch & oklab calls
  */
 function sanitizeDocumentColors(doc: Document) {
   try {
     // 1. Sanitize all <style> tag contents
     const styleTags = doc.querySelectorAll('style');
     styleTags.forEach((styleEl) => {
-      if (styleEl.textContent && styleEl.textContent.includes('oklch')) {
+      if (styleEl.textContent && (styleEl.textContent.includes('oklch') || styleEl.textContent.includes('oklab'))) {
         styleEl.textContent = replaceOklchInString(styleEl.textContent);
       }
     });
 
-    // 2. Sanitize all elements with inline style containing oklch
-    const elementsWithInlineStyle = doc.querySelectorAll('[style*="oklch"]');
+    // 2. Sanitize all elements with inline style containing oklch or oklab
+    const elementsWithInlineStyle = doc.querySelectorAll('[style*="oklch"], [style*="oklab"]');
     elementsWithInlineStyle.forEach((el) => {
       const currentStyle = el.getAttribute('style');
       if (currentStyle) {
@@ -128,7 +211,7 @@ function sanitizeDocumentColors(doc: Document) {
         const computed = window.getComputedStyle(el);
         colorProps.forEach((prop) => {
           const val = (computed as unknown as Record<string, unknown>)[prop];
-          if (typeof val === 'string' && val.includes('oklch')) {
+          if (typeof val === 'string' && (val.includes('oklch') || val.includes('oklab'))) {
             const rgbVal = replaceOklchInString(val);
             (el.style as unknown as Record<string, string>)[prop] = rgbVal;
           }
@@ -138,7 +221,7 @@ function sanitizeDocumentColors(doc: Document) {
       }
     });
   } catch (err) {
-    console.warn('Error sanitizing document oklch colors:', err);
+    console.warn('Error sanitizing document oklch/oklab colors:', err);
   }
 }
 
