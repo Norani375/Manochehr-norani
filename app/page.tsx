@@ -13,6 +13,7 @@ import DabLicenseRenewalLetter from '@/components/DabLicenseRenewalLetter';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
+import DigitalSignatureBlock from '@/components/DigitalSignatureBlock';
 import { 
   subscribePersonnel, 
   subscribeSettings, 
@@ -716,7 +717,7 @@ export default function OrgChartPage() {
       ) : activeTab === 'license-renewal' ? (
         <DabLicenseRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
       ) : activeTab === 'license-renewal-letter' ? (
-        <DabLicenseRenewalLetter customLogo={customLogo} />
+        <DabLicenseRenewalLetter customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
       ) : (
         <>
           {/* Real-time Live Dashboard Stats Widget */}
@@ -1161,6 +1162,19 @@ export default function OrgChartPage() {
 
               </div>
             </div>
+          </div>
+
+          {/* Official DAB Digital Signature Block */}
+          <div className="mt-8 pt-6 border-t border-slate-300">
+            <DigitalSignatureBlock
+              documentTitle="چارت تشکیلات رسمی شرکت صرافی و خدمات پولی برکت‌الله غفوری"
+              defaultSignatoryName="برکت‌الله ولد عبدالغفور"
+              defaultSignatoryTitle="رئیس هیئت مدیره و مالک شرکت"
+              documentCode="DAB/7-0965-ORG"
+              customLogo={customLogo}
+              onOpenLogoModal={() => setIsLogoModalOpen(true)}
+              storageKey="bg_org_chart_signature"
+            />
           </div>
 
         </div>

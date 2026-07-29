@@ -3,70 +3,118 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FileText, Printer, RotateCcw, Save, Edit3, Plus, Trash2, 
-  Check, Download, Building2, Stamp, Calendar, Hash, Paperclip, Mail, ShieldCheck
+  Check, Download, Building2, Stamp, Calendar, Hash, Paperclip, ShieldCheck, UserCheck
 } from 'lucide-react';
+import DigitalSignatureBlock from '@/components/DigitalSignatureBlock';
 import { exportElementToPdf } from '@/lib/pdfExport';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+
+export interface IntroducedMember {
+  id: number;
+  name: string;
+  position: string;
+}
+
+export interface IntroducedPersonnelGroup {
+  id: number;
+  groupTitle: string;
+  members: IntroducedMember[];
+}
 
 export interface LicenseRenewalLetterData {
   letterNo: string;
   letterDate: string;
   attachment: string;
   recipientTitle: string;
-  recipientDepartment: string;
+  recipientAttention: string;
   subject: string;
   companyName: string;
   licenseNo: string;
-  issueDate: string;
+  companyAddressHeader: string;
   mainBodyParagraph1: string;
   mainBodyParagraph2: string;
-  attachmentsList: string[];
+  personnelGroups: IntroducedPersonnelGroup[];
   closingText: string;
   signatoryName: string;
   signatoryTitle: string;
-  signatoryFatherName: string;
   companyPhone: string;
-  companyAddress: string;
 }
 
 const DEFAULT_LETTER_DATA: LicenseRenewalLetterData = {
-  letterNo: '۱۴۰۴/BG-۱۰۲',
-  letterDate: '۱۴۰۴/۰۱/۱۵',
-  attachment: '۶ قلم اسناد (ضمیمه)',
-  recipientTitle: 'مقام محترم آمریت عمومی نظارت بر نهادهای مالی غیربانکی',
-  recipientDepartment: 'د افغانستان بانک (بانک مرکزی افغانستان)',
-  subject: 'درخواست رسمی تمدید جواز فعالیت صرافی و خدمات پولی (نمبر جواز: DAB/7-0965)',
-  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)',
+  letterNo: '۱۴۰۵/BG-۱۰۵',
+  letterDate: '۱۴۰۵/۰۲/۲۰',
+  attachment: 'ضمیمه فرم‌ها و اسناد',
+  recipientTitle: 'به آمریت محترم ساحوی زون شمالشرق د افغانستان بانک !',
+  recipientAttention: 'قابل توجه مدیریت محترم نظارت از موسسات مالی و غیر بانکی !',
+  subject: 'در مورد تمدید جواز فعالیت شرکت و نمایندگی های آن !',
+  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
   licenseNo: 'DAB/7-0965',
-  issueDate: '۱۳۹۹/۰۳/۱۳',
-  mainBodyParagraph1: 'السلام علیکم ورحمة الله وبركاته؛\nاحتراماً به استحضار مقام محترم رسانیده می‌شود که شرکت صرافی و خدمات پولی برکت‌الله غفوری دارنده جواز فعالیت شماره (DAB/7-0965) صادره د افغانستان بانک، مدت اعتبار قانونی جواز خویش را تکمیل نموده و بر اساس مقرره تنظیم فعالیت صرافی‌ها و فراهم‌کنندگان خدمات پولی، خواهان تمدید جواز فعالیت برای یک دوره جدید قانونی می‌باشد.',
-  mainBodyParagraph2: 'بدین‌وسیله تمامی اسناد، فورمه‌ها و مدارک الزامی مطابق به لایحه و مقررات د افغانستان بانک جهت بررسی، ارزیابی و طی مراحل قانونی به شرح ذیل ضمیمه این مکتوب تقدیم می‌گردد:',
-  attachmentsList: [
-    'اصل جواز قبلی فعالیت صرافی و خدمات پولی (DAB/7-0965)',
-    'مکتوب و استعلام عدم مسئولیت مالیاتی و تصفیه حساب از وزارت محترم مالیه',
-    'فورم مکمل ارزیابی و درخواست تمدید جواز شرکت (تکمیل و امضا شده)',
-    'فورمه‌های تضمین سر سهمدار و صورت‌حساب‌های بانکی تأیید شده نزد بانک‌های تجارتی',
-    'جدول مشخصات و سهم‌داران شرکت، هیئت مدیره، هیئت نظار و نمایندگی‌های فعال',
-    'کاپی تذکره، قطعات عکس و عدم سابقه جرمی سهم‌داران و مسئولین شرکت'
+  companyAddressHeader: 'ولایت کندز، مومند مارکیت، منزل دوم، دکان نمبر ۳۰۱',
+  mainBodyParagraph1: 'محترما : شرکت صرافی و خدمات پولی برکت‌الله غفوری دارنده جواز نمبر DAB/7-0965 واقع مومند مارکیت دوکان نمبر 301 که به تاریخ 1405/03/13 جواز فعالیت شرکت ختم میگردد و به منظور فعالیت و ادامه کار صرافی و خدمات پولی رهبری شرکت تصمیم دارد جواز فعالیت مرکزی و نمایندگی های خویش را تمدید نماید در زمینه همکاری نموده ممنون سازید .',
+  mainBodyParagraph2: 'سهم داران شرکت پس از بحث و بررسی و فیصله نهایی افراد ذیل را به عنوان کارمندان و نماینده رسمی شرکت معرفی مینمایند .',
+  personnelGroups: [
+    {
+      id: 1,
+      groupTitle: 'کارمندان دفتر مرکزی:',
+      members: [
+        { id: 1, name: 'برکت‌الله', position: 'رئیس' },
+        { id: 2, name: 'بسم‌الله شیرزی', position: 'رئیس هیئت نظار' },
+        { id: 3, name: 'برکت‌الله غفوری', position: 'عضو هیئت نظار' },
+        { id: 4, name: 'عظیم‌الله رحمانی', position: 'عضو هیئت نظار' },
+        { id: 5, name: 'صالح‌محمد', position: 'مسئول عملیاتی' },
+        { id: 6, name: 'محمد فهیم', position: 'مسئول رعایت قوانین' },
+      ]
+    },
+    {
+      id: 2,
+      groupTitle: 'معرفی نماینده و کارمندان نمایندگی تخار:',
+      members: [
+        { id: 1, name: 'رحمت‌الله', position: 'نماینده' },
+        { id: 2, name: 'عبیدالله', position: 'خزانه‌دار' },
+      ]
+    },
+    {
+      id: 3,
+      groupTitle: 'معرفی نماینده و کارمندان نمایندگی کابل:',
+      members: [
+        { id: 1, name: 'اجمل', position: 'نماینده' },
+        { id: 2, name: 'ریحان', position: 'عضو نمایندگی' },
+        { id: 3, name: 'صدیق‌الله', position: 'منشی و خزانه‌دار' },
+      ]
+    },
+    {
+      id: 4,
+      groupTitle: 'معرفی نماینده و کارمندان نمایندگی امام‌صاحب:',
+      members: [
+        { id: 1, name: 'محمدیوسف', position: 'نماینده' },
+        { id: 2, name: 'عبدالمجید', position: 'خزانه‌دار' },
+      ]
+    },
+    {
+      id: 5,
+      groupTitle: 'معرفی نماینده و کارمندان نمایندگی کشم، بدخشان:',
+      members: [
+        { id: 1, name: 'عتیق‌الله', position: 'نماینده' },
+      ]
+    }
   ],
-  closingText: 'بناً از مقام محترم آمریت عمومی نظارت بر نهادهای مالی غیربانکی تقاضامندیم تا پس از ملاحظه و بررسی مدارک فوق، در زمینه تمدید جواز فعالیت این شرکت هدایت لازم جهت اجراءات بعدی صادر فرمایند.',
-  signatoryName: 'برکت‌الله ولد عبدالغفور',
-  signatoryTitle: 'رئیس شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  signatoryFatherName: 'عبدالغفور',
-  companyPhone: '0799681111 / 0749340000',
-  companyAddress: 'ولایت کندز، مرکز، ناحیه ۳، مومند مارکیت، منزل دوم، دکان ۳۰۱'
+  closingText: 'غرض اجرات بعدی به شما معرفی گردید.',
+  signatoryName: 'صالح‌محمد',
+  signatoryTitle: 'مسئول عملیاتی شرکت صرافی و خدمات پولی برکت‌الله غفوری',
+  companyPhone: '0799681111 / 0749340000'
 };
 
 interface DabLicenseRenewalLetterProps {
   customLogo?: string | null;
+  onOpenLogoModal?: () => void;
 }
 
-export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewalLetterProps) {
+export default function DabLicenseRenewalLetter({ customLogo, onOpenLogoModal }: DabLicenseRenewalLetterProps) {
   const [data, setData] = useState<LicenseRenewalLetterData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_dab_license_renewal_letter');
+        const saved = localStorage.getItem('bg_dab_license_renewal_letter_v2');
         if (saved) {
           const parsed = JSON.parse(saved);
           return { ...DEFAULT_LETTER_DATA, ...parsed };
@@ -84,9 +132,8 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
 
   // Firestore Sync
   useEffect(() => {
-    // Subscribe to Firestore settings/license_renewal_letter
     try {
-      const docRef = doc(db, 'settings', 'license_renewal_letter');
+      const docRef = doc(db, 'settings', 'license_renewal_letter_v2');
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -106,11 +153,10 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_dab_license_renewal_letter', JSON.stringify(data));
+      localStorage.setItem('bg_dab_license_renewal_letter_v2', JSON.stringify(data));
       
-      // Sync to Firestore
       try {
-        const docRef = doc(db, 'settings', 'license_renewal_letter');
+        const docRef = doc(db, 'settings', 'license_renewal_letter_v2');
         await setDoc(docRef, {
           letterData: data,
           updatedAt: new Date().toISOString()
@@ -127,9 +173,9 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
   };
 
   const handleReset = () => {
-    if (window.confirm('آیا از بازنشانی مکتوب تمدید جواز به متن اولیه اطمینان دارید؟')) {
+    if (window.confirm('آیا از بازنشانی مکتوب تمدید جواز به متن دقیق سند رسمی اطمینان دارید؟')) {
       setData(DEFAULT_LETTER_DATA);
-      localStorage.removeItem('bg_dab_license_renewal_letter');
+      localStorage.removeItem('bg_dab_license_renewal_letter_v2');
     }
   };
 
@@ -138,7 +184,7 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
     try {
       await exportElementToPdf({
         elementId: 'dab-license-renewal-letter-canvas',
-        filename: 'مکتوب_تمدید_جواز_برکت_الله_غفوری_DAB.pdf',
+        filename: 'مکتوب_رسمی_تمدید_جواز_برکت_الله_غفوری_DAB.pdf',
         orientation: 'portrait'
       });
     } catch (error) {
@@ -149,23 +195,46 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
     }
   };
 
-  const handleAttachmentChange = (index: number, value: string) => {
-    const updated = [...data.attachmentsList];
-    updated[index] = value;
-    setData({ ...data, attachmentsList: updated });
+  // Group Management Functions
+  const handleMemberChange = (groupIdx: number, memberIdx: number, field: 'name' | 'position', val: string) => {
+    const updatedGroups = [...data.personnelGroups];
+    updatedGroups[groupIdx].members[memberIdx][field] = val;
+    setData({ ...data, personnelGroups: updatedGroups });
   };
 
-  const addAttachmentItem = () => {
+  const addMember = (groupIdx: number) => {
+    const updatedGroups = [...data.personnelGroups];
+    const newId = updatedGroups[groupIdx].members.length + 1;
+    updatedGroups[groupIdx].members.push({ id: newId, name: 'نام کارمند', position: 'سمت شغلی' });
+    setData({ ...data, personnelGroups: updatedGroups });
+  };
+
+  const removeMember = (groupIdx: number, memberIdx: number) => {
+    const updatedGroups = [...data.personnelGroups];
+    if (updatedGroups[groupIdx].members.length <= 1) return;
+    updatedGroups[groupIdx].members = updatedGroups[groupIdx].members.filter((_, i) => i !== memberIdx);
+    setData({ ...data, personnelGroups: updatedGroups });
+  };
+
+  const addPersonnelGroup = () => {
+    const newId = data.personnelGroups.length + 1;
     setData({
       ...data,
-      attachmentsList: [...data.attachmentsList, 'سند جدید ضمیمه']
+      personnelGroups: [
+        ...data.personnelGroups,
+        {
+          id: newId,
+          groupTitle: 'معرفی نماینده و کارمندان نمایندگی جدید:',
+          members: [{ id: 1, name: 'نام نماینده', position: 'نماینده' }]
+        }
+      ]
     });
   };
 
-  const removeAttachmentItem = (index: number) => {
-    if (data.attachmentsList.length <= 1) return;
-    const updated = data.attachmentsList.filter((_, i) => i !== index);
-    setData({ ...data, attachmentsList: updated });
+  const removePersonnelGroup = (groupIdx: number) => {
+    if (data.personnelGroups.length <= 1) return;
+    const updated = data.personnelGroups.filter((_, i) => i !== groupIdx);
+    setData({ ...data, personnelGroups: updated });
   };
 
   return (
@@ -175,10 +244,10 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
         <div>
           <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
             <Stamp className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0" />
-            <span>مکتوب رسمی درخواست تمدید جواز (د افغانستان بانک)</span>
+            <span>مکتوب رسمی درخواست تمدید جواز و نمایندگی‌ها (د افغانستان بانک)</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            مکتوب رسمی استاندارد جهت ارسال به آمریت عمومی نظارت بر نهادهای مالی غیربانکی
+            نسخه دقیق مکتوب رسمی صادر شده به آمریت محترم ساحوی زون شمالشرق د افغانستان بانک
           </p>
         </div>
 
@@ -193,7 +262,7 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
             }`}
           >
             <Edit3 className="w-4 h-4" />
-            <span>{isEditing ? 'حالت پیش‌نمایش' : 'ویرایش متن مکتوب'}</span>
+            <span>{isEditing ? 'حالت پیش‌نمایش سند' : 'ویرایش کامل متن مکتوب'}</span>
           </button>
 
           <button
@@ -229,19 +298,19 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
             type="button"
             onClick={handleReset}
             className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition-all cursor-pointer border border-slate-300 dark:border-slate-700"
-            title="بازنشانی متن مکتوب"
+            title="بازنشانی به متن مکتوب اصلی"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Editing Form Section (Visible when isEditing === true) */}
+      {/* Editing Form Section */}
       {isEditing && (
-        <div className="bg-amber-50 dark:bg-slate-800/80 border border-amber-200 dark:border-slate-700 rounded-2xl p-4 sm:p-6 space-y-4 text-xs text-slate-800 dark:text-slate-200 print:hidden shadow-xs">
+        <div className="bg-amber-50 dark:bg-slate-800/80 border border-amber-200 dark:border-slate-700 rounded-2xl p-4 sm:p-6 space-y-5 text-xs text-slate-800 dark:text-slate-200 print:hidden shadow-xs">
           <h3 className="font-extrabold text-sm text-amber-900 dark:text-amber-300 flex items-center gap-2 border-b border-amber-200 dark:border-slate-700 pb-3">
             <Edit3 className="w-4 h-4" />
-            <span>تنظیمات و ویرایش محتوای مکتوب تمدید جواز</span>
+            <span>ویرایش مشخصات و متن مکتوب رسمی</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -264,11 +333,11 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
               />
             </div>
             <div>
-              <label className="font-bold block mb-1">ضمیمه:</label>
+              <label className="font-bold block mb-1">شماره جواز DAB:</label>
               <input
                 type="text"
-                value={data.attachment}
-                onChange={(e) => setData({ ...data, attachment: e.target.value })}
+                value={data.licenseNo}
+                onChange={(e) => setData({ ...data, licenseNo: e.target.value })}
                 className="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold"
               />
             </div>
@@ -285,11 +354,11 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
               />
             </div>
             <div>
-              <label className="font-bold block mb-1">نام اداره / بانک:</label>
+              <label className="font-bold block mb-1">قسمت توجه:</label>
               <input
                 type="text"
-                value={data.recipientDepartment}
-                onChange={(e) => setData({ ...data, recipientDepartment: e.target.value })}
+                value={data.recipientAttention}
+                onChange={(e) => setData({ ...data, recipientAttention: e.target.value })}
                 className="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold"
               />
             </div>
@@ -306,7 +375,7 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
           </div>
 
           <div>
-            <label className="font-bold block mb-1">بند اول متن اصلی مکتوب:</label>
+            <label className="font-bold block mb-1">متن اصلی درخواست تمدید (بند اول):</label>
             <textarea
               rows={3}
               value={data.mainBodyParagraph1}
@@ -316,7 +385,7 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
           </div>
 
           <div>
-            <label className="font-bold block mb-1">بند دوم متن اصلی (توضیح ضمائم):</label>
+            <label className="font-bold block mb-1">متن معرفی کارمندان (بند دوم):</label>
             <textarea
               rows={2}
               value={data.mainBodyParagraph2}
@@ -325,53 +394,86 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
             />
           </div>
 
-          {/* Edit Enclosures / Attachments List */}
-          <div className="space-y-2">
+          {/* Edit Introduced Personnel & Branches */}
+          <div className="space-y-4 pt-2 border-t border-amber-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
-              <label className="font-bold block">فهرست مدارک و اسناد ضمیمه شده:</label>
+              <label className="font-black text-sm text-slate-900 dark:text-white">فهرست کارمندان و نمایندگی‌های معرفی شده:</label>
               <button
                 type="button"
-                onClick={addAttachmentItem}
-                className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                onClick={addPersonnelGroup}
+                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>افزودن سند</span>
+                <span>افزودن نمایندگی / بخش جدید</span>
               </button>
             </div>
-            {data.attachmentsList.map((att, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <span className="font-bold w-6 text-center text-slate-500">{idx + 1}.</span>
-                <input
-                  type="text"
-                  value={att}
-                  onChange={(e) => handleAttachmentChange(idx, e.target.value)}
-                  className="flex-1 p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeAttachmentItem(idx)}
-                  className="p-2 text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/40 rounded-lg cursor-pointer"
-                  title="حذف"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+
+            {data.personnelGroups.map((group, gIdx) => (
+              <div key={group.id} className="bg-white dark:bg-slate-900 p-3.5 border border-slate-300 dark:border-slate-700 rounded-xl space-y-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={group.groupTitle}
+                    onChange={(e) => {
+                      const updated = [...data.personnelGroups];
+                      updated[gIdx].groupTitle = e.target.value;
+                      setData({ ...data, personnelGroups: updated });
+                    }}
+                    className="flex-1 p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addMember(gIdx)}
+                    className="px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>عضو</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removePersonnelGroup(gIdx)}
+                    className="p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg cursor-pointer"
+                    title="حذف گروه"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-2 pr-2 border-r-2 border-amber-400">
+                  {group.members.map((m, mIdx) => (
+                    <div key={mIdx} className="flex items-center gap-2 text-xs">
+                      <span className="font-bold text-slate-400 w-4">{mIdx + 1}.</span>
+                      <input
+                        type="text"
+                        value={m.name}
+                        placeholder="نام کارمند"
+                        onChange={(e) => handleMemberChange(gIdx, mIdx, 'name', e.target.value)}
+                        className="flex-1 p-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md"
+                      />
+                      <input
+                        type="text"
+                        value={m.position}
+                        placeholder="سمت"
+                        onChange={(e) => handleMemberChange(gIdx, mIdx, 'position', e.target.value)}
+                        className="w-40 p-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeMember(gIdx, mIdx)}
+                        className="p-1 text-rose-500 hover:bg-rose-50 rounded"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
 
-          <div>
-            <label className="font-bold block mb-1">متن اختتامیه / تقاضا:</label>
-            <textarea
-              rows={2}
-              value={data.closingText}
-              onChange={(e) => setData({ ...data, closingText: e.target.value })}
-              className="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs leading-relaxed"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
-              <label className="font-bold block mb-1">نام و تذکره امضاکننده (رئیس شرکت):</label>
+              <label className="font-bold block mb-1">نام مسئول امضاءکننده:</label>
               <input
                 type="text"
                 value={data.signatoryName}
@@ -380,7 +482,7 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
               />
             </div>
             <div>
-              <label className="font-bold block mb-1">عنوان و سمت امضاکننده:</label>
+              <label className="font-bold block mb-1">سمت مسئول امضاءکننده:</label>
               <input
                 type="text"
                 value={data.signatoryTitle}
@@ -395,157 +497,148 @@ export default function DabLicenseRenewalLetter({ customLogo }: DabLicenseRenewa
       {/* Printable / Viewable Official Letter Canvas */}
       <div 
         id="dab-license-renewal-letter-canvas"
-        className="bg-white text-slate-950 p-8 sm:p-12 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0 max-w-4xl mx-auto space-y-7 relative font-sans leading-relaxed dir-rtl"
+        className="bg-white text-slate-950 p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0 max-w-4xl mx-auto space-y-6 relative font-sans leading-relaxed dir-rtl"
       >
-        {/* Decorative Top Border Line for Afghan Official Documents */}
-        <div className="h-1.5 bg-gradient-to-l from-emerald-700 via-amber-500 to-blue-900 rounded-full mb-6 print:mb-4"></div>
+        
+        {/* Letter Official Header Matching Official Document */}
+        <div className="border-b-2 border-slate-900 pb-4">
+          <div className="flex items-center justify-between gap-4">
+            
+            {/* English Header Left */}
+            <div className="text-left text-[11px] font-bold text-slate-800 leading-tight">
+              <div className="font-extrabold text-slate-950 text-xs">Barakatullah Ghafouri</div>
+              <div>Money Exchange & MSP Co.</div>
+            </div>
 
-        {/* Letter Official Header */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b-2 border-slate-800">
-          
-          {/* Right Header Details: Letter Ref & Date */}
-          <div className="text-right text-xs space-y-1.5 font-bold shrink-0 min-w-[170px] bg-slate-50 p-3 rounded-xl border border-slate-200 print:bg-transparent print:border-none print:p-0">
-            <div className="flex items-center gap-1.5 text-slate-800">
-              <Hash className="w-3.5 h-3.5 text-blue-700 shrink-0 print:hidden" />
-              <span>شماره مکتوب:</span>
-              <span className="font-black font-mono text-sm text-blue-900">{data.letterNo}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-slate-800">
-              <Calendar className="w-3.5 h-3.5 text-blue-700 shrink-0 print:hidden" />
-              <span>تاریخ صادر:</span>
-              <span className="font-black text-slate-900">{data.letterDate}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-slate-800">
-              <Paperclip className="w-3.5 h-3.5 text-blue-700 shrink-0 print:hidden" />
-              <span>ضمیمه:</span>
-              <span className="font-semibold text-slate-700">{data.attachment}</span>
-            </div>
-          </div>
-
-          {/* Center Header: Official Title & Logo */}
-          <div className="text-center space-y-2 flex-1">
-            <div className="flex items-center justify-center gap-3">
+            {/* Central Official Logo */}
+            <div className="flex flex-col items-center justify-center text-center">
               {customLogo ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={customLogo} alt="Logo" className="w-14 h-14 object-contain rounded-xl p-0.5 border border-slate-300 bg-white" />
+                <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain rounded-full border border-slate-300 bg-white p-0.5" />
               ) : (
-                <div className="w-12 h-12 bg-blue-950 text-amber-400 rounded-xl flex items-center justify-center shadow-xs">
+                <div className="w-14 h-14 bg-blue-950 text-amber-400 rounded-full flex flex-col items-center justify-center border-2 border-amber-400/60 shadow-xs">
                   <Building2 className="w-7 h-7" />
                 </div>
               )}
             </div>
 
-            <div className="space-y-1">
-              <h1 className="font-black text-lg sm:text-xl text-slate-950 tracking-tight leading-snug">
-                {data.companyName}
-              </h1>
-              <p className="text-xs font-bold text-slate-700">
-                دارنده جواز فعالیت صرافی و خدمات پولی شماره ({data.licenseNo}) د افغانستان بانک
-              </p>
-              <div className="inline-block bg-slate-100 text-slate-800 font-extrabold text-[11px] px-3 py-1 rounded-full border border-slate-200 mt-1 print:bg-transparent print:border-none print:p-0">
-                مکتوب رسمی درخواست تمدید جواز فعالیت
-              </div>
+            {/* Dari Header Right */}
+            <div className="text-right text-[11px] font-bold text-slate-800 leading-tight">
+              <div className="font-extrabold text-slate-950 text-xs">شرکت صرافی و خدمات پولی برکت‌الله غفوری</div>
+              <div className="font-mono text-slate-700">جواز: {data.licenseNo}</div>
+            </div>
+
+          </div>
+
+          {/* Company Title & Address Subheader */}
+          <div className="text-center mt-3 pt-2 border-t border-slate-200">
+            <h1 className="text-base sm:text-lg font-black text-slate-950">
+              {data.companyName}
+            </h1>
+            <p className="text-xs font-bold text-slate-700 mt-0.5">
+              جواز شماره: <span className="font-mono dir-ltr inline-block">{data.licenseNo}</span> — {data.companyAddressHeader}
+            </p>
+          </div>
+
+          {/* Central Title Badge */}
+          <div className="text-center mt-3">
+            <div className="inline-block bg-emerald-50 border-2 border-emerald-700 text-emerald-950 font-black text-sm px-6 py-1.5 rounded-xl">
+              مکتوب تمدید جواز
             </div>
           </div>
 
-          {/* Left Header: Status Badge & Verification */}
-          <div className="text-left text-xs space-y-1.5 shrink-0 min-w-[170px] hidden sm:block">
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-3 rounded-xl text-center font-bold space-y-1 print:bg-transparent print:border-none">
-              <div className="flex items-center justify-center gap-1 text-emerald-700">
-                <ShieldCheck className="w-4 h-4" />
-                <span className="text-[11px]">مکتوب رسمی صادره</span>
-              </div>
-              <div className="text-[10px] text-slate-600">ثبت شده در سیستم د افغانستان بانک</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Recipient Block (عنوان و مرجع دریافت‌کننده) */}
-        <div className="space-y-2 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 print:bg-transparent print:border-none print:p-0">
-          <div className="flex items-start gap-2 text-slate-900 font-extrabold text-sm sm:text-base leading-relaxed">
-            <span className="text-blue-900 shrink-0">به:</span>
+          {/* Letter No & Date Line */}
+          <div className="flex items-center justify-between text-xs font-bold text-slate-800 mt-3 pt-2 border-t border-dashed border-slate-300 px-2">
             <div>
-              <div>{data.recipientTitle}</div>
-              <div className="text-xs font-bold text-slate-700 mt-0.5">{data.recipientDepartment}</div>
+              <span>شماره:</span>
+              <span className="font-black font-mono mr-2 text-blue-900">{data.letterNo}</span>
+            </div>
+            <div>
+              <span>تاریخ:</span>
+              <span className="font-black mr-2">{data.letterDate}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-2 border-t border-slate-200 print:border-slate-400">
-            <span className="text-slate-900 font-extrabold text-xs sm:text-sm shrink-0">موضوع:</span>
-            <span className="font-black text-xs sm:text-sm text-blue-950 underline underline-offset-4 decoration-amber-500">
-              {data.subject}
-            </span>
+        </div>
+
+        {/* Recipient Section */}
+        <div className="space-y-1.5 text-xs sm:text-sm font-extrabold text-slate-900">
+          <div className="text-blue-950 text-sm sm:text-base font-black">
+            {data.recipientTitle}
+          </div>
+          <div className="text-slate-800 font-bold">
+            {data.recipientAttention}
+          </div>
+          <div className="text-slate-950 font-black pt-1">
+            {data.subject}
           </div>
         </div>
 
-        {/* Letter Main Body Text (متن اصلی مکتوب) */}
-        <div className="space-y-4 text-slate-900 text-xs sm:text-sm leading-relaxed text-justify font-medium">
-          <p className="whitespace-pre-line leading-loose">
+        {/* Main Body Paragraphs */}
+        <div className="space-y-3 text-xs sm:text-sm text-slate-900 leading-loose text-justify font-semibold">
+          <p className="whitespace-pre-line">
             {data.mainBodyParagraph1}
           </p>
 
-          <p className="leading-loose">
+          <p className="whitespace-pre-line pt-1">
             {data.mainBodyParagraph2}
-          </p>
-
-          {/* Numbered Enclosures / Attachments Table */}
-          <div className="my-5 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-2xs">
-            <div className="bg-slate-100 px-4 py-2.5 border-b border-slate-300 flex items-center justify-between font-bold text-xs text-slate-800">
-              <span className="flex items-center gap-1.5">
-                <Paperclip className="w-4 h-4 text-blue-800" />
-                <span>فهرست اسناد و مدارک ضمیمه شده (Enclosures):</span>
-              </span>
-              <span className="text-[11px] text-slate-600 font-mono">تعداد: {data.attachmentsList.length} قلم</span>
-            </div>
-
-            <ul className="divide-y divide-slate-200 text-xs text-slate-800">
-              {data.attachmentsList.map((item, idx) => (
-                <li key={idx} className="px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 transition-colors">
-                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-950 text-xs font-black flex items-center justify-center shrink-0">
-                    {idx + 1}
-                  </span>
-                  <span className="font-semibold text-slate-900 flex-1">{item}</span>
-                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <p className="whitespace-pre-line leading-loose font-medium pt-2">
-            {data.closingText}
           </p>
         </div>
 
-        {/* Official Signatures & Stamp Block (امضا و مهر رسمی) */}
-        <div className="pt-10 mt-8 border-t border-slate-300 flex flex-col sm:flex-row items-center justify-between gap-8">
-          
-          {/* Official Seal Placeholder */}
-          <div className="w-36 h-36 rounded-full border-2 border-dashed border-slate-400 flex flex-col items-center justify-center text-center p-2 text-slate-400 text-[10px] shrink-0 print:border-slate-500">
-            <Stamp className="w-8 h-8 mb-1 text-slate-400" />
-            <span className="font-bold">محل مهر رسمی شرکت</span>
-            <span className="text-[9px] font-mono mt-0.5">DAB/7-0965</span>
-          </div>
+        {/* Personnel & Branch Groups (Exact formatting from document) */}
+        <div className="space-y-4 my-4">
+          {data.personnelGroups.map((group) => (
+            <div key={group.id} className="bg-slate-50/70 border border-slate-200 rounded-xl p-3 sm:p-4 text-xs sm:text-sm print:bg-transparent print:border-none print:p-0">
+              <h4 className="font-black text-slate-950 mb-2 border-b border-slate-300 pb-1 flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-blue-900 shrink-0 print:hidden" />
+                <span>{group.groupTitle}</span>
+              </h4>
 
-          {/* President Signature Block */}
-          <div className="text-center sm:text-left space-y-2 min-w-[220px]">
-            <div className="text-xs font-bold text-slate-600">با احترام و امتنان؛</div>
-            <div className="font-black text-sm text-slate-950">{data.signatoryName}</div>
-            <div className="text-xs font-bold text-blue-900">{data.signatoryTitle}</div>
-            
-            {/* Signature Line Space */}
-            <div className="pt-8">
-              <div className="w-44 border-b-2 border-slate-800 mx-auto sm:mx-0"></div>
-              <span className="text-[10px] text-slate-500 font-bold block mt-1">امضاء و شصت رئیس شرکت</span>
+              <ol className="space-y-1.5 pr-4 text-slate-900 font-bold">
+                {group.members.map((m, idx) => (
+                  <li key={m.id} className="flex items-center gap-2">
+                    <span className="font-black text-slate-600">{idx + 1}.</span>
+                    <span className="font-extrabold text-slate-950">{m.name}</span>
+                    <span className="text-slate-700 font-medium">بحیث {m.position}.</span>
+                  </li>
+                ))}
+              </ol>
             </div>
-          </div>
+          ))}
+        </div>
+
+        {/* Closing Paragraph */}
+        <div className="text-xs sm:text-sm font-bold text-slate-900 pt-2">
+          {data.closingText}
+        </div>
+
+        {/* Signatory Title & Sign Block */}
+        <div className="pt-4 text-center sm:text-left space-y-1">
+          <div className="font-bold text-slate-800 text-xs">باحرمت</div>
+          <div className="font-black text-base text-slate-950">{data.signatoryName}</div>
+          <div className="text-xs font-bold text-blue-900">{data.signatoryTitle}</div>
+        </div>
+
+        {/* Official Digital Signature & Stamp Component */}
+        <div className="pt-4 mt-4 border-t border-slate-300">
+          <DigitalSignatureBlock
+            documentTitle="مکتوب رسمی درخواست تمدید جواز فعالیت و نمایندگی‌ها"
+            defaultSignatoryName={data.signatoryName || "صالح‌محمد"}
+            defaultSignatoryTitle={data.signatoryTitle || "مسئول عملیاتی شرکت صرافی و خدمات پولی برکت‌الله غفوری"}
+            documentCode={`DAB-LTR-${data.letterNo || '0965'}`}
+            customLogo={customLogo}
+            onOpenLogoModal={onOpenLogoModal}
+            storageKey="bg_letter_signature_official"
+          />
         </div>
 
         {/* Footer info bar */}
-        <div className="pt-6 border-t border-slate-200 text-center text-[10px] text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2 print:border-slate-300">
-          <span>آدرس: {data.companyAddress}</span>
-          <span>شماره تماس: {data.companyPhone}</span>
-          <span>صفحه ۱ از ۱</span>
+        <div className="pt-4 border-t border-slate-300 text-center text-[10px] text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>آدرس: کندز، مومند مارکیت، دکان ۳۰۱</span>
+          <span>ارسال شده به: آمریت محترم ساحوی زون شمالشرق DAB</span>
+          <span>صفحه رسمی مکتوب تمدید جواز</span>
         </div>
+
       </div>
     </div>
   );
