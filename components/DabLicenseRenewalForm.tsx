@@ -84,9 +84,9 @@ const DEFAULT_LICENSE_RENEWAL_DATA: DabLicenseRenewalData = {
   companyNameFa: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
   companyNameEn: 'Barakatullah Ghafouri Money Exchange and MSP Co.',
   licenseNo: 'DAB/7-0965',
-  issueDate: '1401/05/10',
-  phone: '0795920007 / 0789900097',
-  email: 'khalidahmadmomand1991@gmail.com',
+  issueDate: '1402/03/13',
+  phone: '0799681111 / 0749340000',
+  email: 'info@barakatullah-exchange.af',
 
   province: 'کندز',
   district: 'مرکز',
