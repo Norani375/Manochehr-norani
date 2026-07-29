@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Building, FileText, Printer, RotateCcw, Save, Plus, Trash2, Image as ImageIcon, Download } from 'lucide-react';
-import DigitalSignatureBlock from '@/components/DigitalSignatureBlock';
 
 export interface LicenseRenewalShareholder {
   id: number;

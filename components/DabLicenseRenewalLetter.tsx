@@ -5,7 +5,6 @@ import {
   FileText, Printer, RotateCcw, Save, Edit3, Plus, Trash2, 
   Check, Download, Building2, Stamp, Calendar, Hash, Paperclip, ShieldCheck, UserCheck
 } from 'lucide-react';
-import DigitalSignatureBlock from '@/components/DigitalSignatureBlock';
 import { exportElementToPdf } from '@/lib/pdfExport';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
@@ -612,24 +611,23 @@ export default function DabLicenseRenewalLetter({ customLogo, onOpenLogoModal }:
           {data.closingText}
         </div>
 
-        {/* Signatory Title & Sign Block */}
-        <div className="pt-4 text-center sm:text-left space-y-1">
-          <div className="font-bold text-slate-800 text-xs">باحرمت</div>
-          <div className="font-black text-base text-slate-950">{data.signatoryName}</div>
-          <div className="text-xs font-bold text-blue-900">{data.signatoryTitle}</div>
-        </div>
+        {/* Standard Official Signature & Stamp Area */}
+        <div className="pt-8 mt-6 border-t border-slate-300 flex items-end justify-between px-6">
+          <div className="text-center">
+            <div className="w-28 h-28 border-2 border-dashed border-slate-400 rounded-full flex flex-col items-center justify-center text-slate-500 text-[10px] font-bold p-2 text-center">
+              <span>محل مهر رسمی شرکت</span>
+              <span className="font-mono text-[9px] text-slate-400 mt-1">DAB/7-0965</span>
+            </div>
+          </div>
 
-        {/* Official Digital Signature & Stamp Component */}
-        <div className="pt-4 mt-4 border-t border-slate-300">
-          <DigitalSignatureBlock
-            documentTitle="مکتوب رسمی درخواست تمدید جواز فعالیت و نمایندگی‌ها"
-            defaultSignatoryName={data.signatoryName || "صالح‌محمد"}
-            defaultSignatoryTitle={data.signatoryTitle || "مسئول عملیاتی شرکت صرافی و خدمات پولی برکت‌الله غفوری"}
-            documentCode={`DAB-LTR-${data.letterNo || '0965'}`}
-            customLogo={customLogo}
-            onOpenLogoModal={onOpenLogoModal}
-            storageKey="bg_letter_signature_official"
-          />
+          <div className="text-center space-y-1.5 min-w-[220px]">
+            <div className="font-bold text-slate-700 text-xs">با احترام؛</div>
+            <div className="font-black text-base text-slate-950">{data.signatoryName}</div>
+            <div className="text-xs font-bold text-blue-900">{data.signatoryTitle}</div>
+            <div className="pt-8 font-bold text-slate-600 text-xs border-t border-slate-400 mt-2">
+              امضاء و شصت
+            </div>
+          </div>
         </div>
 
         {/* Footer info bar */}
