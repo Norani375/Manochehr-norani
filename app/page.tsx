@@ -4,13 +4,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
 import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
+import PrintPreviewModal from '@/components/PrintPreviewModal';
 
 interface PersonnelNode {
   key: string;
@@ -107,6 +108,13 @@ export default function OrgChartPage() {
   const [customLogo, setCustomLogo] = useState<string | null>(null);
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+
+  // Dynamic Real-time Dashboard Stats Calculations
+  const totalPersonnelCount = personnel.length;
+  const boardMembersCount = personnel.filter((p) => p.category === 'board').length;
+  const activeBranchesCount = personnel.filter((p) => p.category === 'branch').length;
+  const executiveCount = personnel.filter((p) => p.category === 'president' || p.category === 'operations' || p.category === 'compliance').length;
 
   // Load persisted state after hydration mount
   useEffect(() => {
@@ -403,6 +411,16 @@ export default function OrgChartPage() {
               </button>
             </div>
 
+            {/* Print Preview Button */}
+            <button
+              onClick={() => setIsPrintPreviewOpen(true)}
+              className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer whitespace-nowrap"
+              title="پیش‌نمایش نسخه چاپ و شبیه‌سازی حاشیه‌ها و چیدمان سند"
+            >
+              <Eye className="w-4 h-4 text-blue-200" />
+              پیش‌نمایش نسخه چاپ
+            </button>
+
             {/* Export High Quality PDF Button */}
             <button
               onClick={() => setIsPdfModalOpen(true)}
@@ -410,7 +428,7 @@ export default function OrgChartPage() {
               title="ذخیره چارت به عنوان فایل PDF استاندارد با کیفیت بالا برای د افغانستان بانک"
             >
               <Download className="w-4 h-4" />
-              ذخیره PDF با کیفیت بالا
+              ذخیره PDF با کیفیت
             </button>
 
             {/* Print Button */}
@@ -421,7 +439,7 @@ export default function OrgChartPage() {
               }`}
             >
               <Printer className="w-4 h-4" />
-              چاپ (مرورگر)
+              چاپ مستقیم
             </button>
           </div>
         </div>
@@ -487,6 +505,131 @@ export default function OrgChartPage() {
         <DabLicenseRenewalForm customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
       ) : (
         <>
+          {/* Real-time Live Dashboard Stats Widget */}
+          <div className="max-w-7xl mx-auto mb-6 px-4 print:hidden dir-rtl">
+            <div className={`p-5 rounded-2xl border transition-all shadow-sm ${
+              theme === 'dark' 
+                ? 'bg-slate-900 border-slate-800 text-slate-100' 
+                : 'bg-white border-slate-200/80 text-slate-900'
+            }`}>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4 border-b pb-3 border-slate-200/50 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-blue-900 text-white rounded-xl shadow-xs">
+                    <Activity className="w-5 h-5 text-blue-300 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                      داشبورد آمار لحظه‌ای چارت و ساختار سازمانی
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      محاسبه خودکار و زنده بر اساس اطلاعات پرسنل و نمایندگی‌های ثبت شده شرکت برکت‌الله غفوری
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-bold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span>بروزرسانی زنده (Live Sync)</span>
+                </div>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Stat 1: Total Personnel */}
+                <div 
+                  onClick={() => setSearchTerm('')}
+                  title="نمایش تمامی پرسنل"
+                  className={`p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${
+                    theme === 'dark'
+                      ? 'bg-slate-800/60 border-slate-700 hover:border-blue-500/50'
+                      : 'bg-blue-50/60 border-blue-100 hover:border-blue-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-extrabold text-blue-900 dark:text-blue-300">تعداد کل پرسنل</span>
+                    <div className="p-2 bg-blue-900/10 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 rounded-xl">
+                      <Users className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-black text-blue-950 dark:text-white font-mono">{totalPersonnelCount}</span>
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">نفر کادر رسمی</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">شامل مدیریت، نظارت و نمایندگان</p>
+                </div>
+
+                {/* Stat 2: Active Branches */}
+                <div 
+                  onClick={() => setSearchTerm('نماینده')}
+                  title="جستجو و فیلتر نمایندگی‌ها"
+                  className={`p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${
+                    theme === 'dark'
+                      ? 'bg-slate-800/60 border-slate-700 hover:border-emerald-500/50'
+                      : 'bg-emerald-50/60 border-emerald-100 hover:border-emerald-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-extrabold text-emerald-900 dark:text-emerald-300">تعداد نمایندگی‌های فعال</span>
+                    <div className="p-2 bg-emerald-900/10 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 rounded-xl">
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-black text-emerald-950 dark:text-white font-mono">{activeBranchesCount}</span>
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">نمایندگی فعال</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">کابل، تخار، بدخشان و کندز</p>
+                </div>
+
+                {/* Stat 3: Board Members */}
+                <div 
+                  onClick={() => setSearchTerm('نظار')}
+                  title="جستجو و فیلتر هیئت نظار"
+                  className={`p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${
+                    theme === 'dark'
+                      ? 'bg-slate-800/60 border-slate-700 hover:border-amber-500/50'
+                      : 'bg-amber-50/60 border-amber-100 hover:border-amber-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-extrabold text-amber-900 dark:text-amber-300">تعداد اعضای هیئت نظار</span>
+                    <div className="p-2 bg-amber-900/10 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 rounded-xl">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-black text-amber-950 dark:text-white font-mono">{boardMembersCount}</span>
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">عضو نظارتی</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">رئیس و اعضای رسمی نظار</p>
+                </div>
+
+                {/* Stat 4: Executive Officers */}
+                <div 
+                  onClick={() => setSearchTerm('مدیر')}
+                  title="جستجو و فیلتر مدیران"
+                  className={`p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-md ${
+                    theme === 'dark'
+                      ? 'bg-slate-800/60 border-slate-700 hover:border-purple-500/50'
+                      : 'bg-purple-50/60 border-purple-100 hover:border-purple-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-extrabold text-purple-900 dark:text-purple-300">کادر مدیریت و اجرایی</span>
+                    <div className="p-2 bg-purple-900/10 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 rounded-xl">
+                      <Briefcase className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-black text-purple-950 dark:text-white font-mono">{executiveCount}</span>
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">پست کلیدی</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">ریاست، مدیریت عملیاتی و انطباق</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Org Chart Layout Canvas */}
       <div className="max-w-7xl mx-auto overflow-x-auto pb-12 print:overflow-visible">
         <div id="org-chart-export-canvas" className="min-w-[950px] flex flex-col items-center py-6 px-4 bg-white dark:bg-slate-900 rounded-2xl">
@@ -819,6 +962,18 @@ export default function OrgChartPage() {
         targetElementId={getPdfExportConfig().targetId}
         defaultTitle={getPdfExportConfig().title}
         defaultFilename={getPdfExportConfig().filename}
+      />
+
+      {/* Full-Screen Print Preview Simulation Modal */}
+      <PrintPreviewModal
+        isOpen={isPrintPreviewOpen}
+        onClose={() => setIsPrintPreviewOpen(false)}
+        targetElementId={getPdfExportConfig().targetId}
+        documentTitle={getPdfExportConfig().title}
+        onOpenPdfExport={() => {
+          setIsPrintPreviewOpen(false);
+          setIsPdfModalOpen(true);
+        }}
       />
     </div>
   );

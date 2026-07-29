@@ -44,8 +44,8 @@ export interface GuaranteeFormData {
 }
 
 const DEFAULT_FORM_DATA: GuaranteeFormData = {
-  companyName: 'برکت‌الله غفوری',
-  provinceName: 'کابل',
+  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
+  provinceName: 'کندز',
   guarantors: [
     {
       id: 1,

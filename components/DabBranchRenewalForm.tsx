@@ -49,15 +49,122 @@ export interface BranchRenewalData {
   supervisorDate: string;
 }
 
+export interface BranchPreset {
+  id: string;
+  title: string;
+  branchNo: string;
+  branchProvince: string;
+  branchMarketName: string;
+  branchShopNo: string;
+  branchLocation: string;
+  repName: string;
+  repFatherName: string;
+  repTazkiraNo: string;
+  repPhone: string;
+  repResProv: string;
+  repResDistrict: string;
+  repResVillage: string;
+  educationLevel: 'baccalaureate' | 'higher' | 'other';
+  educationOtherText?: string;
+}
+
+export const REAL_BRANCHES_PRESETS: BranchPreset[] = [
+  {
+    id: 'logar',
+    title: 'نمایندگی سوم: ولایت لوگر (سعادت مارکیت)',
+    branchNo: 'سوم',
+    branchProvince: 'لوگر',
+    branchMarketName: 'سعادت',
+    branchShopNo: 'منزل اول دکان ۱۰',
+    branchLocation: 'سعادت مارکیت',
+    repName: 'علی خان احمدی',
+    repFatherName: 'عبدالولی',
+    repTazkiraNo: '1399-1101-98518',
+    repPhone: '0779584212',
+    repResProv: 'لوگر',
+    repResDistrict: 'دوم',
+    repResVillage: 'مرکز',
+    educationLevel: 'baccalaureate',
+  },
+  {
+    id: 'takhar',
+    title: 'نمایندگی اول: ولایت تخار (تالقان)',
+    branchNo: 'اول',
+    branchProvince: 'تخار',
+    branchMarketName: 'صرافی صرافان تخار',
+    branchShopNo: 'دکان ۲۲',
+    branchLocation: 'مرکز تالقان، مارکیت صرافان',
+    repName: 'رحمت‌الله',
+    repFatherName: 'محمدمراد',
+    repTazkiraNo: '1398-1002-16532',
+    repPhone: '0799123456',
+    repResProv: 'تخار',
+    repResDistrict: 'تالقان',
+    repResVillage: 'مرکز',
+    educationLevel: 'baccalaureate',
+  },
+  {
+    id: 'kabul',
+    title: 'نمایندگی دوم: ولایت کابل (سرای شهزاده)',
+    branchNo: 'دوم',
+    branchProvince: 'کابل',
+    branchMarketName: 'مارکیت سرای شهزاده',
+    branchShopNo: 'منزل اول دکان ۴۵',
+    branchLocation: 'کابل، سرای شهزاده',
+    repName: 'اجمل',
+    repFatherName: 'نورآغا',
+    repTazkiraNo: '1397-0101-46338',
+    repPhone: '0788654321',
+    repResProv: 'کابل',
+    repResDistrict: 'ناحیه اول',
+    repResVillage: 'مرکز',
+    educationLevel: 'higher',
+  },
+  {
+    id: 'kunduz_imam',
+    title: 'نمایندگی چهارم: ولسوالی امام‌صاحب (کندز)',
+    branchNo: 'چهارم',
+    branchProvince: 'کندز',
+    branchMarketName: 'مارکیت مرکزی صرافان',
+    branchShopNo: 'دکان ۱۲',
+    branchLocation: 'بازار مرکزی امام صاحب',
+    repName: 'محمدیوسف',
+    repFatherName: 'عبدالمجید',
+    repTazkiraNo: '1399-1201-98680',
+    repPhone: '0700876543',
+    repResProv: 'کندز',
+    repResDistrict: 'امام‌صاحب',
+    repResVillage: 'مرکز بازار',
+    educationLevel: 'baccalaureate',
+  },
+  {
+    id: 'badakhshan_kishm',
+    title: 'نمایندگی پنجم: ولسوالی کشم (بدخشان)',
+    branchNo: 'پنجم',
+    branchProvince: 'بدخشان',
+    branchMarketName: 'مارکیت صرافان کشم',
+    branchShopNo: 'دکان ۵',
+    branchLocation: 'بازار کشم',
+    repName: 'عتیق‌الله',
+    repFatherName: 'شمس‌الدین',
+    repTazkiraNo: '1396-1501-07252',
+    repPhone: '0798112233',
+    repResProv: 'بدخشان',
+    repResDistrict: 'کشم',
+    repResVillage: 'مرکز کشم',
+    educationLevel: 'baccalaureate',
+  },
+];
+
 const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
-  companyName: 'حاجی ولی محمد مؤمند د زامنو صرافی او پولی خدماتو شرکت',
-  licenseNo: 'DAB/7-0787',
+  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
+  licenseNo: 'DAB/7-0965',
   centralProvince: 'کندز',
-  centralDistrict: 'اول',
-  centralMarket: 'مؤمند',
-  centralShopNo: 'منزل اول دکان 145',
+  centralDistrict: 'مرکز',
+  centralMarket: 'مومند مارکیت',
+  centralShopNo: 'منزل دوم دکان ۳۰۱',
   companyPhone: '0795920007 - 0789900097',
-  companyEmail: 'dawodmohmand1@gmail.com',
+  companyEmail: 'khalidahmadmomand1991@gmail.com',
 
   branchProvince: 'لوگر',
   branchNo: 'سوم',
@@ -74,11 +181,11 @@ const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
   repTazkiraNo: '1399-1101-98518',
   repPhone: '0779584212',
 
-  educationLevel: 'higher',
+  educationLevel: 'baccalaureate',
   educationOtherText: '',
 
-  boardHeadName: 'عزیز الله ناصری',
-  boardHeadFather: 'غلام محی الدین',
+  boardHeadName: 'برکت‌الله غفوری',
+  boardHeadFather: 'عبدالغفور',
   shareholder1Name: 'خالد احمد مؤمند',
   shareholder2Name: 'محمد داود مؤمند',
 
@@ -135,6 +242,26 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
     }
   };
 
+  const handleSelectPreset = (preset: BranchPreset) => {
+    setData((prev) => ({
+      ...prev,
+      branchNo: preset.branchNo,
+      branchProvince: preset.branchProvince,
+      branchMarketName: preset.branchMarketName,
+      branchShopNo: preset.branchShopNo,
+      branchLocation: preset.branchLocation,
+      repName: preset.repName,
+      repFatherName: preset.repFatherName,
+      repTazkiraNo: preset.repTazkiraNo,
+      repPhone: preset.repPhone,
+      repResProv: preset.repResProv,
+      repResDistrict: preset.repResDistrict,
+      repResVillage: preset.repResVillage,
+      educationLevel: preset.educationLevel,
+      educationOtherText: preset.educationOtherText || '',
+    }));
+  };
+
   const updateField = (field: keyof BranchRenewalData, value: any) => {
     setData((prev) => ({ ...prev, [field]: value }));
   };
@@ -142,7 +269,7 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
   return (
     <div className="w-full max-w-5xl mx-auto py-4 px-2 sm:px-6 dir-rtl text-slate-900 font-sans">
       {/* Top Controls Toolbar (Hidden in Print) */}
-      <div className="bg-white rounded-2xl p-4 mb-6 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4 print:hidden">
+      <div className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4 print:hidden">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-blue-900 text-white rounded-xl">
             <Building className="w-6 h-6" />
@@ -201,6 +328,39 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
             <Printer className="w-4 h-4" />
             چاپ فرم
           </button>
+        </div>
+      </div>
+
+      {/* Quick Branch Selection Bar */}
+      <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-2xl p-4 mb-6 shadow-md print:hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
+          <div className="flex items-center gap-2">
+            <Building className="w-5 h-5 text-amber-400" />
+            <span className="font-bold text-sm">انتخاب سریع نمایندگی‌های واقعی شرکت برکت‌الله غفوری (جواز DAB/7-0965):</span>
+          </div>
+          <span className="text-xs text-blue-200 bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-800 font-mono">
+            ۵ نمایندگی رسمی فعال
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {REAL_BRANCHES_PRESETS.map((preset) => {
+            const isSelected = data.branchProvince === preset.branchProvince && data.repName === preset.repName;
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => handleSelectPreset(preset)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                  isSelected 
+                    ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-[1.02]' 
+                    : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
+                }`}
+              >
+                <span>{preset.title}</span>
+                <span className="text-[10px] opacity-80">({preset.repName})</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

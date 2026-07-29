@@ -1,1 +1,54 @@
 @import "tailwindcss";
+
+@layer utilities {
+  @media print {
+    /* Hide toolbar, buttons, modals, and edit controls entirely during printing */
+    .print\:hidden,
+    button,
+    [role="dialog"],
+    .modal-overlay,
+    .fixed.inset-0 {
+      display: none !important;
+    }
+
+    /* Force background and color printing for high contrast */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+
+    /* Target #org-chart-export-canvas specifically for print layout */
+    #org-chart-export-canvas {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 0 !important;
+      margin: 0 auto !important;
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    /* Hide internal buttons and edit badges inside org chart canvas */
+    #org-chart-export-canvas button,
+    #org-chart-export-canvas .absolute.top-2.right-2,
+    #org-chart-export-canvas .absolute.top-1\.5.right-1\.5 {
+      display: none !important;
+    }
+
+    /* High contrast node cards and borders during print */
+    #org-chart-export-canvas [class*="rounded-"] {
+      border-width: 1.5px !important;
+      border-style: solid !important;
+      border-color: #334155 !important;
+      box-shadow: none !important;
+    }
+
+    #org-chart-export-canvas .bg-gradient-to-br {
+      background: #0f172a !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+    }
+  }
+}

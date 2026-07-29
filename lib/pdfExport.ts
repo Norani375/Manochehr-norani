@@ -11,6 +11,63 @@ export interface PdfExportOptions {
 }
 
 /**
+ * Utility to convert oklch(...) color strings into html2canvas-compatible hex or rgb/rgba colors.
+ */
+function convertOklchColorInString(str: string): string {
+  if (!str || !str.includes('oklch')) return str;
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    ctx = canvas.getContext('2d');
+  } catch {
+    // Canvas fallback if not supported
+  }
+
+  return str.replace(/oklch\([^)]+\)/gi, (match) => {
+    if (ctx) {
+      try {
+        ctx.fillStyle = '#000000';
+        ctx.fillStyle = match;
+        const res = ctx.fillStyle;
+        if (res && !res.includes('oklch')) {
+          return res;
+        }
+      } catch {
+        // Fallthrough
+      }
+    }
+    return 'rgb(30, 41, 59)';
+  });
+}
+
+/**
+ * Sanitizes all style tags and inline styles in a document to remove oklch calls
+ */
+function sanitizeDocumentColors(doc: Document) {
+  try {
+    const styleTags = doc.querySelectorAll('style');
+    styleTags.forEach((styleEl) => {
+      if (styleEl.textContent && styleEl.textContent.includes('oklch')) {
+        styleEl.textContent = convertOklchColorInString(styleEl.textContent);
+      }
+    });
+
+    const elementsWithInlineStyle = doc.querySelectorAll('[style*="oklch"]');
+    elementsWithInlineStyle.forEach((el) => {
+      const currentStyle = el.getAttribute('style');
+      if (currentStyle) {
+        el.setAttribute('style', convertOklchColorInString(currentStyle));
+      }
+    });
+  } catch (err) {
+    console.warn('Error sanitizing document oklch colors:', err);
+  }
+}
+
+/**
  * High quality client-side PDF export with standard margins compliant for DAB
  */
 export async function exportElementToPdf({
@@ -28,6 +85,9 @@ export async function exportElementToPdf({
       return false;
     }
 
+    // Sanitize oklch colors in current document before html2canvas runs
+    sanitizeDocumentColors(document);
+
     // Force background color and high scale for crisp text and graphics
     const canvas = await html2canvas(element, {
       scale: qualityScale,
@@ -37,6 +97,7 @@ export async function exportElementToPdf({
       logging: false,
       windowWidth: Math.max(element.scrollWidth, 1200),
       onclone: (clonedDoc) => {
+        sanitizeDocumentColors(clonedDoc);
         const clonedElement = clonedDoc.getElementById(elementId);
         if (clonedElement) {
           clonedElement.style.padding = '20px';
@@ -63,8 +124,8 @@ export async function exportElementToPdf({
     const printableHeight = pdfHeight - marginMm * 2;
 
     // Convert canvas px to mm (1 px ≈ 0.264583 mm)
-    const imgWidthMm = canvas.width * 0.264583 / qualityScale;
-    const imgHeightMm = canvas.height * 0.264583 / qualityScale;
+    const imgWidthMm = (canvas.width * 0.264583) / qualityScale;
+    const imgHeightMm = (canvas.height * 0.264583) / qualityScale;
 
     // Calculate scaling factor to fit within printable area
     const widthScale = printableWidth / imgWidthMm;
@@ -87,3 +148,4 @@ export async function exportElementToPdf({
     return false;
   }
 }
+
