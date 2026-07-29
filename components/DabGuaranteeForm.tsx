@@ -318,122 +318,121 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
                   <div className="w-32 h-40 border-2 border-dashed border-slate-400 bg-white rounded-lg flex flex-col items-center justify-center text-center p-2 text-slate-400 shrink-0 print:w-28 print:h-36">
                     <ImageIcon className="w-6 h-6 mb-1 text-slate-300" />
                     <span className="text-[10px] leading-snug">
-                      عکس تضمین کننده در اینجا نصب و با مهر تاپه گردد
+                      عکس تضمین کننده در اینجا نصب و با مهر تضمین کننده تاپه گردد.
                     </span>
                   </div>
 
                   {/* Form fields */}
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 w-full text-xs">
-                    <div className="col-span-full font-bold text-blue-900 text-sm border-b pb-1 mb-1 flex items-center justify-between">
-                      <span>تضمین کننده {idx === 0 ? 'اول' : idx === 1 ? 'دوم' : 'سوم'}</span>
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 w-full text-xs">
+                    <div className="col-span-full grid grid-cols-2 gap-4 border-b border-slate-300 pb-2 mb-1">
+                      <div className="font-black text-blue-900 text-sm">
+                        اسم و محل فعالیت تشبث تضمین کننده {idx === 0 ? 'اول' : idx === 1 ? 'دوم' : 'سوم'}
+                      </div>
+                      <div className="font-black text-blue-900 text-sm">
+                        سکونت فعلی
+                      </div>
                     </div>
 
-                    <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-700 mb-1">اسم و محل فعالیت تشبث تضمین کننده:</label>
+                        <label className="block text-[11px] font-bold text-slate-700 mb-1 italic">تشبث و محل فعالیت:</label>
                         <input
                           type="text"
                           value={guarantor.businessNameLocation}
                           onChange={(e) => updateGuarantor(idx, 'businessNameLocation', e.target.value)}
                           placeholder="نام و محل کسب ضامن..."
-                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-bold"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-700 mb-1">سکونت فعلی (ولایت/ولسوالی):</label>
+                        <label className="block text-[11px] font-bold text-slate-700 mb-1 italic">توضیحات سکونت:</label>
                         <input
                           type="text"
                           value={guarantor.province}
                           onChange={(e) => updateGuarantor(idx, 'province', e.target.value)}
                           placeholder="ولایت / ولسوالی سکونت..."
-                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-bold"
                         />
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">اسم:</label>
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">اسم:</label>
                       <input
                         type="text"
                         value={guarantor.name}
                         onChange={(e) => updateGuarantor(idx, 'name', e.target.value)}
-                        placeholder="اسم ضامن..."
-                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">ولایت:</label>
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">ولایت:</label>
                       <input
                         type="text"
                         value={guarantor.province}
                         onChange={(e) => updateGuarantor(idx, 'province', e.target.value)}
-                        placeholder="ولایت..."
-                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">ولد:</label>
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">ولد:</label>
                       <input
                         type="text"
                         value={guarantor.fatherName}
                         onChange={(e) => updateGuarantor(idx, 'fatherName', e.target.value)}
-                        placeholder="نام پدر..."
-                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">ولسوالی:</label>
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">ولسوالی:</label>
                       <input
                         type="text"
                         value={guarantor.district}
                         onChange={(e) => updateGuarantor(idx, 'district', e.target.value)}
-                        placeholder="ولسوالی..."
-                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">نمبر تذکره:</label>
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">نمبر تذکره:</label>
                       <input
                         type="text"
                         value={guarantor.tazkiraNo}
                         onChange={(e) => updateGuarantor(idx, 'tazkiraNo', e.target.value)}
-                        placeholder="نمبر تذکره..."
-                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-mono"
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-mono"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">ناحیه / قریه:</label>
-                      <div className="grid grid-cols-2 gap-1">
-                        <input
-                          type="text"
-                          value={guarantor.nahia}
-                          onChange={(e) => updateGuarantor(idx, 'nahia', e.target.value)}
-                          placeholder="ناحیه..."
-                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
-                        />
-                        <input
-                          type="text"
-                          value={guarantor.village}
-                          onChange={(e) => updateGuarantor(idx, 'village', e.target.value)}
-                          placeholder="قریه..."
-                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
-                        />
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">ناحیه:</label>
+                      <input
+                        type="text"
+                        value={guarantor.nahia}
+                        onChange={(e) => updateGuarantor(idx, 'nahia', e.target.value)}
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                      />
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">شماره تماس:</label>
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">شماره تماس:</label>
                       <input
                         type="text"
                         value={guarantor.phoneNo}
                         onChange={(e) => updateGuarantor(idx, 'phoneNo', e.target.value)}
-                        placeholder="07xxxxxxxx"
-                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-mono"
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-mono"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <label className="w-20 font-bold text-slate-700">قریه:</label>
+                      <input
+                        type="text"
+                        value={guarantor.village}
+                        onChange={(e) => updateGuarantor(idx, 'village', e.target.value)}
+                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
                       />
                     </div>
 
@@ -642,7 +641,7 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
               در صورتیکه تضمین کننده، ترک تضمین مینماید و یا نمیخواهد از مالک شرکت صرافی و خدمات پولی فوق الذکر تضمین نماید، نیاز است تا سهمدار/سهمداران شرکت صرافی و خدمات پولی، کتباً تضمین کننده جدید را به د افغانستان بانک معرفی نماید.
             </li>
             <li>
-              تضمین کنندگان الی معرفی تضمین کننده جدید توسط سهمدار/سمهداران شرکت صرافی و خدمات پولی، منحیث تضمین کننده نزد د افغانستان بانک قرار میداشته باشند.
+              تضمین کنندگان الی معرفی تضمین کننده جدید توسط سهمدار/سهمداران شرکت صرافی و خدمات پولی، منحیث تضمین کننده نزد د افغانستان بانک قرار میداشته باشند.
             </li>
             <li>
               هرگاه معلومات ضامن که در بخش اول این فورم ارائه گردیده تغییر نماید و یا تشبث و جواز فعالیت ضامن لغو گردد، تضمین کننده و سهمدار/ سهمداران شرکت صرافی و خدمات پولی مکلف اند تا د افغانستان بانک را عندالموقع کتباً اطلاع دهد. در غیر آن مسئولیت بدوش ضامن و سهمدار/سهمداران شرکت میباشد.
@@ -664,22 +663,28 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
             <div className="border border-slate-300 p-3 rounded-lg text-center bg-slate-50 print:bg-white">
               <div className="font-bold mb-2">تضمین کننده اول</div>
               <div className="h-12 border-b border-dashed border-slate-400 mb-2"></div>
-              <div>امضاء: __________________</div>
-              <div className="mt-2">شصت: __________________</div>
+              <div className="flex flex-col gap-2">
+                <div>امضاء تضمین کننده: __________________</div>
+                <div>شصت تضمین کننده: __________________</div>
+              </div>
             </div>
 
             <div className="border border-slate-300 p-3 rounded-lg text-center bg-slate-50 print:bg-white">
               <div className="font-bold mb-2">تضمین کننده دوم</div>
               <div className="h-12 border-b border-dashed border-slate-400 mb-2"></div>
-              <div>امضاء: __________________</div>
-              <div className="mt-2">شصت: __________________</div>
+              <div className="flex flex-col gap-2">
+                <div>امضاء تضمین کننده: __________________</div>
+                <div>شصت تضمین کننده: __________________</div>
+              </div>
             </div>
 
             <div className="border border-slate-300 p-3 rounded-lg text-center bg-slate-50 print:bg-white">
               <div className="font-bold mb-2">تضمین کننده سوم</div>
               <div className="h-12 border-b border-dashed border-slate-400 mb-2"></div>
-              <div>امضاء: __________________</div>
-              <div className="mt-2">شصت: __________________</div>
+              <div className="flex flex-col gap-2">
+                <div>امضاء تضمین کننده: __________________</div>
+                <div>شصت تضمین کننده: __________________</div>
+              </div>
             </div>
           </div>
 

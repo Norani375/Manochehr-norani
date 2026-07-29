@@ -61,6 +61,15 @@
         "letterData": { "type": "object" },
         "updatedAt": { "type": "string" }
       }
+    },
+    "LicenseChecklistData": {
+      "title": "License Checklist Data",
+      "description": "Data for license checklist document",
+      "type": "object",
+      "properties": {
+        "checklistData": { "type": "object" },
+        "updatedAt": { "type": "string" }
+      }
     }
   },
   "firestore": {
@@ -87,6 +96,12 @@
         "$ref": "#/entities/LicenseRenewalLetterData"
       },
       "description": "Official license renewal letter data"
+    },
+    "/settings/license_checklist_v1": {
+      "schema": {
+        "$ref": "#/entities/LicenseChecklistData"
+      },
+      "description": "DAB License application checklist and personnel data"
     }
   }
 }

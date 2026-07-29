@@ -4,13 +4,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
 import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
 import DabLicenseRenewalLetter from '@/components/DabLicenseRenewalLetter';
 import MeetingMinutes from '@/components/MeetingMinutes';
+import DabLicenseChecklist from '@/components/DabLicenseChecklist';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
@@ -36,14 +37,14 @@ interface PersonnelNode {
 
 const DEFAULT_ORG_DATA: PersonnelNode[] = [
   {
-    key: 'president',
+    key: 'chairman',
     title: 'رئیس شرکت',
     name: 'برکت‌الله ولد عبدالغفور',
     id: '55522',
-    category: 'president'
+    category: 'executive'
   },
   {
-    key: 'board_head',
+    key: 'supervisory_chairman',
     title: 'رئیس هیئت نظار',
     name: 'بسم‌الله شیرزی ولد دوستمحمد',
     id: '45188',
@@ -52,7 +53,7 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
   {
     key: 'board_member_1',
     title: 'عضو هیئت نظار',
-    name: 'برکت‌الله ولد عبدالغفور',
+    name: 'برکت‌الله غفوری ولد عبدالغفور',
     id: '55522',
     category: 'board'
   },
@@ -64,25 +65,31 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
     category: 'board'
   },
   {
-    key: 'operations_manager',
-    title: 'مدیر بخش عملیاتی',
+    key: 'operations_head',
+    title: 'مسئول عملیاتی',
     name: 'صالح‌محمد ولد عبدالرحیم',
     id: '48424',
-    category: 'operations'
+    category: 'executive'
   },
   {
-    key: 'compliance_officer',
-    title: 'مسئول پیروی از قوانین (Compliance)',
+    key: 'compliance',
+    title: 'مسئول رعایت قوانین',
     name: 'محمد فهیم ولد محمد امان',
     id: '97484',
-    category: 'compliance',
-    description: 'مستقیماً زیر نظر هیئت نظار جهت انطباق با قوانین بانکی و مالی (AML/CFT)'
+    category: 'executive'
   },
   {
     key: 'branch_takhar',
     title: 'نماینده ولایت تخار',
-    name: 'رحمت‌الله ولد محمدمراد',
-    id: '16532',
+    name: 'رحمت‌الله ولد فیض‌الله',
+    id: '29384',
+    category: 'branch'
+  },
+  {
+    key: 'branch_takhar_treasurer',
+    title: 'خزانه‌دار نمایندگی تخار',
+    name: 'عبیدالله ولد نصرالله',
+    id: '48392',
     category: 'branch'
   },
   {
@@ -93,10 +100,31 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
     category: 'branch'
   },
   {
+    key: 'branch_kabul_member',
+    title: 'عضو نمایندگی کابل',
+    name: 'ریحان ولد شیرآغا',
+    id: '12345',
+    category: 'branch'
+  },
+  {
+    key: 'branch_kabul_sec',
+    title: 'منشی و خزانه‌دار کابل',
+    name: 'صدیق‌الله ولد حبیب‌الله',
+    id: '67890',
+    category: 'branch'
+  },
+  {
     key: 'branch_imam_sahib',
     title: 'نماینده ولسوالی امام‌صاحب',
     name: 'محمدیوسف ولد عبدالمجید',
     id: '98680',
+    category: 'branch'
+  },
+  {
+    key: 'branch_imam_sahib_treasurer',
+    title: 'خزانه‌دار امام‌صاحب',
+    name: 'عبدالمجید ولد محمدیوسف',
+    id: '54321',
     category: 'branch'
   },
   {
@@ -109,7 +137,7 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
 ];
 
 export default function OrgChartPage() {
-  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes'>('org-chart');
+  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist'>('org-chart');
   const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
@@ -247,6 +275,12 @@ export default function OrgChartPage() {
           targetId: 'meeting-minutes-canvas',
           title: 'صورتجلسه مجمع عمومی عادی سالانه شرکت برکت‌الله غفوری',
           filename: 'صورتجلسه_مجمع_عمومی_برکت_الله_غفوری.pdf',
+        };
+      case 'license-checklist':
+        return {
+          targetId: 'license-checklist-canvas',
+          title: 'چک‌لست اسناد و شرایط صدور جواز فعالیت',
+          filename: 'چک_لست_اسناد_جواز_برکت_الله_غفوری.pdf',
         };
       default:
         return {
@@ -566,6 +600,21 @@ export default function OrgChartPage() {
                 </div>
                 {activeTab === 'meeting-minutes' && <ChevronLeft className="w-4 h-4 text-blue-200" />}
               </button>
+
+              <button
+                onClick={() => { setActiveTab('license-checklist'); setIsMobileSidebarOpen(false); }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'license-checklist'
+                    ? 'bg-blue-600 text-white shadow-md font-black'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <ClipboardCheck className={`w-4 h-4 ${activeTab === 'license-checklist' ? 'text-white' : 'text-emerald-400'}`} />
+                  <span>چک‌لست جواز (Checklist)</span>
+                </div>
+                {activeTab === 'license-checklist' && <ChevronLeft className="w-4 h-4 text-blue-200" />}
+              </button>
             </nav>
           </div>
 
@@ -741,6 +790,8 @@ export default function OrgChartPage() {
         <DabLicenseRenewalLetter customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
       ) : activeTab === 'meeting-minutes' ? (
         <MeetingMinutes customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
+      ) : activeTab === 'license-checklist' ? (
+        <DabLicenseChecklist customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} />
       ) : (
         <>
           {/* Real-time Live Dashboard Stats Widget */}

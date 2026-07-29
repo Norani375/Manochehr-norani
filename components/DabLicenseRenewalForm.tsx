@@ -109,7 +109,7 @@ const DEFAULT_LICENSE_RENEWAL_DATA: DabLicenseRenewalData = {
   branches: [
     {
       id: 1,
-      repName: 'اجمل احمدی',
+      repName: 'اجمل',
       repFatherName: 'نورآغا',
       repTazkiraNo: '۱۴۰۰-۱۰۷-۴۶۳۳۸',
       province: 'کابل',
@@ -123,8 +123,8 @@ const DEFAULT_LICENSE_RENEWAL_DATA: DabLicenseRenewalData = {
     },
     {
       id: 2,
-      repName: 'رحمت‌الله رحیمی',
-      repFatherName: 'محمد مراد',
+      repName: 'رحمت‌الله',
+      repFatherName: 'فیض‌الله',
       repTazkiraNo: '۱۴۰۰-۰۳۰۵-۱۶۵۳۲',
       province: 'تخار',
       district: 'تالقان',
@@ -137,7 +137,7 @@ const DEFAULT_LICENSE_RENEWAL_DATA: DabLicenseRenewalData = {
     },
     {
       id: 3,
-      repName: 'محمد یوسف حیدری',
+      repName: 'محمد یوسف',
       repFatherName: 'عبدالمجید',
       repTazkiraNo: '۱۳۹۹-۱۲۰۵-۹۸۶۸۰',
       province: 'کندز',
