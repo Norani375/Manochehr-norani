@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "PersonnelNode": {
+      "title": "Personnel Node",
+      "description": "Organizational chart personnel node for Barakatullah Ghafouri Exchange",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Personnel ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full Name in Dari/Pashto"
+        },
+        "title": {
+          "type": "string",
+          "description": "Official Job Title"
+        },
+        "category": {
+          "type": "string",
+          "description": "Organizational category"
+        },
+        "key": {
+          "type": "string",
+          "description": "Unique node key"
+        }
+      },
+      "required": ["id", "name", "title", "category", "key"]
+    },
+    "CompanyMetadata": {
+      "title": "Company Metadata",
+      "description": "Company document header settings including issue date and custom logo",
+      "type": "object",
+      "properties": {
+        "issueDate": {
+          "type": "string",
+          "description": "Document issue date"
+        },
+        "customLogo": {
+          "type": "string",
+          "description": "Base64 or URL custom logo"
+        }
+      },
+      "required": ["issueDate"]
+    }
+  },
+  "firestore": {
+    "/personnel/{personnelKey}": {
+      "schema": {
+        "$ref": "#/entities/PersonnelNode"
+      },
+      "description": "Collection of all organizational chart personnel and branch representatives"
+    },
+    "/settings/company": {
+      "schema": {
+        "$ref": "#/entities/CompanyMetadata"
+      },
+      "description": "Company global settings and document header metadata"
+    }
+  }
+}

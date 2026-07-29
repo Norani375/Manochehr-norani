@@ -2,6 +2,22 @@
 
 @layer utilities {
   @media print {
+    @page {
+      size: A4 landscape;
+      margin: 6mm;
+    }
+
+    /* Force single page print without page breaks */
+    html, body {
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+      overflow: visible !important;
+    }
+
     /* Hide toolbar, buttons, modals, and edit controls entirely during printing */
     .print\:hidden,
     button,
@@ -18,7 +34,7 @@
       color-adjust: exact !important;
     }
 
-    /* Target #org-chart-export-canvas specifically for print layout */
+    /* Target #org-chart-export-canvas specifically for standard A4 single-page layout */
     #org-chart-export-canvas {
       width: 100% !important;
       max-width: 100% !important;
@@ -28,6 +44,33 @@
       color: #0f172a !important;
       box-shadow: none !important;
       border: none !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+      transform-scale: 0.95;
+    }
+
+    /* Compact vertical spacing during print to guarantee fitting on 1 standard page */
+    #org-chart-export-canvas .p-6,
+    #org-chart-export-canvas .p-5 {
+      padding: 0.5rem 0.75rem !important;
+    }
+    #org-chart-export-canvas .p-4 {
+      padding: 0.5rem !important;
+    }
+    #org-chart-export-canvas .p-3 {
+      padding: 0.375rem !important;
+    }
+    #org-chart-export-canvas .mb-6,
+    #org-chart-export-canvas .mb-8 {
+      margin-bottom: 0.5rem !important;
+    }
+    #org-chart-export-canvas .gap-6,
+    #org-chart-export-canvas .gap-8 {
+      gap: 0.5rem !important;
+    }
+    #org-chart-export-canvas .h-10,
+    #org-chart-export-canvas .h-8 {
+      height: 0.75rem !important;
     }
 
     /* Hide internal buttons and edit badges inside org chart canvas */
@@ -41,7 +84,7 @@
     #org-chart-export-canvas [class*="rounded-"] {
       border-width: 1.5px !important;
       border-style: solid !important;
-      border-color: #334155 !important;
+      border-color: #1e293b !important;
       box-shadow: none !important;
     }
 
