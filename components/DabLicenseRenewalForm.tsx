@@ -198,7 +198,7 @@ const DEFAULT_LICENSE_RENEWAL_DATA: DabLicenseRenewalData = {
   assessorDate: '',
 };
 
-export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogoModal, onExportPdf }: { customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
+export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf }: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [data, setData] = useState<DabLicenseRenewalData>(DEFAULT_LICENSE_RENEWAL_DATA);
   const [isSaved, setIsSaved] = useState(false);
@@ -338,7 +338,25 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-4 px-2 sm:px-6 dir-rtl text-slate-900 font-sans">
+    <div className={`w-full max-w-5xl mx-auto py-4 px-2 sm:px-6 dir-rtl text-slate-900 font-sans ${!isEditMode ? 'static-view-mode' : ''}`}>
+      <style>{`
+        .static-view-mode input[type="text"], 
+        .static-view-mode input[type="number"],
+        .static-view-mode textarea {
+          border: none !important;
+          background: transparent !important;
+          pointer-events: none !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+          font-weight: 800 !important;
+          color: #1e3a8a !important;
+          box-shadow: none !important;
+          min-height: auto !important;
+        }
+        .static-view-mode .print-hidden-in-static {
+          display: none !important;
+        }
+      `}</style>
       {/* Top Controls Toolbar */}
       <div className="bg-white rounded-2xl p-4 mb-6 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4 print:hidden">
         <div className="flex items-center gap-3">
@@ -354,7 +372,7 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
         </div>
 
         <div className="flex items-center gap-3">
-          {onOpenLogoModal && (
+          {onOpenLogoModal && isEditMode && (
             <button
               type="button"
               onClick={onOpenLogoModal}
@@ -365,21 +383,25 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
             </button>
           )}
 
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
-          >
-            <Save className="w-4 h-4" />
-            {isSaved ? 'ذخیره شد!' : 'ذخیره اطلاعات'}
-          </button>
+          {isEditMode && (
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
+            >
+              <Save className="w-4 h-4" />
+              {isSaved ? 'ذخیره شد!' : 'ذخیره اطلاعات'}
+            </button>
+          )}
 
-          <button
-            onClick={handleReset}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
-            title="پاکسازی / بازنشانی"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+          {isEditMode && (
+            <button
+              onClick={handleReset}
+              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
+              title="پاکسازی / بازنشانی"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
 
           {onExportPdf && (
             <button
@@ -403,7 +425,10 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
       </div>
 
       {/* Official Form Printable Canvas */}
-      <div id="dab-license-renewal-canvas" className="bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0">
+      <div 
+        id="dab-license-renewal-canvas" 
+        className={`bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0 ${!isEditMode ? 'static-view-mode' : ''}`}
+      >
         
         {/* Header */}
         <div className="relative text-center mb-6 pb-4 border-b-2 border-slate-900">
@@ -510,7 +535,7 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
                 <th className="border border-slate-400 p-2">ولسوالی/ناحیه</th>
                 <th className="border border-slate-400 p-2 w-16">شصت</th>
                 <th className="border border-slate-400 p-2 w-20">امضاء</th>
-                <th className="border border-slate-400 p-2 w-12 print:hidden">حذف</th>
+                {isEditMode && <th className="border border-slate-400 p-2 w-12 print:hidden">حذف</th>}
               </tr>
             </thead>
             <tbody>
@@ -567,27 +592,31 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
                   </td>
                   <td className="border border-slate-300 p-1 text-slate-400 text-[10px]">شصت</td>
                   <td className="border border-slate-300 p-1 text-slate-400 text-[10px]">امضاء</td>
-                  <td className="border border-slate-300 p-1 print:hidden">
-                    <button
-                      onClick={() => removeShareholder(sh.id)}
-                      className="text-red-600 hover:text-red-800 p-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
+                  {isEditMode && (
+                    <td className="border border-slate-300 p-1 print:hidden">
+                      <button
+                        onClick={() => removeShareholder(sh.id)}
+                        className="text-red-600 hover:text-red-800 p-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div className="print:hidden">
-            <button
-              onClick={addShareholder}
-              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-300 cursor-pointer"
-            >
-              + افزودن سهمدار جدید
-            </button>
-          </div>
+          {isEditMode && (
+            <div className="print:hidden">
+              <button
+                onClick={addShareholder}
+                className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-300 cursor-pointer"
+              >
+                + افزودن سهمدار جدید
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Section 2: License Specifications */}
@@ -709,7 +738,7 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
                 <th className="border border-slate-400 p-2" colSpan={5}>موقعیت نمایندگی</th>
                 <th className="border border-slate-400 p-2">شماره نمایندگی طبق جواز</th>
                 <th className="border border-slate-400 p-2">شماره تماس</th>
-                <th className="border border-slate-400 p-2 w-12 print:hidden">حذف</th>
+                {isEditMode && <th className="border border-slate-400 p-2 w-12 print:hidden">حذف</th>}
               </tr>
               <tr className="bg-slate-100 text-slate-700">
                 <th className="border border-slate-400 p-1 font-semibold">اسم</th>
@@ -808,27 +837,30 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
                       className="w-full p-1 border rounded bg-white text-center font-mono"
                     />
                   </td>
-                  <td className="border border-slate-300 p-1 print:hidden">
-                    <button
-                      onClick={() => removeBranch(b.id)}
-                      className="text-red-600 hover:text-red-800 p-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
+                  {isEditMode && (
+                    <td className="border border-slate-300 p-1 print:hidden text-center">
+                      <button
+                        onClick={() => removeBranch(b.id)}
+                        className="text-red-600 hover:text-red-800 p-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
-
-          <div className="mb-6 print:hidden">
-            <button
-              onClick={addBranch}
-              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-300 cursor-pointer"
-            >
-              + افزودن نمایندگی/کارمند جدید
-            </button>
-          </div>
+          {isEditMode && (
+            <div className="mb-6 print:hidden">
+              <button
+                onClick={addBranch}
+                className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-300 cursor-pointer"
+              >
+                + افزودن نمایندگی/کارمند جدید
+              </button>
+            </div>
+          )}
 
           {/* List of Bank Accounts */}
           <p className="text-xs font-bold text-slate-800 mb-2">
@@ -842,7 +874,7 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
                 <th className="border border-slate-400 p-2">نام حساب بانکی</th>
                 <th className="border border-slate-400 p-2">نمبر حساب</th>
                 <th className="border border-slate-400 p-2">بانک مربوطه</th>
-                <th className="border border-slate-400 p-2 w-12 print:hidden">حذف</th>
+                {isEditMode && <th className="border border-slate-400 p-2 w-12 print:hidden">حذف</th>}
               </tr>
             </thead>
             <tbody>
@@ -875,27 +907,28 @@ export default function DabLicenseRenewalForm({ customLogo: propLogo, onOpenLogo
                       placeholder="نام بانک..."
                     />
                   </td>
-                  <td className="border border-slate-300 p-1 print:hidden">
-                    <button
-                      onClick={() => removeBankAccount(acc.id)}
-                      className="text-red-600 hover:text-red-800 p-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
+                  {isEditMode && (
+                    <td className="border border-slate-300 p-1 print:hidden text-center">
+                      <button onClick={() => removeBankAccount(acc.id)} className="text-red-600 hover:text-red-800 p-1">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div className="print:hidden">
-            <button
-              onClick={addBankAccount}
-              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-300 cursor-pointer"
-            >
-              + افزودن حساب بانکی جدید
-            </button>
-          </div>
+          {isEditMode && (
+            <div className="print:hidden">
+              <button
+                onClick={addBankAccount}
+                className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-300 cursor-pointer"
+              >
+                + افزودن حساب بانکی جدید
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Section 3: Requested Changes */}

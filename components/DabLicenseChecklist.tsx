@@ -73,11 +73,13 @@ const DEFAULT_CHECKLIST_DATA: ChecklistData = {
 };
 
 interface DabLicenseChecklistProps {
+  isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
+  onExportPdf?: () => void;
 }
 
-export default function DabLicenseChecklist({ customLogo }: DabLicenseChecklistProps) {
+export default function DabLicenseChecklist({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: DabLicenseChecklistProps) {
   const [data, setData] = useState<ChecklistData>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -88,7 +90,6 @@ export default function DabLicenseChecklist({ customLogo }: DabLicenseChecklistP
     return DEFAULT_CHECKLIST_DATA;
   });
 
-  const [isEditing, setIsEditing] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -142,17 +143,20 @@ export default function DabLicenseChecklist({ customLogo }: DabLicenseChecklistP
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button onClick={() => setIsEditing(!isEditing)} className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all ${isEditing ? 'bg-amber-500 border-amber-400 text-slate-950' : 'bg-slate-100 border-slate-200 dark:bg-slate-800'}`}>
-            <Info className="w-4 h-4" /> {isEditing ? 'پیش‌نمایش سند' : 'ویرایش داده‌ها'}
-          </button>
-          <button onClick={handleSave} className="px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm hover:bg-blue-700 transition-colors">
-            {isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />} {isSaved ? 'ذخیره شد' : 'ذخیره در سیستم'}
-          </button>
+          {isEditMode && (
+            <button onClick={handleSave} className="px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm hover:bg-blue-700 transition-colors">
+              {isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />} {isSaved ? 'ذخیره شد' : 'ذخیره در سیستم'}
+            </button>
+          )}
+          {isEditMode && (
+            <button onClick={() => { if(confirm('بازنشانی به تنظیمات اولیه؟')) setData(DEFAULT_CHECKLIST_DATA); }} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl" title="بازنشانی">
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
           <button onClick={handlePdfExport} disabled={isExporting} className="px-3 py-2 bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
             <Download className="w-4 h-4" /> {isExporting ? 'در حال تهیه...' : 'خروجی PDF'}
           </button>
-          <button onClick={() => window.print()} className="p-2 bg-slate-800 text-white rounded-xl"><Printer className="w-4 h-4" /></button>
-          <button onClick={() => { if(confirm('بازنشانی به تنظیمات اولیه؟')) setData(DEFAULT_CHECKLIST_DATA); }} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl"><RotateCcw className="w-4 h-4" /></button>
+          <button onClick={() => window.print()} className="p-2 bg-slate-800 text-white rounded-xl" title="چاپ"><Printer className="w-4 h-4" /></button>
         </div>
       </div>
 

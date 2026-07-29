@@ -105,11 +105,13 @@ const DEFAULT_LETTER_DATA: LicenseRenewalLetterData = {
 };
 
 interface DabLicenseRenewalLetterProps {
+  isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
+  onExportPdf?: () => void;
 }
 
-export default function DabLicenseRenewalLetter({ customLogo, onOpenLogoModal }: DabLicenseRenewalLetterProps) {
+export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: DabLicenseRenewalLetterProps) {
   const [data, setData] = useState<LicenseRenewalLetterData>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -125,7 +127,6 @@ export default function DabLicenseRenewalLetter({ customLogo, onOpenLogoModal }:
     return DEFAULT_LETTER_DATA;
   });
 
-  const [isEditing, setIsEditing] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -251,27 +252,27 @@ export default function DabLicenseRenewalLetter({ customLogo, onOpenLogoModal }:
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setIsEditing(!isEditing)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
-              isEditing
-                ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-xs'
-                : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
-            }`}
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>{isEditing ? 'حالت پیش‌نمایش سند' : 'ویرایش کامل متن مکتوب'}</span>
-          </button>
+          {isEditMode && (
+            <button
+              type="button"
+              onClick={handleSave}
+              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+            >
+              {isSaved ? <Check className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
+              <span>{isSaved ? 'ذخیره شد' : 'ذخیره مکتوب'}</span>
+            </button>
+          )}
 
-          <button
-            type="button"
-            onClick={handleSave}
-            className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-          >
-            {isSaved ? <Check className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
-            <span>{isSaved ? 'ذخیره شد' : 'ذخیره مکتوب'}</span>
-          </button>
+          {isEditMode && (
+            <button
+              type="button"
+              onClick={handleReset}
+              className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition-all cursor-pointer border border-slate-300 dark:border-slate-700"
+              title="پاکسازی / بازنشانی"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
 
           <button
             type="button"
@@ -305,7 +306,7 @@ export default function DabLicenseRenewalLetter({ customLogo, onOpenLogoModal }:
       </div>
 
       {/* Editing Form Section */}
-      {isEditing && (
+      {isEditMode && (
         <div className="bg-amber-50 dark:bg-slate-800/80 border border-amber-200 dark:border-slate-700 rounded-2xl p-4 sm:p-6 space-y-5 text-xs text-slate-800 dark:text-slate-200 print:hidden shadow-xs">
           <h3 className="font-extrabold text-sm text-amber-900 dark:text-amber-300 flex items-center gap-2 border-b border-amber-200 dark:border-slate-700 pb-3">
             <Edit3 className="w-4 h-4" />

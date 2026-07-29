@@ -49,11 +49,36 @@ export default function PrintPreviewModal({
     a3: { landscape: { w: 420, h: 297 }, portrait: { w: 297, h: 420 } },
   }[paperSize][orientation];
 
+  // DPI conversion: 1mm ≈ 3.78px
+  const mmToPx = 3.78;
+  const paperW = paperDimensions.w * mmToPx;
+  const paperH = paperDimensions.h * mmToPx;
   const printableW = paperDimensions.w - marginMm * 2;
   const printableH = paperDimensions.h - marginMm * 2;
 
   const handleTriggerPrint = () => {
+    // Inject print styles for specific orientation
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @page { 
+        size: ${paperSize} ${orientation}; 
+        margin: ${marginMm}mm; 
+      }
+      @media print {
+        body * { visibility: hidden; }
+        #print-content-area, #print-content-area * { visibility: visible; }
+        #print-content-area {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          direction: rtl;
+        }
+      }
+    `;
+    document.head.appendChild(style);
     window.print();
+    document.head.removeChild(style);
   };
 
   return (
@@ -84,18 +109,20 @@ export default function PrintPreviewModal({
           <div className="flex items-center bg-slate-900 rounded-xl p-1 text-xs font-bold">
             <button
               onClick={() => setOrientation('landscape')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
                 orientation === 'landscape' ? 'bg-blue-900 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
+              <Maximize2 className="w-3.5 h-3.5 rotate-90" />
               افقی
             </button>
             <button
               onClick={() => setOrientation('portrait')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
                 orientation === 'portrait' ? 'bg-blue-900 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
+              <Maximize2 className="w-3.5 h-3.5" />
               عمودی
             </button>
           </div>
@@ -221,25 +248,29 @@ export default function PrintPreviewModal({
             transform: `scale(${zoomLevel / 100})`,
             transformOrigin: 'center center',
             transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            width: `${paperW}px`,
+            height: `${paperH}px`,
           }}
-          className="relative bg-white text-slate-900 rounded-sm shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-slate-300 transition-all"
+          className="relative bg-white text-slate-900 rounded-sm shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-slate-300 transition-all flex flex-col items-center justify-start overflow-hidden"
         >
           {/* Printable Sheet Outer Representation */}
           <div
+            id="print-content-area"
             style={{
-              padding: `${marginMm * 3.78}px`, // Convert mm to px approx (1mm ~ 3.78px)
-              minWidth: orientation === 'landscape' ? '1100px' : '820px',
+              padding: `${marginMm * mmToPx}px`,
+              width: '100%',
+              height: '100%',
             }}
-            className="relative"
+            className="relative flex flex-col"
           >
             {/* Dashed Margin Guide Box */}
             {showMarginGuide && (
               <div 
                 style={{
-                  top: `${marginMm * 3.78}px`,
-                  bottom: `${marginMm * 3.78}px`,
-                  left: `${marginMm * 3.78}px`,
-                  right: `${marginMm * 3.78}px`,
+                  top: `${marginMm * mmToPx}px`,
+                  bottom: `${marginMm * mmToPx}px`,
+                  left: `${marginMm * mmToPx}px`,
+                  right: `${marginMm * mmToPx}px`,
                 }}
                 className="absolute border-2 border-dashed border-amber-500/50 pointer-events-none rounded-xs z-20 flex flex-col justify-between p-2"
               >
@@ -254,7 +285,7 @@ export default function PrintPreviewModal({
 
             {/* Cloned Element Content Container */}
             <div 
-              className="bg-white p-2 rounded-xl text-slate-900"
+              className="bg-white p-2 rounded-xl text-slate-900 flex-1 overflow-hidden"
               dangerouslySetInnerHTML={{ __html: clonedHtml }}
             />
           </div>

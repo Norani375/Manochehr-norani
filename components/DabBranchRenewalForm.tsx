@@ -180,7 +180,30 @@ const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
   supervisorDate: '',
 };
 
-export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoModal, onExportPdf }: { customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
+interface EditableFieldProps {
+  isEditMode: boolean;
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+const EditableField = ({ isEditMode, value, onChange, placeholder, className = "" }: EditableFieldProps) => {
+  if (isEditMode) {
+    return (
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`w-full px-2 py-1 border border-slate-300 rounded bg-white text-xs ${className}`}
+      />
+    );
+  }
+  return <span className={`inline-block py-1 font-bold text-blue-900 border-b border-transparent ${className}`}>{value || '---'}</span>;
+};
+
+export default function DabBranchRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf }: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [data, setData] = useState<BranchRenewalData>(DEFAULT_BRANCH_RENEWAL_DATA);
   const [isSaved, setIsSaved] = useState(false);
@@ -266,7 +289,7 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
         </div>
 
         <div className="flex items-center gap-3">
-          {onOpenLogoModal && (
+          {onOpenLogoModal && isEditMode && (
             <button
               type="button"
               onClick={onOpenLogoModal}
@@ -277,21 +300,25 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
             </button>
           )}
 
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
-          >
-            <Save className="w-4 h-4" />
-            {isSaved ? 'ذخیره شد!' : 'ذخیره اطلاعات'}
-          </button>
+          {isEditMode && (
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
+            >
+              <Save className="w-4 h-4" />
+              {isSaved ? 'ذخیره شد!' : 'ذخیره اطلاعات'}
+            </button>
+          )}
 
-          <button
-            onClick={handleReset}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
-            title="پاکسازی / بازنشانی"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+          {isEditMode && (
+            <button
+              onClick={handleReset}
+              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
+              title="پاکسازی / بازنشانی"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
 
           {onExportPdf && (
             <button
@@ -315,37 +342,39 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
       </div>
 
       {/* Quick Branch Selection Bar */}
-      <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-2xl p-4 mb-6 shadow-md print:hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
-          <div className="flex items-center gap-2">
-            <Building className="w-5 h-5 text-amber-400" />
-            <span className="font-bold text-sm">انتخاب سریع نمایندگی‌های واقعی شرکت برکت‌الله غفوری (جواز DAB/7-0965):</span>
+      {isEditMode && (
+        <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-2xl p-4 mb-6 shadow-md print:hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
+            <div className="flex items-center gap-2">
+              <Building className="w-5 h-5 text-amber-400" />
+              <span className="font-bold text-sm">انتخاب سریع نمایندگی‌های واقعی شرکت برکت‌الله غفوری (جواز DAB/7-0965):</span>
+            </div>
+            <span className="text-xs text-blue-200 bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-800 font-mono">
+              ۵ نمایندگی رسمی فعال
+            </span>
           </div>
-          <span className="text-xs text-blue-200 bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-800 font-mono">
-            ۵ نمایندگی رسمی فعال
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            {REAL_BRANCHES_PRESETS.map((preset) => {
+              const isSelected = data.branchProvince === preset.branchProvince && data.repName === preset.repName;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handleSelectPreset(preset)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                    isSelected 
+                      ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-[1.02]' 
+                      : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
+                  }`}
+                >
+                  <span>{preset.title}</span>
+                  <span className="text-[10px] opacity-80">({preset.repName})</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {REAL_BRANCHES_PRESETS.map((preset) => {
-            const isSelected = data.branchProvince === preset.branchProvince && data.repName === preset.repName;
-            return (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => handleSelectPreset(preset)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
-                  isSelected 
-                    ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-[1.02]' 
-                    : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
-                }`}
-              >
-                <span>{preset.title}</span>
-                <span className="text-[10px] opacity-80">({preset.repName})</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      )}
 
       {/* Official Form Canvas */}
       <div id="dab-branch-renewal-canvas" className="bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0">
@@ -422,20 +451,18 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 <tr>
                   <td className="border border-slate-400 bg-slate-100 p-2 font-bold w-1/4">نام شرکت:</td>
                   <td className="border border-slate-400 p-1.5 font-bold text-blue-950" colSpan={3}>
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.companyName}
-                      onChange={(e) => updateField('companyName', e.target.value)}
-                      className="w-full px-2 py-1 border border-slate-300 rounded bg-white font-bold text-blue-900"
+                      onChange={(val) => updateField('companyName', val)}
+                      className="font-bold text-blue-900"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-100 p-2 font-bold w-1/6">شماره جواز:</td>
                   <td className="border border-slate-400 p-1.5 font-bold font-mono">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.licenseNo}
-                      onChange={(e) => updateField('licenseNo', e.target.value)}
-                      className="w-full px-2 py-1 border border-slate-300 rounded bg-white font-mono text-center"
+                      onChange={(val) => updateField('licenseNo', val)}
+                      className="font-mono text-center"
                     />
                   </td>
                 </tr>
@@ -452,35 +479,31 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 </tr>
                 <tr>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.centralProvince}
-                      onChange={(e) => updateField('centralProvince', e.target.value)}
-                      className="w-full px-1.5 py-1 border rounded text-center"
+                      onChange={(val) => updateField('centralProvince', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.centralDistrict}
-                      onChange={(e) => updateField('centralDistrict', e.target.value)}
-                      className="w-full px-1.5 py-1 border rounded text-center"
+                      onChange={(val) => updateField('centralDistrict', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.centralMarket}
-                      onChange={(e) => updateField('centralMarket', e.target.value)}
-                      className="w-full px-1.5 py-1 border rounded text-center"
+                      onChange={(val) => updateField('centralMarket', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1" colSpan={2}>
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.centralShopNo}
-                      onChange={(e) => updateField('centralShopNo', e.target.value)}
-                      className="w-full px-1.5 py-1 border rounded text-center"
+                      onChange={(val) => updateField('centralShopNo', val)}
+                      className="text-center"
                     />
                   </td>
                 </tr>
@@ -497,19 +520,17 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 </tr>
                 <tr>
                   <td className="border border-slate-400 p-1" colSpan={2}>
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.companyPhone}
-                      onChange={(e) => updateField('companyPhone', e.target.value)}
-                      className="w-full px-1.5 py-1 border rounded font-mono text-center"
+                      onChange={(val) => updateField('companyPhone', val)}
+                      className="font-mono text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1" colSpan={3}>
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.companyEmail}
-                      onChange={(e) => updateField('companyEmail', e.target.value)}
-                      className="w-full px-1.5 py-1 border rounded font-mono text-center"
+                      onChange={(val) => updateField('companyEmail', val)}
+                      className="font-mono text-center"
                     />
                   </td>
                 </tr>
@@ -540,29 +561,26 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ولایت</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.branchProvince}
-                      onChange={(e) => updateField('branchProvince', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('branchProvince', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ولایت</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.repResProv}
-                      onChange={(e) => updateField('repResProv', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('repResProv', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">اسم</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.repName}
-                      onChange={(e) => updateField('repName', e.target.value)}
-                      className="w-full p-1 border rounded font-bold text-blue-900 text-center"
+                      onChange={(val) => updateField('repName', val)}
+                      className="font-bold text-blue-900 text-center"
                     />
                   </td>
                 </tr>
@@ -570,29 +588,26 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">شماره نمایندگی</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.branchNo}
-                      onChange={(e) => updateField('branchNo', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('branchNo', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ناحیه/ولسوالی</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.repResDistrict}
-                      onChange={(e) => updateField('repResDistrict', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('repResDistrict', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ولد</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.repFatherName}
-                      onChange={(e) => updateField('repFatherName', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('repFatherName', val)}
+                      className="text-center"
                     />
                   </td>
                 </tr>
@@ -600,29 +615,26 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">اسم مارکیت</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.branchMarketName}
-                      onChange={(e) => updateField('branchMarketName', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('branchMarketName', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">قریه</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.repResVillage}
-                      onChange={(e) => updateField('repResVillage', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('repResVillage', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">نمبر تذکره</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.repTazkiraNo}
-                      onChange={(e) => updateField('repTazkiraNo', e.target.value)}
-                      className="w-full p-1 border rounded font-mono text-center"
+                      onChange={(val) => updateField('repTazkiraNo', val)}
+                      className="font-mono text-center"
                     />
                   </td>
                 </tr>
@@ -630,29 +642,26 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">شماره دکان و منزل</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.branchShopNo}
-                      onChange={(e) => updateField('branchShopNo', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('branchShopNo', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">محل فعالیت</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.branchLocation}
-                      onChange={(e) => updateField('branchLocation', e.target.value)}
-                      className="w-full p-1 border rounded text-center"
+                      onChange={(val) => updateField('branchLocation', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">شماره تماس نماینده</td>
                   <td className="border border-slate-400 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.repPhone}
-                      onChange={(e) => updateField('repPhone', e.target.value)}
-                      className="w-full p-1 border rounded font-mono text-center"
+                      onChange={(val) => updateField('repPhone', val)}
+                      className="font-mono text-center"
                     />
                   </td>
                 </tr>
@@ -673,48 +682,59 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
               ۱. سطح تحصیلات نماینده با صلاحیت تا چه حد است؟ در صورت داشتن تحصیل، سند تحصیلی را ضمیمه این فورم نمایید.
             </p>
             <div className="flex flex-wrap items-center gap-6 my-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="educationLevel"
-                  checked={data.educationLevel === 'baccalaureate'}
-                  onChange={() => updateField('educationLevel', 'baccalaureate')}
-                  className="w-4 h-4 text-blue-900"
-                />
-                <span className="font-semibold">بکلوریا (۱۲ پاس)</span>
-              </label>
+              {isEditMode ? (
+                <>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="educationLevel"
+                      checked={data.educationLevel === 'baccalaureate'}
+                      onChange={() => updateField('educationLevel', 'baccalaureate')}
+                      className="w-4 h-4 text-blue-900"
+                    />
+                    <span className="font-semibold">بکلوریا (۱۲ پاس)</span>
+                  </label>
 
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="educationLevel"
-                  checked={data.educationLevel === 'higher'}
-                  onChange={() => updateField('educationLevel', 'higher')}
-                  className="w-4 h-4 text-blue-900"
-                />
-                <span className="font-semibold">دارای تحصیلات عالی (لیسانس / ماستر)</span>
-              </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="educationLevel"
+                      checked={data.educationLevel === 'higher'}
+                      onChange={() => updateField('educationLevel', 'higher')}
+                      className="w-4 h-4 text-blue-900"
+                    />
+                    <span className="font-semibold">دارای تحصیلات عالی (لیسانس / ماستر)</span>
+                  </label>
 
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="educationLevel"
-                  checked={data.educationLevel === 'other'}
-                  onChange={() => updateField('educationLevel', 'other')}
-                  className="w-4 h-4 text-blue-900"
-                />
-                <span className="font-semibold">سایر موارد</span>
-              </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="educationLevel"
+                      checked={data.educationLevel === 'other'}
+                      onChange={() => updateField('educationLevel', 'other')}
+                      className="w-4 h-4 text-blue-900"
+                    />
+                    <span className="font-semibold">سایر موارد</span>
+                  </label>
+                </>
+              ) : (
+                <div className="flex items-center gap-2 text-blue-900 font-bold">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>
+                    {data.educationLevel === 'baccalaureate' ? 'بکلوریا (۱۲ پاس)' : 
+                     data.educationLevel === 'higher' ? 'دارای تحصیلات عالی (لیسانس / ماستر)' : 
+                     `سایر موارد: ${data.educationOtherText}`}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {data.educationLevel === 'other' && (
+            {isEditMode && data.educationLevel === 'other' && (
               <div className="mt-2">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={data.educationOtherText}
-                  onChange={(e) => updateField('educationOtherText', e.target.value)}
+                  onChange={(val) => updateField('educationOtherText', val)}
                   placeholder="سایر موارد سطح تحصیلات..."
-                  className="w-full p-2 border border-slate-300 rounded bg-white text-xs"
                 />
               </div>
             )}
@@ -727,22 +747,20 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
             </p>
             <p>
               این جانب (
-              <input
-                type="text"
+              <EditableField isEditMode={isEditMode}
                 value={data.boardHeadName}
-                onChange={(e) => updateField('boardHeadName', e.target.value)}
-                className="inline-block mx-1 px-2 py-0.5 border-b border-slate-800 bg-white font-bold text-blue-900 w-36 text-center text-xs"
+                onChange={(val) => updateField('boardHeadName', val)}
+                className="font-bold text-blue-900 w-36 text-center text-xs"
               />
               ) ولد (
-              <input
-                type="text"
+              <EditableField isEditMode={isEditMode}
                 value={data.boardHeadFather}
-                onChange={(e) => updateField('boardHeadFather', e.target.value)}
-                className="inline-block mx-1 px-2 py-0.5 border-b border-slate-800 bg-white font-bold w-36 text-center text-xs"
+                onChange={(val) => updateField('boardHeadFather', val)}
+                className="font-bold w-36 text-center text-xs"
               />
               ) رییس هیأت نظار شرکت صرافی و خدمات پولی (
               <span className="font-bold">{data.companyName}</span>) دارای جواز نمبر (
-              <span className="font-mono font-bold">{data.licenseNo}</span>) از اهلیت و شهرت نیک نماینده با صلاحیت (
+              <span className="font-bold">{data.licenseNo}</span>) از اهلیت و شهرت نیک نماینده با صلاحیت (
               <span className="font-bold text-blue-900">{data.repName}</span>) تصدیق نموده و موصوف را منحیث نماینده رسمی شرکت به د افغانستان بانک معرفی می نمایم. همچنان بدین وسیله اقرار مینمایم که معلومات ارائه شده در فورم درخواستی هذا را با تمام هوش و حواس خویش خانه پوری نموده و درست و کامل میباشد.
             </p>
           </div>
@@ -808,11 +826,10 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 <tr className="border-b border-slate-300">
                   <td className="border-r border-slate-300 p-2 font-bold bg-slate-50">سهمدار</td>
                   <td className="border-r border-slate-300 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.shareholder1Name}
-                      onChange={(e) => updateField('shareholder1Name', e.target.value)}
-                      className="w-full p-1 border rounded text-center font-bold"
+                      onChange={(val) => updateField('shareholder1Name', val)}
+                      className="text-center font-bold"
                     />
                   </td>
                   <td className="p-2">______________________</td>
@@ -820,11 +837,10 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
                 <tr>
                   <td className="border-r border-slate-300 p-2 font-bold bg-slate-50">سهمدار</td>
                   <td className="border-r border-slate-300 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={data.shareholder2Name}
-                      onChange={(e) => updateField('shareholder2Name', e.target.value)}
-                      className="w-full p-1 border rounded text-center font-bold"
+                      onChange={(val) => updateField('shareholder2Name', val)}
+                      className="text-center font-bold"
                     />
                   </td>
                   <td className="p-2">______________________</td>
@@ -839,11 +855,10 @@ export default function DabBranchRenewalForm({ customLogo: propLogo, onOpenLogoM
             </div>
             <div>
               تاریخ: 
-              <input
-                type="text"
+              <EditableField isEditMode={isEditMode}
                 value={data.formDate}
-                onChange={(e) => updateField('formDate', e.target.value)}
-                className="inline-block mx-2 px-2 py-1 border rounded bg-white font-mono text-center w-32"
+                onChange={(val) => updateField('formDate', val)}
+                className="inline-block mx-2 text-center font-mono w-32"
               />
             </div>
           </div>

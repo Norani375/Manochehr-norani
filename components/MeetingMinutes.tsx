@@ -72,11 +72,13 @@ const DEFAULT_MEETING_DATA: MeetingMinutesData = {
 };
 
 interface MeetingMinutesProps {
+  isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
+  onExportPdf?: () => void;
 }
 
-export default function MeetingMinutes({ customLogo }: MeetingMinutesProps) {
+export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: MeetingMinutesProps) {
   const [data, setData] = useState<MeetingMinutesData>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -87,7 +89,6 @@ export default function MeetingMinutes({ customLogo }: MeetingMinutesProps) {
     return DEFAULT_MEETING_DATA;
   });
 
-  const [isEditing, setIsEditing] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -158,22 +159,25 @@ export default function MeetingMinutes({ customLogo }: MeetingMinutesProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button onClick={() => setIsEditing(!isEditing)} className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all ${isEditing ? 'bg-amber-500 border-amber-400 text-slate-950' : 'bg-slate-100 border-slate-200 dark:bg-slate-800'}`}>
-            <Edit3 className="w-4 h-4" /> {isEditing ? 'پیش‌نمایش' : 'ویرایش متن'}
-          </button>
-          <button onClick={handleSave} className="px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
-            {isSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />} {isSaved ? 'ذخیره شد' : 'ذخیره'}
-          </button>
+          {isEditMode && (
+            <button onClick={handleSave} className="px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
+              {isSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />} {isSaved ? 'ذخیره شد' : 'ذخیره'}
+            </button>
+          )}
+          {isEditMode && (
+            <button onClick={handleReset} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl" title="بازنشانی">
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
           <button onClick={handlePdfExport} disabled={isExporting} className="px-3 py-2 bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
             <Download className="w-4 h-4" /> {isExporting ? 'صبر کنید...' : 'دانلود PDF'}
           </button>
-          <button onClick={() => window.print()} className="p-2 bg-slate-800 text-white rounded-xl"><Printer className="w-4 h-4" /></button>
-          <button onClick={handleReset} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl"><RotateCcw className="w-4 h-4" /></button>
+          <button onClick={() => window.print()} className="p-2 bg-slate-800 text-white rounded-xl" title="چاپ"><Printer className="w-4 h-4" /></button>
         </div>
       </div>
 
       {/* Editor */}
-      {isEditing && (
+      {isEditMode && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm print:hidden animate-in fade-in slide-in-from-top-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div><label className="block text-xs font-bold mb-1">شماره صورتجلسه:</label><input className="w-full p-2 border rounded-xl text-xs" value={data.meetingNo} onChange={e => setData({...data, meetingNo: e.target.value})} /></div>

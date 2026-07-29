@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   // Allow access to remote image placeholder.
+  distDir: 'dist',
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
@@ -19,7 +21,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'standalone',
   transpilePackages: ['motion'],
   webpack: (config, {dev}) => {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.

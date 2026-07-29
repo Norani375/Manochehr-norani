@@ -28,5 +28,11 @@ service cloud.firestore {
       allow create, update: if true; // Loosened for various document types
       allow delete: if true;
     }
+
+    // Employees collection - Comprehensive records
+    match /employees/{employeeId} {
+      allow read: if true;
+      allow create, update, delete: if true; // Loosened for demo/preview, should be tightened later
+    }
   }
 }

@@ -100,7 +100,30 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
   formDate: new Date().toISOString().split('T')[0],
 };
 
-export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal, onExportPdf }: { customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
+interface EditableFieldProps {
+  isEditMode: boolean;
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+const EditableField = ({ isEditMode, value, onChange, placeholder, className = "" }: EditableFieldProps) => {
+  if (isEditMode) {
+    return (
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`w-full px-2 py-1 border border-slate-300 rounded bg-white text-xs ${className}`}
+      />
+    );
+  }
+  return <span className={`inline-block py-1 font-bold text-blue-900 border-b border-transparent ${className}`}>{value || '---'}</span>;
+};
+
+export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf }: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [formData, setFormData] = useState<GuaranteeFormData>(DEFAULT_FORM_DATA);
   const [isSaved, setIsSaved] = useState(false);
@@ -195,7 +218,7 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
         </div>
 
         <div className="flex items-center gap-3">
-          {onOpenLogoModal && (
+          {onOpenLogoModal && isEditMode && (
             <button
               type="button"
               onClick={onOpenLogoModal}
@@ -206,21 +229,25 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
             </button>
           )}
 
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
-          >
-            <Save className="w-4 h-4" />
-            {isSaved ? 'ذخیره شد!' : 'ذخیره اطلاعات'}
-          </button>
+          {isEditMode && (
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
+            >
+              <Save className="w-4 h-4" />
+              {isSaved ? 'ذخیره شد!' : 'ذخیره اطلاعات'}
+            </button>
+          )}
 
-          <button
-            onClick={handleReset}
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
-            title="پاکسازی / بازنشانی"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+          {isEditMode && (
+            <button
+              onClick={handleReset}
+              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
+              title="پاکسازی / بازنشانی"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
 
           {onExportPdf && (
             <button
@@ -336,103 +363,87 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
                     <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
                       <div>
                         <label className="block text-[11px] font-bold text-slate-700 mb-1 italic">تشبث و محل فعالیت:</label>
-                        <input
-                          type="text"
+                        <EditableField isEditMode={isEditMode}
                           value={guarantor.businessNameLocation}
-                          onChange={(e) => updateGuarantor(idx, 'businessNameLocation', e.target.value)}
+                          onChange={(val) => updateGuarantor(idx, 'businessNameLocation', val)}
                           placeholder="نام و محل کسب ضامن..."
-                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-bold"
+                          className="font-bold"
                         />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-slate-700 mb-1 italic">توضیحات سکونت:</label>
-                        <input
-                          type="text"
+                        <EditableField isEditMode={isEditMode}
                           value={guarantor.province}
-                          onChange={(e) => updateGuarantor(idx, 'province', e.target.value)}
+                          onChange={(val) => updateGuarantor(idx, 'province', val)}
                           placeholder="ولایت / ولسوالی سکونت..."
-                          className="w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-bold"
+                          className="font-bold"
                         />
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">اسم:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.name}
-                        onChange={(e) => updateGuarantor(idx, 'name', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        onChange={(val) => updateGuarantor(idx, 'name', val)}
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">ولایت:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.province}
-                        onChange={(e) => updateGuarantor(idx, 'province', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        onChange={(val) => updateGuarantor(idx, 'province', val)}
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">ولد:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.fatherName}
-                        onChange={(e) => updateGuarantor(idx, 'fatherName', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        onChange={(val) => updateGuarantor(idx, 'fatherName', val)}
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">ولسوالی:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.district}
-                        onChange={(e) => updateGuarantor(idx, 'district', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        onChange={(val) => updateGuarantor(idx, 'district', val)}
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">نمبر تذکره:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.tazkiraNo}
-                        onChange={(e) => updateGuarantor(idx, 'tazkiraNo', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-mono"
+                        onChange={(val) => updateGuarantor(idx, 'tazkiraNo', val)}
+                        className="font-mono"
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">ناحیه:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.nahia}
-                        onChange={(e) => updateGuarantor(idx, 'nahia', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        onChange={(val) => updateGuarantor(idx, 'nahia', val)}
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">شماره تماس:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.phoneNo}
-                        onChange={(e) => updateGuarantor(idx, 'phoneNo', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs font-mono"
+                        onChange={(val) => updateGuarantor(idx, 'phoneNo', val)}
+                        className="font-mono"
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <label className="w-20 font-bold text-slate-700">قریه:</label>
-                      <input
-                        type="text"
+                      <EditableField isEditMode={isEditMode}
                         value={guarantor.village}
-                        onChange={(e) => updateGuarantor(idx, 'village', e.target.value)}
-                        className="flex-1 px-2.5 py-1.5 border border-slate-300 rounded bg-white text-xs"
+                        onChange={(val) => updateGuarantor(idx, 'village', val)}
                       />
                     </div>
 
@@ -454,84 +465,71 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
             <div className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-y divide-slate-300 border-b border-slate-300">
               <div className="p-2 bg-slate-50 font-bold">اسم تشبث:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.businessName}
-                  onChange={(e) => updateGuarantorCompany('businessName', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white"
+                  onChange={(val) => updateGuarantorCompany('businessName', val)}
                   placeholder="اسم شرکت ضامن..."
                 />
               </div>
               <div className="p-2 bg-slate-50 font-bold">نوع فعالیت:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.activityType}
-                  onChange={(e) => updateGuarantorCompany('activityType', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white"
+                  onChange={(val) => updateGuarantorCompany('activityType', val)}
                   placeholder="نوع فعالیت..."
                 />
               </div>
 
               <div className="p-2 bg-slate-50 font-bold">نمبر جواز:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.licenseNo}
-                  onChange={(e) => updateGuarantorCompany('licenseNo', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white font-mono"
+                  onChange={(val) => updateGuarantorCompany('licenseNo', val)}
+                  className="font-mono"
                   placeholder="شماره جواز..."
                 />
               </div>
               <div className="p-2 bg-slate-50 font-bold">شماره تماس شرکت:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.companyPhone}
-                  onChange={(e) => updateGuarantorCompany('companyPhone', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white font-mono"
+                  onChange={(val) => updateGuarantorCompany('companyPhone', val)}
+                  className="font-mono"
                   placeholder="شماره تماس..."
                 />
               </div>
 
               <div className="p-2 bg-slate-50 font-bold">تاریخ اعتبار:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.expiryDate}
-                  onChange={(e) => updateGuarantorCompany('expiryDate', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white"
+                  onChange={(val) => updateGuarantorCompany('expiryDate', val)}
                   placeholder="۱۴۰x/xx/xx"
                 />
               </div>
               <div className="p-2 bg-slate-50 font-bold">ایمیل آدرس:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.email}
-                  onChange={(e) => updateGuarantorCompany('email', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white font-mono"
+                  onChange={(val) => updateGuarantorCompany('email', val)}
+                  className="font-mono"
                   placeholder="email@example.com"
                 />
               </div>
 
               <div className="p-2 bg-slate-50 font-bold">اداره صادر کننده جواز:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.issuingAuthority}
-                  onChange={(e) => updateGuarantorCompany('issuingAuthority', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white"
+                  onChange={(val) => updateGuarantorCompany('issuingAuthority', val)}
                   placeholder="وزارت صنعت و تجارت / ..."
                 />
               </div>
               <div className="p-2 bg-slate-50 font-bold">آدرس تشبث:</div>
               <div className="p-1.5">
-                <input
-                  type="text"
+                <EditableField isEditMode={isEditMode}
                   value={formData.guarantorCompany.businessAddress}
-                  onChange={(e) => updateGuarantorCompany('businessAddress', e.target.value)}
-                  className="w-full px-2 py-1 border rounded bg-white"
+                  onChange={(val) => updateGuarantorCompany('businessAddress', val)}
                   placeholder="آدرس کامل دفتر..."
                 />
               </div>
@@ -547,18 +545,16 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
 
           <div className="p-4 bg-slate-50 border border-slate-300 rounded-lg text-xs leading-relaxed text-slate-800 mb-4 print:bg-white print:p-2">
             مایان هریک که شهرت مکمل مان در فوق ذکر گردیده است، با رضایت کامل اظهار می‌داریم که سهمدار/سهمداران آتی‌الذکر که می‌خواهد جواز شرکت صرافی و خدمات پولی را تحت نام 
-            <input
-              type="text"
+            <EditableField isEditMode={isEditMode}
               value={formData.companyName}
-              onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-              className="inline-block mx-2 px-2 py-0.5 border-b-2 border-slate-800 bg-white font-bold text-blue-900 text-center w-48 text-xs"
+              onChange={(val) => setFormData({ ...formData, companyName: val })}
+              className="inline-block mx-2 font-bold text-blue-900 text-center w-48 text-xs"
             />
             در ولایت 
-            <input
-              type="text"
+            <EditableField isEditMode={isEditMode}
               value={formData.provinceName}
-              onChange={(e) => setFormData({ ...formData, provinceName: e.target.value })}
-              className="inline-block mx-2 px-2 py-0.5 border-b-2 border-slate-800 bg-white font-bold text-blue-900 text-center w-32 text-xs"
+              onChange={(val) => setFormData({ ...formData, provinceName: val })}
+              className="inline-block mx-2 font-bold text-blue-900 text-center w-32 text-xs"
             />
             اخذ/تمدید نماید، تضمین نموده و در صورت هر گونه تخلف و تخطی که از قوانین و مقررات نافذه کشور از آدرس شرکت صرافی و خدمات پولی ایشان انجام یابد، ایشان را در وقت معینه به مرجع مربوط یا د افغانستان بانک حاضر می‌نماییم و در اقرار خود صادق می‌باشیم.
           </div>
@@ -577,29 +573,26 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
             <tbody>
               {formData.shareholders.map((shareholder, sIdx) => (
                 <tr key={shareholder.id} className="hover:bg-slate-50">
-                  <td className="border border-slate-300 p-2 font-bold">{sIdx + 1}</td>
+                  <td className="border border-slate-300 p-1 font-bold">{sIdx + 1}</td>
                   <td className="border border-slate-300 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={shareholder.name}
-                      onChange={(e) => updateShareholder(sIdx, 'name', e.target.value)}
-                      className="w-full p-1 border rounded bg-white text-center font-bold"
+                      onChange={(val) => updateShareholder(sIdx, 'name', val)}
+                      className="text-center font-bold"
                     />
                   </td>
                   <td className="border border-slate-300 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={shareholder.fatherName}
-                      onChange={(e) => updateShareholder(sIdx, 'fatherName', e.target.value)}
-                      className="w-full p-1 border rounded bg-white text-center"
+                      onChange={(val) => updateShareholder(sIdx, 'fatherName', val)}
+                      className="text-center"
                     />
                   </td>
                   <td className="border border-slate-300 p-1">
-                    <input
-                      type="text"
+                    <EditableField isEditMode={isEditMode}
                       value={shareholder.tazkiraNo}
-                      onChange={(e) => updateShareholder(sIdx, 'tazkiraNo', e.target.value)}
-                      className="w-full p-1 border rounded bg-white text-center font-mono"
+                      onChange={(val) => updateShareholder(sIdx, 'tazkiraNo', val)}
+                      className="text-center font-mono"
                     />
                   </td>
                   <td className="border border-slate-300 p-1 print:hidden">
@@ -691,11 +684,10 @@ export default function DabGuaranteeForm({ customLogo: propLogo, onOpenLogoModal
           <div className="mt-6 flex justify-between items-center text-xs font-bold border-t border-slate-200 pt-4">
             <div>
               تاریخ: 
-              <input
-                type="text"
+              <EditableField isEditMode={isEditMode}
                 value={formData.formDate}
-                onChange={(e) => setFormData({ ...formData, formDate: e.target.value })}
-                className="inline-block mx-2 px-2 py-1 border rounded bg-white text-center font-mono w-32"
+                onChange={(val) => setFormData({ ...formData, formDate: val })}
+                className="inline-block mx-2 text-center font-mono w-32"
               />
             </div>
             <div>

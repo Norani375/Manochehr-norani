@@ -57,7 +57,7 @@ export interface PersonnelNode {
   id: string;
   name: string;
   title: string;
-  category: 'president' | 'board' | 'operations' | 'compliance' | 'branch';
+  category: 'president' | 'board' | 'operations' | 'compliance' | 'branch' | 'executive';
   key: string;
 }
 
@@ -168,4 +168,320 @@ export function subscribeSettings(callback: (settings: CompanySettings) => void)
       handleFirestoreError(error, OperationType.GET, path);
     }
   );
+}
+
+// Employee Record Interface
+export interface EmployeeRecord {
+  id: string;
+  fullName: string;
+  fatherName: string;
+  grandfatherName: string;
+  position: string;
+  tazkiraNo: string;
+  education: string;
+  experience: string;
+  phone: string;
+  tin: string;
+  email: string;
+  photo?: string | null;
+  signature?: string | null;
+  formDate: string;
+  updatedAt: string;
+}
+
+// Save employee record
+export async function saveEmployee(employee: EmployeeRecord) {
+  const path = `employees/${employee.id}`;
+  try {
+    await setDoc(doc(db, 'employees', employee.id), {
+      ...employee,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+// Delete employee record
+export async function deleteEmployee(id: string) {
+  const path = `employees/${id}`;
+  try {
+    await deleteDoc(doc(db, 'employees', id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+// Subscribe to employees
+export function subscribeEmployees(callback: (employees: EmployeeRecord[]) => void) {
+  const path = 'employees';
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const list: EmployeeRecord[] = [];
+      snapshot.forEach((docSnap) => {
+        list.push(docSnap.data() as EmployeeRecord);
+      });
+      callback(list);
+    },
+    (error) => {
+      handleFirestoreError(error, OperationType.GET, path);
+    }
+  );
+}
+
+// Default Employee Data for Seeding
+export const DEFAULT_EMPLOYEES: EmployeeRecord[] = [
+  {
+    id: 'EMP-001',
+    fullName: 'برکت‌الله',
+    fatherName: 'عبدالغفور',
+    grandfatherName: '',
+    position: 'سهمدار و رئیس هیئت مدیره',
+    tazkiraNo: '۵۵۵۲۲-۱۱۰۴-۱۰۰۱۳۹۹',
+    education: 'لیسانس کامپیوتر ساینس',
+    experience: 'مدیریت ارشد شرکت و سهمدار اصلی.',
+    phone: '',
+    tin: '9003365203',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-002',
+    fullName: 'بسم‌الله شیرزی',
+    fatherName: 'دوست‌محمد',
+    grandfatherName: '',
+    position: 'رئیس هیئت نظار',
+    tazkiraNo: '۴۵۱۸۸',
+    education: 'لیسانس ادبیات پشتو',
+    experience: 'نظارت بر امور داخلی و اداری.',
+    phone: '',
+    tin: '9005155800',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-003',
+    fullName: 'برکت‌الله غفوری',
+    fatherName: 'عبدالغفور',
+    grandfatherName: '',
+    position: 'عضو هیئت نظار',
+    tazkiraNo: '۵۵۵۲۲-۱۱۰۴-۱۰۰۱۳۹۹',
+    education: 'لیسانس اقتصاد',
+    experience: 'کارشناس امور اقتصادی و نظارت.',
+    phone: '',
+    tin: '9003365203',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-004',
+    fullName: 'عظیم‌الله رحمانی',
+    fatherName: 'محمد آجان',
+    grandfatherName: '',
+    position: 'عضو هیئت نظار',
+    tazkiraNo: '۳۵۸۰۶',
+    education: 'لیسانس حقوق و علوم سیاسی',
+    experience: 'متخصص در امور حقوقی و نظارت.',
+    phone: '',
+    tin: '9020613858',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-005',
+    fullName: 'محمد فهیم',
+    fatherName: 'محمد امان',
+    grandfatherName: '',
+    position: 'مسئول رعایت از قانون و مقررات',
+    tazkiraNo: '۹۷۴۸۴',
+    education: 'لیسانس ادبیات دری',
+    experience: 'مدیریت اطاعت‌پذیری و رعایت مقررات DAB.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-006',
+    fullName: 'صالح‌محمد',
+    fatherName: 'عبدالرحیم',
+    grandfatherName: '',
+    position: 'مسئول عملیاتی',
+    tazkiraNo: '۴۸۴۲۴',
+    education: 'لیسانس حقوق و علوم سیاسی',
+    experience: 'مدیریت عملیاتی و اجرایی شرکت.',
+    phone: '',
+    tin: '9020613858',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-007',
+    fullName: 'رحمت‌الله',
+    fatherName: 'فیض‌الله',
+    grandfatherName: '',
+    position: 'نماینده تخار',
+    tazkiraNo: '۲۹۳۸۴',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'مسئول نمایندگی ولایت تخار.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-008',
+    fullName: 'عبید‌الله',
+    fatherName: 'نصر‌الله',
+    grandfatherName: '',
+    position: 'خزانه دار تخار',
+    tazkiraNo: '۴۸۳۹۲',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'امور خزانه‌داری در نمایندگی تخار.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-009',
+    fullName: 'اجمل',
+    fatherName: 'نورآغا',
+    grandfatherName: '',
+    position: 'نماینده کابل',
+    tazkiraNo: '۴۶۳۳۸',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'مسئول نمایندگی پایتخت (کابل).',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-010',
+    fullName: 'ریحان',
+    fatherName: 'شیرآغا',
+    grandfatherName: '',
+    position: 'عضو نمایندگی کابل',
+    tazkiraNo: '۱۲۳۴۵',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'فعالیت در بخش خدمات مشتریان کابل.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-011',
+    fullName: 'صدیق‌الله',
+    fatherName: 'حبیب‌الله',
+    grandfatherName: '',
+    position: 'منشی و خزانه دار کابل',
+    tazkiraNo: '۶۷۸۹۰',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'امور اداری و خزانه‌داری مرکز.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-012',
+    fullName: 'محمد‌يوسف',
+    fatherName: 'عبدالمجید',
+    grandfatherName: '',
+    position: 'نماینده امام صاحب',
+    tazkiraNo: '۹۸۶۸۰',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'مسئول نمایندگی ولسوالی امام صاحب.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-013',
+    fullName: 'عبدالمجید',
+    fatherName: 'محمد‌يوسف',
+    grandfatherName: '',
+    position: 'خزانه دار امام صاحب',
+    tazkiraNo: '۵۴۳۲۱',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'امور مالی و خزانه‌داری امام صاحب.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'EMP-014',
+    fullName: 'عتیق‌الله',
+    fatherName: 'شمس‌الدین',
+    grandfatherName: '',
+    position: 'نماینده کشم',
+    tazkiraNo: '۷۲۵۲',
+    education: 'فارغ صنف ۱۲ عمومی',
+    experience: 'مسئول نمایندگی ولسوالی کشم.',
+    phone: '',
+    tin: '',
+    email: '',
+    photo: null,
+    signature: null,
+    formDate: new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString()
+  }
+];
+
+// Save multiple employees (seeding)
+export async function seedEmployees(employees: EmployeeRecord[]) {
+  try {
+    for (const emp of employees) {
+      await setDoc(doc(db, 'employees', emp.id), {
+        ...emp,
+        updatedAt: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    console.error('Seeding failed:', error);
+  }
 }

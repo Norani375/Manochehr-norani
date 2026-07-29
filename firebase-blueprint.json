@@ -70,6 +70,29 @@
         "checklistData": { "type": "object" },
         "updatedAt": { "type": "string" }
       }
+    },
+    "EmployeeRecord": {
+      "title": "Employee Record",
+      "description": "Full information for a company employee including personal and professional details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "fullName": { "type": "string" },
+        "fatherName": { "type": "string" },
+        "grandfatherName": { "type": "string" },
+        "position": { "type": "string" },
+        "tazkiraNo": { "type": "string" },
+        "education": { "type": "string" },
+        "experience": { "type": "string" },
+        "phone": { "type": "string" },
+        "tin": { "type": "string" },
+        "email": { "type": "string" },
+        "photo": { "type": "string", "description": "Base64 encoded photo or storage URL" },
+        "signature": { "type": "string", "description": "Base64 encoded signature" },
+        "formDate": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["fullName", "position"]
     }
   },
   "firestore": {
@@ -78,6 +101,12 @@
         "$ref": "#/entities/PersonnelNode"
       },
       "description": "Collection of all organizational chart personnel and branch representatives"
+    },
+    "/employees/{employeeId}": {
+      "schema": {
+        "$ref": "#/entities/EmployeeRecord"
+      },
+      "description": "Comprehensive employee records for management and official forms"
     },
     "/settings/company": {
       "schema": {
