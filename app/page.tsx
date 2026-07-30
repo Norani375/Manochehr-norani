@@ -433,10 +433,10 @@ export default function OrgChartPage() {
   const selectedBranchObj = branches.find(b => b.key === selectedBranchFilter);
 
   return (
-    <div className={`min-h-screen ${themeStyle.bg} font-sans flex flex-col lg:flex-row transition-colors duration-200 print:bg-white print:text-black print:block dir-rtl`}>
+    <div className={`min-h-screen ${themeStyle.bg} font-sans flex flex-col lg:flex-row items-start transition-colors duration-200 print:bg-white print:text-black print:block dir-rtl overflow-x-hidden`}>
       
       {/* Mobile Top Header Bar (hidden on desktop & print) */}
-      <div className="lg:hidden bg-blue-950 text-white p-3.5 border-b border-blue-900 flex items-center justify-between print:hidden sticky top-0 z-40 shadow-md">
+      <div className="lg:hidden bg-blue-950 text-white p-3.5 border-b border-blue-900 flex items-center justify-between print:hidden sticky top-0 z-40 shadow-md w-full">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
@@ -486,7 +486,7 @@ export default function OrgChartPage() {
 
       {/* Sidebar Component (RTL right-side sidebar) */}
       <aside
-        className={`fixed lg:sticky top-0 right-0 h-screen w-72 shrink-0 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between z-50 transition-all duration-300 print:hidden overflow-y-auto ${
+        className={`fixed lg:sticky top-0 right-0 h-screen w-72 shrink-0 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-xl lg:shadow-none flex flex-col justify-between z-50 transition-transform duration-300 print:hidden overflow-y-auto ${
           isMobileSidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
         }`}
       >
