@@ -45,6 +45,13 @@
       print-color-adjust: exact !important;
       color-adjust: exact !important;
       box-shadow: none !important;
+      overflow: visible !important;
+      max-height: none !important;
+      scrollbar-width: none !important;
+    }
+    
+    *::-webkit-scrollbar {
+      display: none !important;
     }
 
     /* Convert input fields and selectors to clean printed text lines */
