@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   // Allow access to remote image placeholder.
-  distDir: 'dist',
   output: 'standalone',
   images: {
     remotePatterns: [
