@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ClipboardCheck, Printer, RotateCcw, Save, Download, 
   Building2, UserCheck, FileCheck, Info, Users, 
-  ShieldCheck, Activity, Image as ImageIcon, CheckCircle2
+  ShieldCheck, Activity, Image as ImageIcon, CheckCircle2, Edit3, Plus, Trash2
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
 import { db } from '@/lib/firebase';
@@ -34,24 +34,24 @@ export interface ChecklistData {
 }
 
 const DEFAULT_CHECKLIST_DATA: ChecklistData = {
-  companyName: 'حاجی ولی محمد مؤمند د زامنو صرافی او پولی خدماتو شرکت',
+  companyName: 'شرکت صرافی و خدمات پولی برکت الله غفوری',
   licenseNo: 'DAB/7-0965',
   province: 'کندز',
   personnel: [
-    { id: 1, position: 'سهمدار', name: 'برکت‌الله', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
-    { id: 2, position: 'رئیس هیئت نظار', name: 'بسم‌الله شیرزی', fatherName: 'دوست‌محمد', idNo: '1402-0902-45188', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
-    { id: 3, position: 'عضو هیئت نظار', name: 'برکت‌الله غفوری', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', infoForm: '', tin: '9005155800', criminalInquiry: '', sanctions: '' },
-    { id: 4, position: 'عضو هیئت نظار', name: 'عظیم‌الله رحمانی', fatherName: 'محمد آجان', idNo: '1399-1105-35806', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 1, position: 'سهمدار', name: 'برکتالله', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 2, position: 'رئیس هیئت نظار', name: 'بسمالله شیرزی', fatherName: 'دوستمحمد', idNo: '1402-0902-45188', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 3, position: 'عضو هیئت نظار', name: 'برکتالله غفوری', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', infoForm: '', tin: '9005155800', criminalInquiry: '', sanctions: '' },
+    { id: 4, position: 'عضو هیئت نظار', name: 'عظیمالله رحمانی', fatherName: 'محمد آجان', idNo: '1399-1105-35806', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
     { id: 5, position: 'مسئول رعایت از قانون و مقررات', name: 'محمد فهیم یوسفزی', fatherName: 'محمد امان', idNo: '1399-1103-97484', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
-    { id: 6, position: 'مسئول عملیاتی', name: 'صالح‌محمد رحیمی', fatherName: 'عبدالرحیم', idNo: '1402-0201-48424', education: 'لیسانس', field: '', infoForm: '', tin: '9020613858', criminalInquiry: '', sanctions: '' },
+    { id: 6, position: 'مسئول عملیاتی', name: 'صالحمحمدرحیمی', fatherName: 'عبدالرحیم', idNo: '1402-0201-48424', education: 'لیسانس', field: '', infoForm: '', tin: '9020613858', criminalInquiry: '', sanctions: '' },
   ],
   checklistItems: [
-    { id: 1, text: 'اساسنامه (با تاپه شرکت و امضای سهمداران)', status: 'ارائه شده', note: '' },
+    { id: 1, text: 'اساسنامه ( با تاپه شرکت و امضای سهمداران)', status: 'ارائه شده', note: '' },
     { id: 2, text: 'رسید پرداخت آویز تضمین: مبلغ 6,600,000 افغانی (کاپی رنگه) در مراکز زونها (کابل، کندهار، هرات، مزار، جلال اباد، کندز و پکتیا) / مبلغ 3,300,000 افغانی (کاپی رنگه) در سایر ولایات', status: 'ارائه شده', note: '' },
     { id: 3, text: 'فورم تضمین سر سهمدار/سهمداران', status: 'ارائه شده', note: '' },
     { id: 4, text: 'پالیسی مبارزه علیه تطهیر پول و تمویل تروریزم (با تاپه شرکت در همه اوراق)', status: 'ارائه شده', note: '' },
-    { id: 5, text: 'فورم درخواستی (شصت و امضا) توسط سهمداران', status: 'ارائه شده', note: '' },
-    { id: 6, text: 'چارت ساختار تشکیلاتی شرکت (با تاپه شرکت و امضای هیئت نظار)', status: 'ارائه شده', note: '' },
+    { id: 5, text: 'فورم درخواستی ( شصت و امضا ) توسط سهمداران', status: 'ارائه شده', note: '' },
+    { id: 6, text: 'چارت ساختار تشکیلاتی شرکت ( با تاپه شرکت و امضای هیئت نظار)', status: 'ارائه شده', note: '' },
     { id: 7, text: 'فورم بازدید ساحه جهت مناسب بودن محل فعالیت و ارائه معلومات اتحادیه در خصوص ثبت و قرار داد دکان', status: 'ارائه شده', note: '' },
     { id: 8, text: 'دریافت مکتوب عدم باقیداری مالیاتی شرکت و یا مکتوب ترک پیشه از جواز قبلی', status: 'ارائه شده', note: '' },
     { id: 9, text: 'ارائه قرار داد خط ایجاد سیستم نرم افزار و فعال بودن آن قبل از صدور جواز شرکت صرافی و خدمات پولی', status: 'ارائه شده', note: '' },
@@ -73,11 +73,12 @@ interface DabLicenseChecklistProps {
   onExportPdf?: () => void;
 }
 
-export default function DabLicenseChecklist({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: DabLicenseChecklistProps) {
+export default function DabLicenseChecklist({ isEditMode: initialEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: DabLicenseChecklistProps) {
+  const [isEditing, setIsEditing] = useState(initialEditMode);
   const [data, setData] = useState<ChecklistData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_license_checklist_v2');
+        const saved = localStorage.getItem('bg_license_checklist_v5');
         if (saved) return { ...DEFAULT_CHECKLIST_DATA, ...JSON.parse(saved) };
       } catch (e) { console.error(e); }
     }
@@ -89,7 +90,7 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'license_checklist_v2');
+      const docRef = doc(db, 'settings', 'license_checklist_v5');
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -102,8 +103,8 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_license_checklist_v2', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'license_checklist_v2');
+      localStorage.setItem('bg_license_checklist_v5', JSON.stringify(data));
+      const docRef = doc(db, 'settings', 'license_checklist_v5');
       await setDoc(docRef, { checklistData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
@@ -122,6 +123,90 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
     }
   };
 
+  const updatePersonnel = (id: number, field: keyof ChecklistPersonnel, value: string) => {
+    setData(prev => ({
+      ...prev,
+      personnel: prev.personnel.map(p => p.id === id ? { ...p, [field]: value } : p)
+    }));
+  };
+
+  const addPersonnel = () => {
+    const newId = Date.now();
+    setData(prev => ({
+      ...prev,
+      personnel: [
+        ...prev.personnel,
+        {
+          id: newId,
+          position: 'عضو جدید',
+          name: '',
+          fatherName: '',
+          idNo: '',
+          education: 'لیسانس',
+          field: '',
+          infoForm: '',
+          tin: '',
+          criminalInquiry: '',
+          sanctions: ''
+        }
+      ]
+    }));
+  };
+
+  const removePersonnel = (id: number) => {
+    if (data.personnel.length <= 1) return;
+    setData(prev => ({
+      ...prev,
+      personnel: prev.personnel.filter(p => p.id !== id)
+    }));
+  };
+
+  const updateChecklistItem = (id: number, text: string) => {
+    setData(prev => ({
+      ...prev,
+      checklistItems: prev.checklistItems.map(item => item.id === id ? { ...item, text } : item)
+    }));
+  };
+
+  const addChecklistItem = () => {
+    const newId = Date.now();
+    setData(prev => ({
+      ...prev,
+      checklistItems: [...prev.checklistItems, { id: newId, text: 'عنوان مدرک جدید...', status: 'ارائه شده', note: '' }]
+    }));
+  };
+
+  const removeChecklistItem = (id: number) => {
+    if (data.checklistItems.length <= 1) return;
+    setData(prev => ({
+      ...prev,
+      checklistItems: prev.checklistItems.filter(item => item.id !== id)
+    }));
+  };
+
+  const updateObligation = (id: number, field: 'subject' | 'note', value: string) => {
+    setData(prev => ({
+      ...prev,
+      postLicenseObligations: prev.postLicenseObligations.map(o => o.id === id ? { ...o, [field]: value } : o)
+    }));
+  };
+
+  const addObligation = () => {
+    const newId = Date.now();
+    setData(prev => ({
+      ...prev,
+      postLicenseObligations: [...prev.postLicenseObligations, { id: newId, subject: 'مکلفیت جدید...', submitted: '', note: '' }]
+    }));
+  };
+
+  const removeObligation = (id: number) => {
+    if (data.postLicenseObligations.length <= 1) return;
+    setData(prev => ({
+      ...prev,
+      postLicenseObligations: prev.postLicenseObligations.filter(o => o.id !== id)
+    }));
+  };
+
   return (
     <div className="space-y-6 dir-rtl">
       {/* Top Action Bar */}
@@ -132,17 +217,29 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
           </div>
           <div>
             <h2 className="text-lg font-black text-slate-900 dark:text-white">چک لست اسناد و شرایط جواز</h2>
-            <p className="text-[10px] text-slate-500">مدیریت اطلاعات و مدارک رسمی مورد نیاز جوازدهی</p>
+            <p className="text-[10px] text-slate-500">مدیریت و ویرایش کامل تمام فیلدها و جدول‌های چک‌لست رسمی</p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {isEditMode && (
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+              isEditing 
+                ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm' 
+                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            <Edit3 className="w-4 h-4" />
+            <span>{isEditing ? 'پیش‌نمایش نهایی' : 'ویرایش فرم'}</span>
+          </button>
+
+          {isEditing && (
             <button onClick={handleSave} className="px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm hover:bg-blue-700 transition-colors">
               {isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />} {isSaved ? 'ذخیره شد' : 'ذخیره در سیستم'}
             </button>
           )}
-          {isEditMode && (
+          {isEditing && (
             <button onClick={() => { if(confirm('بازنشانی به تنظیمات اولیه؟')) setData(DEFAULT_CHECKLIST_DATA); }} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl" title="بازنشانی">
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -153,6 +250,30 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
           <button onClick={() => window.print()} className="p-2 bg-slate-800 text-white rounded-xl" title="چاپ"><Printer className="w-4 h-4" /></button>
         </div>
       </div>
+
+      {/* Editable Header Fields in Edit Mode */}
+      {isEditing && (
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border border-slate-200 dark:border-slate-700 rounded-2xl grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs print:hidden">
+          <div>
+            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">نام شرکت:</label>
+            <input
+              type="text"
+              value={data.companyName}
+              onChange={(e) => setData({ ...data, companyName: e.target.value })}
+              className="w-full px-3 py-2 border rounded-xl bg-white dark:bg-slate-900 font-bold"
+            />
+          </div>
+          <div>
+            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">شماره جواز:</label>
+            <input
+              type="text"
+              value={data.licenseNo}
+              onChange={(e) => setData({ ...data, licenseNo: e.target.value })}
+              className="w-full px-3 py-2 border rounded-xl bg-white dark:bg-slate-900 font-bold font-mono"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Document Canvas */}
       <div 
@@ -174,32 +295,65 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
           </div>
           <h1 className="text-xl font-black text-slate-900 mt-4">فورم موجودیت اسناد و شرایط برای صدور جواز فعالیت شرکت صرافی و خدمات پولی</h1>
           <div className="inline-block bg-amber-50 border border-amber-200 px-6 py-1 rounded-full text-xs font-black text-amber-900">
-            چک لست معلومات و اسناد ( {data.companyName} )
+            چک لست معلومات ( {data.companyName} )
           </div>
         </div>
 
         {/* Section 1: Checklist Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {data.checklistItems.map((item, idx) => (
-            <div key={item.id} className="flex items-center gap-3 p-3 border border-slate-100 rounded-xl bg-slate-50/50">
-              <div className="w-6 h-6 bg-blue-900 text-white rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">
-                {idx + 1}
-              </div>
-              <div className="flex-1 text-[11px] font-bold text-slate-800">{item.text}</div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-slate-400 rounded flex items-center justify-center">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-black text-slate-700">اسناد و مدارک چک‌لست:</h3>
+            {isEditing && (
+              <button onClick={addChecklistItem} className="text-xs text-blue-600 font-bold flex items-center gap-1 hover:underline">
+                <Plus className="w-3.5 h-3.5" /> افزودن بند اسناد
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {data.checklistItems.map((item, idx) => (
+              <div key={item.id} className="flex items-center gap-3 p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                <div className="w-6 h-6 bg-blue-900 text-white rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">
+                  {idx + 1}
+                </div>
+                {isEditing ? (
+                  <div className="flex-1 flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item.text}
+                      onChange={(e) => updateChecklistItem(item.id, e.target.value)}
+                      className="w-full text-xs p-1.5 border border-slate-300 rounded bg-white font-medium"
+                    />
+                    {data.checklistItems.length > 1 && (
+                      <button onClick={() => removeChecklistItem(item.id)} className="text-rose-600 p-1 hover:bg-rose-50 rounded">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex-1 text-[11px] font-bold text-slate-800">{item.text}</div>
+                )}
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="w-4 h-4 border-2 border-slate-400 rounded flex items-center justify-center">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Section 2: Personnel Table */}
         <div className="space-y-4">
-          <h3 className="text-sm font-black flex items-center gap-2 border-r-4 border-blue-900 pr-3 text-blue-900 uppercase">
-            جدول مشخصات کادر مدیریتی و عملیاتی
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-black flex items-center gap-2 border-r-4 border-blue-900 pr-3 text-blue-900 uppercase">
+              جدول مشخصات کادر مدیریتی و عملیاتی
+            </h3>
+            {isEditing && (
+              <button onClick={addPersonnel} className="text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-200 font-bold flex items-center gap-1 hover:bg-blue-100">
+                <Plus className="w-3.5 h-3.5" /> افزودن فرد جدید
+              </button>
+            )}
+          </div>
           <div className="overflow-x-auto border border-slate-200 rounded-2xl">
             <table className="w-full text-[10px] text-right border-collapse">
               <thead className="bg-slate-900 text-white font-bold">
@@ -215,24 +369,72 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
                   <th className="p-2 border border-slate-700 text-center">نمبر تشخصیه برویت سند TIN</th>
                   <th className="p-2 border border-slate-700 text-center">استعلام جنائی</th>
                   <th className="p-2 border border-slate-700 text-center">تطبیق تعزیرات</th>
+                  {isEditing && <th className="p-2 border border-slate-700 text-center w-8 print:hidden">حذف</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 font-semibold">
                 {data.personnel.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50">
-                    <td className="p-2 border border-slate-100 font-black text-slate-950">{p.position}</td>
-                    <td className="p-2 border border-slate-100 font-bold">{p.name}</td>
-                    <td className="p-2 border border-slate-100">{p.fatherName}</td>
-                    <td className="p-2 border border-slate-100 text-center">
+                    <td className="p-1.5 border border-slate-100 font-black text-slate-950">
+                      {isEditing ? (
+                        <input type="text" value={p.position} onChange={(e) => updatePersonnel(p.id, 'position', e.target.value)} className="w-full p-1 border rounded text-[10px] font-bold" />
+                      ) : p.position}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 font-bold">
+                      {isEditing ? (
+                        <input type="text" value={p.name} onChange={(e) => updatePersonnel(p.id, 'name', e.target.value)} className="w-full p-1 border rounded text-[10px]" />
+                      ) : p.name}
+                    </td>
+                    <td className="p-1.5 border border-slate-100">
+                      {isEditing ? (
+                        <input type="text" value={p.fatherName} onChange={(e) => updatePersonnel(p.id, 'fatherName', e.target.value)} className="w-full p-1 border rounded text-[10px]" />
+                      ) : p.fatherName}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 text-center">
                       <div className="w-7 h-9 border border-slate-300 rounded bg-slate-100 mx-auto" />
                     </td>
-                    <td className="p-2 border border-slate-100 text-center font-mono">{p.idNo}</td>
-                    <td className="p-2 border border-slate-100 text-center">{p.education}</td>
-                    <td className="p-2 border border-slate-100 text-center">{p.field || '-'}</td>
-                    <td className="p-2 border border-slate-100 text-center">{p.infoForm || '-'}</td>
-                    <td className="p-2 border border-slate-100 text-center font-mono">{p.tin || '-'}</td>
-                    <td className="p-2 border border-slate-100 text-center">{p.criminalInquiry || '-'}</td>
-                    <td className="p-2 border border-slate-100 text-center">{p.sanctions || '-'}</td>
+                    <td className="p-1.5 border border-slate-100 text-center font-mono">
+                      {isEditing ? (
+                        <input type="text" value={p.idNo} onChange={(e) => updatePersonnel(p.id, 'idNo', e.target.value)} className="w-full p-1 border rounded text-[10px] font-mono text-center" />
+                      ) : p.idNo}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 text-center">
+                      {isEditing ? (
+                        <input type="text" value={p.education} onChange={(e) => updatePersonnel(p.id, 'education', e.target.value)} className="w-full p-1 border rounded text-[10px] text-center" />
+                      ) : p.education}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 text-center">
+                      {isEditing ? (
+                        <input type="text" value={p.field || ''} onChange={(e) => updatePersonnel(p.id, 'field', e.target.value)} className="w-full p-1 border rounded text-[10px] text-center" />
+                      ) : (p.field || '-')}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 text-center">
+                      {isEditing ? (
+                        <input type="text" value={p.infoForm || ''} onChange={(e) => updatePersonnel(p.id, 'infoForm', e.target.value)} className="w-full p-1 border rounded text-[10px] text-center" />
+                      ) : (p.infoForm || '-')}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 text-center font-mono">
+                      {isEditing ? (
+                        <input type="text" value={p.tin || ''} onChange={(e) => updatePersonnel(p.id, 'tin', e.target.value)} className="w-full p-1 border rounded text-[10px] font-mono text-center" />
+                      ) : (p.tin || '-')}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 text-center">
+                      {isEditing ? (
+                        <input type="text" value={p.criminalInquiry || ''} onChange={(e) => updatePersonnel(p.id, 'criminalInquiry', e.target.value)} className="w-full p-1 border rounded text-[10px] text-center" />
+                      ) : (p.criminalInquiry || '-')}
+                    </td>
+                    <td className="p-1.5 border border-slate-100 text-center">
+                      {isEditing ? (
+                        <input type="text" value={p.sanctions || ''} onChange={(e) => updatePersonnel(p.id, 'sanctions', e.target.value)} className="w-full p-1 border rounded text-[10px] text-center" />
+                      ) : (p.sanctions || '-')}
+                    </td>
+                    {isEditing && (
+                      <td className="p-1.5 border border-slate-100 text-center print:hidden">
+                        <button onClick={() => removePersonnel(p.id)} className="text-rose-600 hover:bg-rose-50 p-1 rounded">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -268,9 +470,16 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
 
         {/* Section 4: Post-License Obligations */}
         <div className="space-y-4 pt-10 border-t-2 border-slate-200">
-          <h3 className="text-sm font-black flex items-center gap-2 text-rose-900 border-r-4 border-rose-900 pr-3">
-            مکلفیت های بعد از جواز شرکت صرافی و خدمات پولی ( برکت الله غفوری ) دارنده جواز شماره ( {data.licenseNo} ):
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-black flex items-center gap-2 text-rose-900 border-r-4 border-rose-900 pr-3">
+              مکلفیت های بعد از جواز شرکت صرافی و خدمات پولی ( برکت الله غفوری ) دارنده جواز شماره ( {data.licenseNo} ):
+            </h3>
+            {isEditing && (
+              <button onClick={addObligation} className="text-xs bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg border border-rose-200 font-bold flex items-center gap-1 hover:bg-rose-100">
+                <Plus className="w-3.5 h-3.5" /> افزودن بند جدید
+              </button>
+            )}
+          </div>
           <div className="overflow-hidden border border-slate-200 rounded-2xl">
             <table className="w-full text-[11px] text-right border-collapse">
               <thead className="bg-slate-50 text-slate-900 font-black">
@@ -279,17 +488,44 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
                   <th className="p-3 border border-slate-200">موضوع</th>
                   <th className="p-3 border border-slate-200 w-32 text-center">ارائه شده یا خیر</th>
                   <th className="p-3 border border-slate-200">ملاحظه</th>
+                  {isEditing && <th className="p-3 border border-slate-200 text-center w-8 print:hidden">حذف</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-bold text-slate-700">
                 {data.postLicenseObligations.map((obj, i) => (
                   <tr key={obj.id} className="hover:bg-slate-50">
                     <td className="p-3 border border-slate-100 text-center">{i + 1}</td>
-                    <td className="p-3 border border-slate-100">{obj.subject}</td>
+                    <td className="p-3 border border-slate-100">
+                      {isEditing ? (
+                        <textarea
+                          rows={2}
+                          value={obj.subject}
+                          onChange={(e) => updateObligation(obj.id, 'subject', e.target.value)}
+                          className="w-full p-1.5 border rounded text-xs font-bold leading-relaxed"
+                        />
+                      ) : obj.subject}
+                    </td>
                     <td className="p-3 border border-slate-100 text-center">
                       <div className="w-4 h-4 border border-slate-300 rounded mx-auto" />
                     </td>
-                    <td className="p-3 border border-slate-100 text-slate-400 font-normal italic">قید ملاحظه...</td>
+                    <td className="p-3 border border-slate-100 text-slate-400 font-normal italic">
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={obj.note}
+                          onChange={(e) => updateObligation(obj.id, 'note', e.target.value)}
+                          placeholder="ملاحظات..."
+                          className="w-full p-1 border rounded text-xs"
+                        />
+                      ) : (obj.note || 'قید ملاحظه...')}
+                    </td>
+                    {isEditing && (
+                      <td className="p-3 border border-slate-100 text-center print:hidden">
+                        <button onClick={() => removeObligation(obj.id)} className="text-rose-600 hover:bg-rose-50 p-1 rounded">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

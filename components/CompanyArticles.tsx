@@ -1,7 +1,41 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Printer, Download, BookOpen, Edit2, Check, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Printer, Download, BookOpen, Edit2, Check, ShieldCheck, Plus, Trash2, Save, RotateCcw } from 'lucide-react';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+
+interface ShareholderRow {
+  id: number;
+  name: string;
+  fatherName: string;
+  percentage: string;
+  capitalAmount: string;
+  tazkiraNo: string;
+}
+
+interface CompanyArticlesData {
+  companyName: string;
+  address: string;
+  dateStr: string;
+  shareholders: ShareholderRow[];
+}
+
+const DEFAULT_ARTICLES_DATA: CompanyArticlesData = {
+  companyName: 'شرکت صرافی و خدمات پولی برکت الله غفوری',
+  address: 'دوکان (301) منزل (دوم) مارکیت (مؤمند) ناحیه (3) ولایت (کندز) زون (شمالشرق)',
+  dateStr: 'جوزا ۱۴۰۵',
+  shareholders: [
+    {
+      id: 1,
+      name: 'برکت‌الله غفوری',
+      fatherName: 'عبدالغفور',
+      percentage: '100%',
+      capitalAmount: '۳۰,۰۰۰,۰۰۰',
+      tazkiraNo: '1399-1104-55522',
+    }
+  ]
+};
 
 interface CompanyArticlesProps {
   customLogo?: string | null;
@@ -9,15 +43,69 @@ interface CompanyArticlesProps {
 
 export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [companyName, setCompanyName] = useState('شرکت صرافی و خدمات پولی برکت الله غفوری');
-  const [address, setAddress] = useState('دوکان (301) منزل (دوم) مارکیت (مؤمند) ناحیه (3) ولایت (کندز) زون (شمالشرق)');
-  const [dateStr, setDateStr] = useState('جوزا ۱۴۰۵');
-  const [capital, setCapital] = useState('۳۰,۰۰۰,۰۰۰');
-  const [shareholderName, setShareholderName] = useState('برکت‌الله غفوری');
-  const [tazkiraId, setTazkiraId] = useState('1399-1104-55522');
+  const [data, setData] = useState<CompanyArticlesData>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('bg_company_articles_v1');
+        if (saved) return { ...DEFAULT_ARTICLES_DATA, ...JSON.parse(saved) };
+      } catch (e) { console.error(e); }
+    }
+    return DEFAULT_ARTICLES_DATA;
+  });
+
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    try {
+      const docRef = doc(db, 'settings', 'company_articles_v1');
+      const unsubscribe = onSnapshot(docRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const remoteData = snapshot.data();
+          if (remoteData?.articlesData) setData(prev => ({ ...prev, ...remoteData.articlesData }));
+        }
+      });
+      return () => unsubscribe();
+    } catch (e) { console.warn(e); }
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      localStorage.setItem('bg_company_articles_v1', JSON.stringify(data));
+      const docRef = doc(db, 'settings', 'company_articles_v1');
+      await setDoc(docRef, { articlesData: data, updatedAt: new Date().toISOString() }, { merge: true });
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
+    } catch (e) { console.error(e); }
+  };
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const updateShareholder = (id: number, field: keyof ShareholderRow, value: string) => {
+    setData(prev => ({
+      ...prev,
+      shareholders: prev.shareholders.map(s => s.id === id ? { ...s, [field]: value } : s)
+    }));
+  };
+
+  const addShareholder = () => {
+    const newId = Date.now();
+    setData(prev => ({
+      ...prev,
+      shareholders: [
+        ...prev.shareholders,
+        { id: newId, name: 'سهمدار جدید', fatherName: '', percentage: '0%', capitalAmount: '۰', tazkiraNo: '' }
+      ]
+    }));
+  };
+
+  const removeShareholder = (id: number) => {
+    if (data.shareholders.length <= 1) return;
+    setData(prev => ({
+      ...prev,
+      shareholders: prev.shareholders.filter(s => s.id !== id)
+    }));
   };
 
   return (
@@ -30,7 +118,7 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
           </div>
           <div>
             <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">اساسنامه شرکت صرافی و خدمات پولی</h2>
-            <p className="text-xs text-slate-500">متن رسمی اساسنامه شرکت صرافی و خدمات پولی</p>
+            <p className="text-xs text-slate-500">متن رسمی اساسنامه با قابلیت ویرایش کامل مشخصات و سهمداران</p>
           </div>
         </div>
 
@@ -44,8 +132,21 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
             }`}
           >
             {isEditing ? <Check className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
-            {isEditing ? 'ذخیره تغییرات' : 'ویرایش متن اساسنامه'}
+            {isEditing ? 'پیش‌نمایش نهایی' : 'ویرایش متن اساسنامه'}
           </button>
+
+          {isEditing && (
+            <button onClick={handleSave} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm hover:bg-blue-700">
+              <Save className="w-4 h-4" />
+              <span>{isSaved ? 'ذخیره شد' : 'ذخیره'}</span>
+            </button>
+          )}
+
+          {isEditing && (
+            <button onClick={() => { if(confirm('بازنشانی به حالت اولیه؟')) setData(DEFAULT_ARTICLES_DATA); }} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-600" title="بازنشانی">
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
 
           <button
             onClick={handlePrint}
@@ -76,12 +177,12 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
             {isEditing ? (
               <input
                 type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="text-xl sm:text-2xl font-black text-center w-full border-b border-blue-500 bg-blue-50/50 py-1"
+                value={data.companyName}
+                onChange={(e) => setData({ ...data, companyName: e.target.value })}
+                className="text-xl sm:text-2xl font-black text-center w-full border-b border-blue-500 bg-blue-50/50 py-1 font-sans"
               />
             ) : (
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{companyName}</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{data.companyName}</h1>
             )}
           </div>
 
@@ -95,17 +196,26 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
                 <span className="font-bold">آدرس:</span>
                 <input
                   type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="flex-1 border-b border-slate-400 bg-slate-50 px-2 py-0.5 text-xs"
+                  value={data.address}
+                  onChange={(e) => setData({ ...data, address: e.target.value })}
+                  className="flex-1 border-b border-slate-400 bg-slate-50 px-2 py-0.5 text-xs font-sans"
                 />
               </div>
             ) : (
-              <span>آدرس دفتر مرکزی: {address}</span>
+              <span>آدرس دفتر مرکزی: {data.address}</span>
             )}
-            <span className="font-semibold text-blue-900 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
-              {dateStr}
-            </span>
+            {isEditing ? (
+              <input
+                type="text"
+                value={data.dateStr}
+                onChange={(e) => setData({ ...data, dateStr: e.target.value })}
+                className="font-semibold text-blue-900 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 text-xs font-sans text-center w-28"
+              />
+            ) : (
+              <span className="font-semibold text-blue-900 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
+                {data.dateStr}
+              </span>
+            )}
           </div>
         </div>
 
@@ -121,7 +231,7 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
             <div className="space-y-2 pr-4">
               <p>
                 <strong className="text-slate-900">ماده اول (مبنی):</strong>{' '}
-                این اساسنامه به منظور تنظیم فعالیت شرکت صرافی و خدمات پولی برکت‌الله غفوری وضع گردیده است.
+                این اساسنامه به منظور تنظیم فعالیت {data.companyName} وضع گردیده است.
               </p>
               <p>
                 <strong className="text-slate-900">ماده دوم (شخصیت حقوقی):</strong>{' '}
@@ -155,7 +265,14 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
               </p>
               
               <div>
-                <strong className="text-slate-900 block mb-2">ماده هفتم (سهام):</strong>
+                <div className="flex items-center justify-between mb-2">
+                  <strong className="text-slate-900 block">ماده هفتم (سهام):</strong>
+                  {isEditing && (
+                    <button onClick={addShareholder} className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded border border-blue-200 font-bold font-sans flex items-center gap-1 hover:bg-blue-100">
+                      <Plus className="w-3.5 h-3.5" /> افزودن سهمدار
+                    </button>
+                  )}
+                </div>
                 <p className="mb-2">سهام شرکت به ترتیب ذیل توسط شرکای آتی تأمین می‌گردد:</p>
                 <div className="overflow-x-auto border border-slate-300 rounded-xl">
                   <table className="w-full text-center border-collapse text-xs font-sans">
@@ -168,51 +285,83 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
                         <th className="p-2 border-l border-slate-300">مقدار سرمایه (افغانی)</th>
                         <th className="p-2 border-l border-slate-300">نمبر تذکره</th>
                         <th className="p-2">امضا / شصت</th>
+                        {isEditing && <th className="p-2 border-r border-slate-300 w-8 print:hidden">حذف</th>}
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-slate-200">
-                        <td className="p-2 border-l border-slate-200">۱</td>
-                        <td className="p-2 border-l border-slate-200 font-bold">
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              value={shareholderName}
-                              onChange={(e) => setShareholderName(e.target.value)}
-                              className="w-full border px-1 text-center"
-                            />
-                          ) : (
-                            shareholderName
+                      {data.shareholders.map((s, idx) => (
+                        <tr key={s.id} className="border-b border-slate-200">
+                          <td className="p-2 border-l border-slate-200">{idx + 1}</td>
+                          <td className="p-2 border-l border-slate-200 font-bold">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={s.name}
+                                onChange={(e) => updateShareholder(s.id, 'name', e.target.value)}
+                                className="w-full border px-1 text-center font-bold"
+                              />
+                            ) : (
+                              s.name
+                            )}
+                          </td>
+                          <td className="p-2 border-l border-slate-200">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={s.fatherName}
+                                onChange={(e) => updateShareholder(s.id, 'fatherName', e.target.value)}
+                                className="w-full border px-1 text-center"
+                              />
+                            ) : (
+                              s.fatherName
+                            )}
+                          </td>
+                          <td className="p-2 border-l border-slate-200 font-bold text-blue-800">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={s.percentage}
+                                onChange={(e) => updateShareholder(s.id, 'percentage', e.target.value)}
+                                className="w-full border px-1 text-center font-bold text-blue-800"
+                              />
+                            ) : (
+                              s.percentage
+                            )}
+                          </td>
+                          <td className="p-2 border-l border-slate-200">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={s.capitalAmount}
+                                onChange={(e) => updateShareholder(s.id, 'capitalAmount', e.target.value)}
+                                className="w-full border px-1 text-center font-mono"
+                              />
+                            ) : (
+                              s.capitalAmount
+                            )}
+                          </td>
+                          <td className="p-2 border-l border-slate-200 font-mono">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={s.tazkiraNo}
+                                onChange={(e) => updateShareholder(s.id, 'tazkiraNo', e.target.value)}
+                                className="w-full border px-1 text-center font-mono"
+                              />
+                            ) : (
+                              s.tazkiraNo
+                            )}
+                          </td>
+                          <td className="p-2 h-10"></td>
+                          {isEditing && (
+                            <td className="p-2 border-r border-slate-200 print:hidden text-center">
+                              <button onClick={() => removeShareholder(s.id)} className="text-rose-600 hover:bg-rose-50 p-1 rounded">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
                           )}
-                        </td>
-                        <td className="p-2 border-l border-slate-200">عبدالغفور</td>
-                        <td className="p-2 border-l border-slate-200 font-bold text-blue-800">100%</td>
-                        <td className="p-2 border-l border-slate-200">
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              value={capital}
-                              onChange={(e) => setCapital(e.target.value)}
-                              className="w-full border px-1 text-center"
-                            />
-                          ) : (
-                            capital
-                          )}
-                        </td>
-                        <td className="p-2 border-l border-slate-200 font-mono">
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              value={tazkiraId}
-                              onChange={(e) => setTazkiraId(e.target.value)}
-                              className="w-full border px-1 text-center font-mono"
-                            />
-                          ) : (
-                            tazkiraId
-                          )}
-                        </td>
-                        <td className="p-2 h-10"></td>
-                      </tr>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -284,13 +433,13 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
           </div>
 
           {/* Signatures & Stamps Footer */}
-          <div className="pt-12 mt-8 border-t-2 border-slate-300 grid grid-cols-2 gap-8 text-center text-xs">
+          <div className="pt-12 mt-8 border-t-2 border-slate-300 grid grid-cols-2 gap-8 text-center text-xs font-sans">
             <div className="space-y-6">
               <p className="font-bold text-slate-800">تأیید و امضای سهمدار / رئیس شرکت</p>
               <div className="pt-4 border-b border-dashed border-slate-400 pb-2">
-                <span className="font-bold text-slate-900">{shareholderName}</span>
+                <span className="font-bold text-slate-900">{data.shareholders[0]?.name || data.companyName}</span>
               </div>
-              <p className="text-slate-500 font-sans">تذکره: {tazkiraId}</p>
+              <p className="text-slate-500 font-sans">تذکره: {data.shareholders[0]?.tazkiraNo || '-'}</p>
             </div>
 
             <div className="space-y-6">
@@ -298,7 +447,7 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
               <div className="pt-4 border-b border-dashed border-slate-400 pb-2">
                 <span className="text-slate-400">(مهر و امضا)</span>
               </div>
-              <p className="text-slate-500 font-sans">تاریخ: {dateStr}</p>
+              <p className="text-slate-500 font-sans">تاریخ: {data.dateStr}</p>
             </div>
           </div>
 
