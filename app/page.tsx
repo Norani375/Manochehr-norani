@@ -924,15 +924,15 @@ export default function OrgChartPage() {
                     </div>
                   )}
 
-                  {/* Vertical connector to branches */}
-                  <div className={`w-px h-6 ${themeStyle.connector} opacity-50 my-1`}></div>
-
                   {/* Regional Representatives - Peer Level under Operations Manager */}
-                  <div className="w-full">
-                    <div className="flex items-center justify-between mb-4 px-2">
+                  <div className="w-full mt-4">
+                    <div className="flex flex-wrap items-center justify-between mb-4 px-2 gap-2">
                       <div className="flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-blue-600" />
-                        <span className="text-xs font-black text-slate-900 dark:text-white">شبکه نمایندگی‌های سراسری</span>
+                        <span className="text-xs font-black text-slate-900 dark:text-white">نماینده‌ها و شبکه نمایندگی‌های ولایتی</span>
+                        <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-200 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800/60">
+                          تحت اثر مدیر بخش عملیاتی
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         {selectedBranchFilter !== 'all' && (
@@ -958,15 +958,15 @@ export default function OrgChartPage() {
                     {/* Tree connector graphic for peer-level branches */}
                     <div className="relative w-full">
                       {/* Central vertical drop line from Operations Manager */}
-                      <div className={`w-px h-4 mx-auto ${themeStyle.connector} opacity-50`}></div>
+                      <div className="w-1 h-5 mx-auto bg-blue-600 dark:bg-blue-400 rounded-t-full"></div>
                       
                       {/* Horizontal tree line linking peer branches */}
                       {filteredBranches.length > 1 && (
-                        <div className={`h-px w-[90%] mx-auto ${themeStyle.connector} opacity-50`}></div>
+                        <div className="h-1 w-[90%] mx-auto bg-blue-600 dark:bg-blue-400 rounded-full"></div>
                       )}
 
                       {/* Peer Representatives Grid on same horizontal row */}
-                      <div className={`grid gap-4 mt-2 ${
+                      <div className={`grid gap-4 mt-0 ${
                         filteredBranches.length === 1 
                           ? 'grid-cols-1 max-w-sm mx-auto' 
                           : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
@@ -974,7 +974,7 @@ export default function OrgChartPage() {
                         {filteredBranches.map((branch) => (
                           <div key={branch.key} className="flex flex-col items-center">
                             {/* Individual drop line to node */}
-                            <div className={`w-px h-3 ${themeStyle.connector} opacity-50`}></div>
+                            <div className="w-1 h-4 bg-blue-600 dark:bg-blue-400"></div>
 
                             <div 
                               onClick={() => isEditMode && setEditingNode(branch)}
@@ -1009,6 +1009,9 @@ export default function OrgChartPage() {
 
                               <div className="text-[11px] font-black text-blue-600 dark:text-blue-400 mb-1">{branch.title}</div>
                               <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">{branch.name}</div>
+                              <div className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md mt-2 border border-blue-100 dark:border-blue-900/40 inline-block">
+                                گزارش به: مدیر بخش عملیاتی
+                              </div>
                             </div>
                           </div>
                         ))}

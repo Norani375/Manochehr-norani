@@ -114,8 +114,8 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
     { unit: 'عضو هیئت نظار', reportsTo: 'سهمدار / مجمع عمومی' },
     { unit: 'مسئول عملیاتی', reportsTo: 'عضو هیئت نظار (برکت‌الله)' },
     { unit: 'مسئول پیروی از قوانین', reportsTo: 'عضو هیئت نظار (برکت‌الله) — با استقلال انطباقی' },
-    { unit: 'نمایندگی‌های ولایتی', reportsTo: 'مسئول عملیاتی' },
-    { unit: 'کارکنان نمایندگی', reportsTo: 'مسئول نمایندگی مربوطه' }
+    { unit: 'نماینده‌ها و نمایندگی‌های ولایتی', reportsTo: 'مدیر / مسئول بخش عملیاتی (صالح‌محمد)' },
+    { unit: 'کارکنان و پرسنل نمایندگی‌ها', reportsTo: 'مسئول نماینده مربوطه (زیر نظر مدیر عملیاتی)' }
   ],
 
   footerNote: '▸ هیئت نظار: نظارت بر عملکرد شرکت.'
@@ -471,12 +471,12 @@ export default function OrgChartCanvas({ customLogo }: OrgChartCanvasProps) {
             </div>
 
             {/* Connector down to Executives */}
-            <div className="flex flex-col items-center relative -mt-4">
-              <div className="w-0.5 h-8 bg-[#1e3a8a]"></div>
-              <div className="w-[50%] max-w-[380px] h-0.5 bg-[#1e3a8a]"></div>
-              <div className="w-[50%] max-w-[380px] flex justify-between h-6">
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
+            <div className="flex flex-col items-center relative my-2">
+              <div className="w-0.5 h-6 bg-[#1e3a8a] dark:bg-blue-400"></div>
+              <div className="w-[50%] max-w-[380px] h-0.5 bg-[#1e3a8a] dark:bg-blue-400"></div>
+              <div className="w-[50%] max-w-[380px] flex justify-between h-4">
+                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
+                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
               </div>
             </div>
 
@@ -496,32 +496,42 @@ export default function OrgChartCanvas({ customLogo }: OrgChartCanvasProps) {
               </div>
             </div>
 
-            {/* Connector down to Provincial Branches */}
-            <div className="flex flex-col items-center relative -mt-4">
-              {/* Vertical line from right executive box (Operations) down to branches line */}
+            {/* LEVEL 4: Provincial Branches under Operational Manager */}
+            <div className="text-center my-4">
+              <span className="inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-950/80 text-[#1e3a8a] dark:text-blue-200 border border-blue-300 dark:border-blue-800 text-xs font-black px-4 py-1.5 rounded-full shadow-xs">
+                <span>نماینده‌ها و نمایندگی‌های ولایتی</span>
+                <span className="text-[10px] bg-[#1e3a8a] text-white px-2 py-0.5 rounded-full font-bold">تحت اثر مستقیم مسئول عملیاتی</span>
+              </span>
+            </div>
+
+            {/* Clean connector down from Operations Manager to Provincial Branches */}
+            <div className="flex flex-col items-center relative mb-2">
+              {/* Line dropping from Operations Manager (RTL right column box) */}
               <div className="w-full max-w-2xl flex justify-end pr-[25%] sm:pr-[25%]">
-                <div className="w-0.5 h-8 bg-[#1e3a8a]"></div>
+                <div className="w-0.5 h-6 bg-[#1e3a8a] dark:bg-blue-400"></div>
               </div>
               
-              <div className="w-[90%] max-w-[720px] h-0.5 bg-[#1e3a8a]"></div>
+              <div className="w-[90%] max-w-[720px] h-0.5 bg-[#1e3a8a] dark:bg-blue-400 rounded-full"></div>
               
-              <div className="w-[90%] max-w-[720px] flex justify-between h-6">
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
+              <div className="w-[90%] max-w-[720px] flex justify-between h-4">
+                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
+                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
+                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
+                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
               </div>
             </div>
 
-            {/* LEVEL 4: Provincial Branches (4 Cards) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {data.branches.map((br) => (
                 <div 
                   key={br.id}
-                  className="bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 text-center shadow-sm flex flex-col justify-between space-y-2 min-h-[110px]"
+                  className="bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 text-center shadow-sm flex flex-col justify-between space-y-2 min-h-[120px]"
                 >
-                  <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-1.5">
-                    {br.name}
+                  <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-1.5 flex flex-col items-center">
+                    <span>{br.name}</span>
+                    <span className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 mt-1">
+                      گزارش‌دهی: مسئول عملیاتی
+                    </span>
                   </div>
                   
                   <div className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
