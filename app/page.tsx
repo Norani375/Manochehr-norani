@@ -41,7 +41,7 @@ interface PersonnelNode {
 
 const DEFAULT_ORG_DATA: PersonnelNode[] = [
   {
-    key: 'chairman',
+    key: 'president',
     title: 'رئیس شرکت',
     name: 'برکت‌الله ولد عبدالغفور',
     id: '55522',
@@ -69,15 +69,15 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
     category: 'board'
   },
   {
-    key: 'operations_head',
-    title: 'مسئول عملیاتی',
+    key: 'operations_manager',
+    title: 'مدیر بخش عملیاتی',
     name: 'صالح‌محمد ولد عبدالرحیم',
     id: '48424',
     category: 'executive'
   },
   {
-    key: 'compliance',
-    title: 'مسئول رعایت قوانین',
+    key: 'compliance_officer',
+    title: 'مسئول پیروی از قوانین',
     name: 'محمد فهیم ولد محمد امان',
     id: '97484',
     category: 'executive'
@@ -359,7 +359,19 @@ export default function OrgChartPage() {
     }
   };
 
-  const getNode = (key: string) => personnel.find(p => p.key === key);
+  const getNode = (key: string) => {
+    let node = personnel.find(p => p.key === key);
+    if (!node) {
+      if (key === 'president') {
+        node = personnel.find(p => p.key === 'chairman' || p.title.includes('رئیس شرکت'));
+      } else if (key === 'operations_manager') {
+        node = personnel.find(p => p.key === 'operations_head' || p.title.includes('عملیاتی'));
+      } else if (key === 'compliance_officer') {
+        node = personnel.find(p => p.key === 'compliance' || p.title.includes('قوانین') || p.title.includes('رعایت قوانین'));
+      }
+    }
+    return node;
+  };
   const getNodesByCategory = (category: 'board' | 'branch') => personnel.filter(p => p.category === category);
 
   const matchesSearch = (node?: PersonnelNode) => {
