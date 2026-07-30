@@ -307,17 +307,16 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
             </div>
 
             <div className="text-center flex-1">
-              <h1 className="text-lg font-extrabold text-slate-900 mb-1">د افغانستان بانک</h1>
-              <h2 className="text-base font-bold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-              <h3 className="text-sm font-semibold text-slate-700">مدیریت جوازدهی</h3>
+              <h1 className="text-lg font-extrabold text-slate-900 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h1>
+              <h2 className="text-base font-bold text-slate-800 mb-1">مدیریت جوازدهی</h2>
             </div>
 
-            {/* Official DAB Emblem Badge */}
+            {/* Official Emblem Badge */}
             <div className="hidden sm:flex flex-col items-center justify-center p-2 bg-slate-50 border border-slate-300 rounded-xl text-center w-24">
               <div className="w-10 h-10 rounded-full bg-blue-900 text-amber-400 flex items-center justify-center font-black text-xs border-2 border-amber-400/50">
-                DAB
+                جواز
               </div>
-              <span className="text-[9px] font-bold text-slate-700 mt-1">بانک مرکزی</span>
+              <span className="text-[9px] font-bold text-slate-700 mt-1">رسمی</span>
             </div>
           </div>
 

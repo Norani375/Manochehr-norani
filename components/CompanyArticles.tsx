@@ -30,7 +30,7 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
           </div>
           <div>
             <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">اساسنامه شرکت صرافی و خدمات پولی</h2>
-            <p className="text-xs text-slate-500">متن رسمی اساسنامه شرکت مطابق مقررات د افغانستان بانک</p>
+            <p className="text-xs text-slate-500">متن رسمی اساسنامه شرکت صرافی و خدمات پولی</p>
           </div>
         </div>
 
@@ -125,7 +125,7 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
               </p>
               <p>
                 <strong className="text-slate-900">ماده دوم (شخصیت حقوقی):</strong>{' '}
-                شرکت دارای شخصیت حکمی بوده، وجایب و صلاحیت‌های آن مطابق احکام قانون د افغانستان بانک، قانون بخش صرافان و خدمات پولی و این اساسنامه تنظیم می‌گردد.
+                شرکت دارای شخصیت حکمی بوده، وجایب و صلاحیت‌های آن مطابق احکام قانون بخش صرافان و خدمات پولی و این اساسنامه تنظیم می‌گردد.
               </p>
               <p>
                 <strong className="text-slate-900">ماده سوم (هدف):</strong>{' '}

@@ -34,7 +34,7 @@ export interface ChecklistData {
 
 const DEFAULT_CHECKLIST_DATA: ChecklistData = {
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  licenseNo: 'DAB/7-0965',
+  licenseNo: '7-0965',
   province: 'کندز',
   personnel: [
     { id: 1, position: 'سهمدار و رئیس هیئت مدیره', name: 'برکت‌الله', fatherName: 'عبدالغفور', idNo: '۵۵۵۲۲-۱۱۰۴-۱۰۰۱۳۹۹', education: 'لیسانس', field: 'کامپیوتر ساینس', tin: '9003365203', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
@@ -182,8 +182,7 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
               )}
             </div>
             <div className="text-right text-[9px] font-bold text-slate-800 leading-tight w-40">
-              <div className="text-[11px] font-black">د افغانستان بانک</div>
-              <div>آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</div>
+              <div className="text-[11px] font-black">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</div>
               <div>مدیریت جوازدهی</div>
             </div>
           </div>

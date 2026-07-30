@@ -366,7 +366,7 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
           <div>
             <h2 className="font-bold text-lg text-slate-900">فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی</h2>
             <p className="text-xs text-slate-500">
-              د افغانستان بانک - آمریت عمومی نظارت از مؤسسات مالی غیر بانکی - مدیریت جواز دهی
+              آمریت عمومی نظارت از مؤسسات مالی غیر بانکی - مدیریت جواز دهی
             </p>
           </div>
         </div>
@@ -464,17 +464,16 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
             </div>
 
             <div className="text-center flex-1">
-              <h1 className="text-lg font-extrabold text-slate-900 mb-1">د افغانستان بانک</h1>
-              <h2 className="text-base font-bold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-              <h3 className="text-sm font-semibold text-slate-700">مدیریت جواز دهی</h3>
+              <h1 className="text-lg font-extrabold text-slate-900 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h1>
+              <h2 className="text-base font-bold text-slate-800 mb-1">مدیریت جواز دهی</h2>
             </div>
 
-            {/* Official DAB Emblem Badge */}
+            {/* Official Emblem Badge */}
             <div className="hidden sm:flex flex-col items-center justify-center p-2 bg-slate-50 border border-slate-300 rounded-xl text-center w-24">
               <div className="w-10 h-10 rounded-full bg-blue-900 text-amber-400 flex items-center justify-center font-black text-xs border-2 border-amber-400/50">
-                DAB
+                جواز
               </div>
-              <span className="text-[9px] font-bold text-slate-700 mt-1">بانک مرکزی</span>
+              <span className="text-[9px] font-bold text-slate-700 mt-1">رسمی</span>
             </div>
           </div>
 
@@ -482,7 +481,7 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
             فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی
           </div>
           <p className="text-xs text-slate-600 mt-3 font-semibold bg-amber-50 border border-amber-200 p-2.5 rounded-lg inline-block text-amber-900 leading-relaxed text-right">
-            رهنمود عمومی: این فورم باید با حضور سهمدار/سهمداران در مقابل کارمند مسئول در مدیریت جوازدهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی یا در حضور داشت کارمند مسئول در آمریت زون مربوط/مدیریت نمایندگی د افغانستان بانک در ولایات امضاء و شصتگذاری گردد. کارمند مسئول خود را مطمئن سازد که فورم درخواستی حسب اسناد و مدارک مربوط خانهپُری گردیده و توسط شخص خود سهمدار/سهمداران امضاء و شصتگذاری میگردد.
+            رهنمود عمومی: این فورم باید با حضور سهمدار/سهمداران در مقابل کارمند مسئول در مدیریت جوازدهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی یا در حضور داشت کارمند مسئول در آمریت زون مربوط/مدیریت نمایندگی در ولایات امضاء و شصتگذاری گردد. کارمند مسئول خود را مطمئن سازد که فورم درخواستی حسب اسناد و مدارک مربوط خانهپُری گردیده و توسط شخص خود سهمدار/سهمداران امضاء و شصتگذاری میگردد.
           </p>
         </div>
 
@@ -494,7 +493,7 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
 
           <div className="p-3 bg-slate-50 border border-slate-300 rounded-lg text-xs leading-relaxed mb-4 text-slate-800">
             <p className="font-bold text-slate-900 mb-1">
-              به آمریت عمومی نظارت از مؤسسات مالی غیر بانکی / مدیریت نمایندگی د افغانستان بانک!
+              به آمریت عمومی نظارت از مؤسسات مالی غیر بانکی / مدیریت نمایندگی!
             </p>
             <p>
               اینجانب/مایان که شهرت ام/ما در جدول آتی تذکر گردیده منحیث سهمدار/سهمداران شرکت صرافی و خدمات پولی (

@@ -638,7 +638,7 @@ export default function OrgChartPage() {
           {/* Sidebar Footer */}
           <div className="pt-2 text-center">
             <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">سامانه مدیریت صرافی برکت‌الله غفوری</p>
-            <p className="text-[9px] text-slate-500 font-mono mt-0.5 tracking-tight">V 2.5.0 • DAB/7-0965</p>
+            <p className="text-[9px] text-slate-500 font-mono mt-0.5 tracking-tight">V 2.5.0 • 7-0965</p>
           </div>
         </div>
       </aside>
