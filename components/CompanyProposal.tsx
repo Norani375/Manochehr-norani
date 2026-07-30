@@ -385,19 +385,6 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
         </div>
       )}
 
-      {/* Outer Template Header (Matching the screenshot top pill) */}
-      <div className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
-        <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">پیشنهاد / احکام</h1>
-          <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1">
-            معرفی رئیس و اعضای هیئت نظار به سهمداران
-          </p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-5 py-2.5 rounded-full text-xs font-extrabold text-blue-900 dark:text-blue-300 shadow-xs">
-          فرم رسمی شرکت صرافی و خدمات پولی
-        </div>
-      </div>
-
       {/* Minimalist Printable 2-Column Canvas */}
       <div 
         id="company-proposal-canvas"
