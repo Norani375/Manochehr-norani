@@ -15,6 +15,7 @@ import DabLicenseChecklist from '@/components/DabLicenseChecklist';
 import EmployeeManagement from '@/components/EmployeeManagement';
 import CompanyArticles from '@/components/CompanyArticles';
 import CompanyProposal from '@/components/CompanyProposal';
+import OrgChartCanvas from '@/components/OrgChartCanvas';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
@@ -664,6 +665,9 @@ export default function OrgChartPage() {
         ) : activeTab === 'company-articles' ? (
           <CompanyArticles customLogo={customLogo} />
         ) : (
+          <OrgChartCanvas customLogo={customLogo} />
+        )}
+        {false && (
         <>
           {/* Real-time Live Dashboard Stats Widget */}
           <div className="max-w-7xl mx-auto mb-8 px-4 print:hidden dir-rtl">
@@ -742,7 +746,7 @@ export default function OrgChartPage() {
               {customLogo ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
-                  src={customLogo}
+                  src={customLogo || undefined}
                   alt="Company Logo"
                   className="w-20 h-20 object-contain border border-slate-100 dark:border-slate-800 rounded-2xl p-2 bg-white shadow-sm shrink-0"
                 />
@@ -805,11 +809,11 @@ export default function OrgChartPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-black text-xs text-blue-200">حالت نمای تمرکز تک‌صفحه‌ای:</span>
                     <span className="bg-amber-400 text-slate-950 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full">
-                      {selectedBranchObj.title}
+                      {selectedBranchObj?.title}
                     </span>
                   </div>
                   <p className="text-[11px] text-blue-100/90 mt-0.5">
-                    نمایش اختصاصی <strong className="text-white">{selectedBranchObj.name}</strong> با مسیر گزارش‌دهی به مدیر عملیاتی (<strong className="text-white">{operations?.name || ''}</strong>) و رئیس اجرائیه (<strong className="text-white">{president?.name || ''}</strong>).
+                    نمایش اختصاصی <strong className="text-white">{selectedBranchObj?.name}</strong> با مسیر گزارش‌دهی به مدیر عملیاتی (<strong className="text-white">{operations?.name || ''}</strong>) و رئیس اجرائیه (<strong className="text-white">{president?.name || ''}</strong>).
                   </p>
                 </div>
               </div>
@@ -828,7 +832,7 @@ export default function OrgChartPage() {
           {president && (
             <div className="flex flex-col items-center relative group">
               <div 
-                onClick={() => isEditMode && setEditingNode(president)}
+                onClick={() => isEditMode && president && setEditingNode(president)}
                 className={`bg-slate-900 dark:bg-slate-800 text-white rounded-[2rem] p-6 shadow-2xl border border-slate-800 dark:border-slate-700 w-80 text-center relative transition-all duration-300 ${
                   isEditMode ? 'cursor-pointer hover:ring-4 hover:ring-amber-400/30 hover:scale-105' : ''
                 } ${matchesSearch(president) ? 'ring-4 ring-blue-500' : ''}`}
@@ -841,8 +845,8 @@ export default function OrgChartPage() {
                 <div className="inline-flex p-3 bg-blue-500/20 rounded-2xl mb-3 text-blue-400">
                   <Award className="w-7 h-7" />
                 </div>
-                <div className="text-[11px] uppercase tracking-[0.2em] text-blue-400 font-black mb-1">{president.title}</div>
-                <div className="text-xl font-black tracking-tight">{president.name}</div>
+                <div className="text-[11px] uppercase tracking-[0.2em] text-blue-400 font-black mb-1">{president?.title}</div>
+                <div className="text-xl font-black tracking-tight">{president?.name}</div>
                 <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 font-bold tracking-widest uppercase">Chairman & Founder</div>
               </div>
 
@@ -902,7 +906,7 @@ export default function OrgChartPage() {
                 <div className="flex flex-col items-center">
                   {operations && (
                     <div 
-                      onClick={() => isEditMode && setEditingNode(operations)}
+                      onClick={() => isEditMode && operations && setEditingNode(operations)}
                       className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
                         isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
                       } ${matchesSearch(operations) ? 'ring-4 ring-blue-500/30' : ''}`}
@@ -915,8 +919,8 @@ export default function OrgChartPage() {
                       <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
                         <Briefcase className="w-5 h-5" />
                       </div>
-                      <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{operations.title}</div>
-                      <div className="text-base font-black">{operations.name}</div>
+                      <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{operations?.title}</div>
+                      <div className="text-base font-black">{operations?.name}</div>
                     </div>
                   )}
 
@@ -1017,7 +1021,7 @@ export default function OrgChartPage() {
                 <div className="flex flex-col items-center justify-start">
                   {compliance && (
                     <div 
-                      onClick={() => isEditMode && setEditingNode(compliance)}
+                      onClick={() => isEditMode && compliance && setEditingNode(compliance)}
                       className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
                         isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
                       } ${matchesSearch(compliance) ? 'ring-4 ring-blue-500/30' : ''}`}
@@ -1030,8 +1034,8 @@ export default function OrgChartPage() {
                       <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
                         <Shield className="w-5 h-5" />
                       </div>
-                      <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{compliance.title}</div>
-                      <div className="text-base font-black">{compliance.name}</div>
+                      <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{compliance?.title}</div>
+                      <div className="text-base font-black">{compliance?.name}</div>
                     </div>
                   )}
                   <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-2xl text-[11px] font-medium text-amber-800 dark:text-amber-400 text-center max-w-xs leading-relaxed">
@@ -1084,14 +1088,14 @@ export default function OrgChartPage() {
 
             <form onSubmit={(e) => {
               e.preventDefault();
-              handleUpdateNode(editingNode);
+              if (editingNode) handleUpdateNode(editingNode);
             }} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">عنوان / سمت سازمانی</label>
                 <input
                   type="text"
-                  value={editingNode.title}
-                  onChange={(e) => setEditingNode({ ...editingNode, title: e.target.value })}
+                  value={editingNode?.title || ''}
+                  onChange={(e) => editingNode && setEditingNode({ ...editingNode, title: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   required
                 />
@@ -1101,18 +1105,18 @@ export default function OrgChartPage() {
                 <label className="block text-xs font-bold text-slate-700 mb-1">نام کامل و نام پدر (ولد)</label>
                 <input
                   type="text"
-                  value={editingNode.name}
-                  onChange={(e) => setEditingNode({ ...editingNode, name: e.target.value })}
+                  value={editingNode?.name || ''}
+                  onChange={(e) => editingNode && setEditingNode({ ...editingNode, name: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                   required
                 />
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-6">
-                {editingNode.category === 'branch' ? (
+                {editingNode?.category === 'branch' ? (
                   <button
                     type="button"
-                    onClick={() => handleDeleteNode(editingNode.key)}
+                    onClick={() => editingNode && handleDeleteNode(editingNode.key)}
                     className="flex items-center gap-1 text-red-600 hover:text-red-700 text-xs font-bold px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
