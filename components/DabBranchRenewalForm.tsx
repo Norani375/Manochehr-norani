@@ -71,7 +71,7 @@ export interface BranchPreset {
 export const REAL_BRANCHES_PRESETS: BranchPreset[] = [
   {
     id: 'kabul',
-    title: 'نمایندگی اول: ولایت کابل (DAB/7-0965-A1)',
+    title: 'نمایندگی اول: ولایت کابل (7-0965-A1)',
     branchNo: 'اول',
     branchProvince: 'کابل',
     branchMarketName: 'مارکیت سرای شهزاده',
@@ -88,7 +88,7 @@ export const REAL_BRANCHES_PRESETS: BranchPreset[] = [
   },
   {
     id: 'takhar',
-    title: 'نمایندگی دوم: ولایت تخار (DAB/7-0965-A2)',
+    title: 'نمایندگی دوم: ولایت تخار (7-0965-A2)',
     branchNo: 'دوم',
     branchProvince: 'تخار',
     branchMarketName: 'صرافی صرافان تخار',
@@ -105,7 +105,7 @@ export const REAL_BRANCHES_PRESETS: BranchPreset[] = [
   },
   {
     id: 'kunduz_imam',
-    title: 'نمایندگی سوم: ولسوالی امام‌صاحب (DAB/7-0965-A3)',
+    title: 'نمایندگی سوم: ولسوالی امام‌صاحب (7-0965-A3)',
     branchNo: 'سوم',
     branchProvince: 'کندز',
     branchMarketName: 'مارکیت مرکزی صرافان',
@@ -122,7 +122,7 @@ export const REAL_BRANCHES_PRESETS: BranchPreset[] = [
   },
   {
     id: 'badakhshan_kishm',
-    title: 'نمایندگی چهارم: ولسوالی کشم (DAB/7-0965-A4)',
+    title: 'نمایندگی چهارم: ولسوالی کشم (7-0965-A4)',
     branchNo: 'چهارم',
     branchProvince: 'بدخشان',
     branchMarketName: 'مارکیت صرافان کشم',
@@ -141,7 +141,7 @@ export const REAL_BRANCHES_PRESETS: BranchPreset[] = [
 
 const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  licenseNo: 'DAB/7-0965',
+  licenseNo: '7-0965',
   centralProvince: 'کندز',
   centralDistrict: 'مرکز',
   centralMarket: 'مومند مارکیت',

@@ -138,7 +138,7 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
           </div>
           <div>
             <h2 className="text-lg font-black text-slate-900 dark:text-white">چک لست اسناد و شرایط جواز</h2>
-            <p className="text-[10px] text-slate-500">مدیریت اطلاعات و مدارک مورد نیاز د افغانستان بانک (DAB)</p>
+            <p className="text-[10px] text-slate-500">مدیریت اطلاعات و مدارک رسمی مورد نیاز جوازدهی</p>
           </div>
         </div>
 
@@ -169,7 +169,7 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
         <div className="border-b-4 border-double border-slate-900 pb-6 text-center space-y-2">
           <div className="flex items-center justify-between mb-2">
             <div className="text-left text-[9px] font-bold text-slate-500 leading-tight w-40">
-              <div>DA AFGHANISTAN BANK</div>
+              <div>FINANCIAL INSTITUTIONS SUPERVISION</div>
               <div>Non-Bank Financial Institutions Supervision Department</div>
             </div>
             <div className="flex flex-col items-center">
@@ -309,8 +309,8 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
 
         {/* Footer */}
         <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
-          <span>Official DAB Licensing Form Template</span>
-          <span>DAB/SUPERVISION/LICENSE-002</span>
+          <span>Official Licensing Form Template</span>
+          <span>SUPERVISION/LICENSE-002</span>
           <span>صفحه ۱ از ۱</span>
         </div>
       </div>

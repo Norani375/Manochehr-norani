@@ -87,11 +87,11 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
   guarantorCompany: {
     businessName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
     activityType: 'صرافی و خدمات پولی (MSP)',
-    licenseNo: 'DAB/7-0965',
+    licenseNo: '7-0965',
     companyPhone: '0799681111 / 0749340000',
     expiryDate: '1405/03/13',
     email: 'info@barakatullah-exchange.af',
-    issuingAuthority: 'د افغانستان بانک',
+    issuingAuthority: 'مرجع مربوطه',
     businessAddress: 'ولایت کندز، مارکیت مهمند، منزل دوم، دکان نمبر ۳۰۱',
   },
   shareholders: [
@@ -555,7 +555,7 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
               onChange={(val) => setFormData({ ...formData, provinceName: val })}
               className="inline-block mx-2 font-bold text-blue-900 text-center w-32 text-xs"
             />
-            اخذ/تمدید نماید، تضمین نموده و در صورت هر گونه تخلف و تخطی که از قوانین و مقررات نافذه کشور از آدرس شرکت صرافی و خدمات پولی ایشان انجام یابد، ایشان را در وقت معینه به مرجع مربوط یا د افغانستان بانک حاضر می‌نماییم و در اقرار خود صادق می‌باشیم.
+            اخذ/تمدید نماید، تضمین نموده و در صورت هر گونه تخلف و تخطی که از قوانین و مقررات نافذه کشور از آدرس شرکت صرافی و خدمات پولی ایشان انجام یابد، ایشان را در وقت معینه به مرجع مربوطه حاضر می‌نماییم و در اقرار خود صادق می‌باشیم.
           </div>
 
           {/* Table of Guaranteed Shareholders */}

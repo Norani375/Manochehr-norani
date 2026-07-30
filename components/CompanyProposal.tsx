@@ -47,19 +47,19 @@ const DEFAULT_PROPOSAL_DATA: ProposalData = {
   approvalStatusText: 'متن پیشنهاد منظور است',
   subject: 'موضوع: معرفی رئیس و اعضای هیئت نظار',
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  licenseNo: '7-0787',
-  companyAddress: 'ولایت کندز، مومند مارکیت، منزل دوم، دکان نمبر ۱۴۵',
+  licenseNo: 'DAB/7-0965',
+  companyAddress: 'ولایت کندز، مومند مارکیت، منزل دوم، دکان نمبر ۳۰۱',
   expiryDate: '۱۴۰۴/۱۱/۰۵',
   recipientTitle: 'به مقام محترم سهمداران شرکت!',
-  bodyText: 'محترماً؛ شرکت صرافی و خدمات پولی برکت‌الله غفوری دارنده جواز نمبر 7-0787 واقع مومند مارکیت دوکان نمبر ۱۴۵ که به تاریخ ۱۴۰۴/۱۱/۰۵ جواز فعالیت شرکت ختم میگردد و به منظور فعالیت و ادامه کار صرافی و خدمات پولی، رهبری شرکت افراد ذیل را به محضر مقام شما معرفی می‌نماید:',
+  bodyText: 'محترماً؛ شرکت صرافی و خدمات پولی برکت‌الله غفوری به منظور فعالیت و ادامهٔ کار صرافی و خدمات پولی، رهبری شرکت افراد ذیل را به محضر مقام شما معرفی می‌نماید:',
   closingText: 'غرض اجراآت بعدی به شما معرفی گردید.',
-  signatoryName: 'عبدالله مؤمند',
-  signatoryTitle: 'مدیر عملیاتی شرکت',
+  signatoryName: 'صالح محمد رحیمی',
+  signatoryTitle: 'مدیر عملیاتی',
   approvalIntroText: 'سهمداران شرکت پیشنهاد فوق را پس از بررسی و تأیید، افراد ذیل را به عنوان رئیس و اعضای هیئت نظار شرکت احکام می‌نمایند:',
   members: [
-    { id: 1, name: 'عزیزالله ناصری', fatherName: 'غلام محی‌الدین', tazkiraNo: '79824-1101-1402', position: 'رئیس هیئت نظار' },
-    { id: 2, name: 'محمد داود مؤمند', fatherName: 'ولی محمد', tazkiraNo: '69208-1204-1399', position: 'عضو هیئت نظار' },
-    { id: 3, name: 'احمد رامین دستگیر', fatherName: 'غلام دستگیر', tazkiraNo: '21002-0300-1400', position: 'عضو هیئت نظار' },
+    { id: 1, name: 'بسم‌الله شیرزی', position: 'رئیس هیئت نظار' },
+    { id: 2, name: 'برکت‌الله غفوری', position: 'عضو هیئت نظار' },
+    { id: 3, name: 'عظیم‌الله رحمانی', position: 'عضو هیئت نظار' },
   ],
   shareholders: [
     { id: 1, name: 'خالد احمد مؤمند' },
@@ -76,7 +76,7 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
   const [data, setData] = useState<ProposalData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_company_proposal_v2');
+        const saved = localStorage.getItem('bg_company_proposal_v3');
         if (saved) return { ...DEFAULT_PROPOSAL_DATA, ...JSON.parse(saved) };
       } catch (e) {
         console.error(e);
@@ -92,7 +92,7 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
   // Sync with Firestore
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'company_proposal_v2');
+      const docRef = doc(db, 'settings', 'company_proposal_v3');
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remote = snapshot.data();
@@ -109,9 +109,9 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_company_proposal_v2', JSON.stringify(data));
+      localStorage.setItem('bg_company_proposal_v3', JSON.stringify(data));
       try {
-        const docRef = doc(db, 'settings', 'company_proposal_v2');
+        const docRef = doc(db, 'settings', 'company_proposal_v3');
         await setDoc(docRef, {
           proposalData: data,
           updatedAt: new Date().toISOString()

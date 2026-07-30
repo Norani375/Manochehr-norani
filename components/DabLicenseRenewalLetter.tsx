@@ -333,7 +333,7 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
               />
             </div>
             <div>
-              <label className="font-bold block mb-1">شماره جواز DAB:</label>
+              <label className="font-bold block mb-1">شماره جواز:</label>
               <input
                 type="text"
                 value={data.licenseNo}
