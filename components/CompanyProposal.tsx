@@ -28,6 +28,7 @@ export interface ProposalData {
   proposalNo: string;
   proposalDate: string;
   approvalStatusText: string;
+  subject: string;
   boardMembers: { name: string; position: string }[];
   recipientTitle: string;
   companyName: string;
@@ -43,66 +44,35 @@ export interface ProposalData {
 }
 
 const DEFAULT_PROPOSAL_DATA: ProposalData = {
-  proposalNo: '۱۴۰۵/P-۱۰۲',
-  proposalDate: '۱۴۰۵/۰۲/۲۰',
+  proposalNo: '۱۴۰۴/P-۱۰۷',
+  proposalDate: '۱۴۰۴/۱۱/۰۱',
   approvalStatusText: 'متن پیشنهاد منظور است.',
+  subject: 'موضوع: معرفی رئیس و اعضای هیئت نظار',
   boardMembers: [
-    { name: 'بسم‌الله شیرزی', position: 'رئیس هیئت نظار' },
-    { name: 'برکت‌الله غفوری', position: 'عضو هیئت نظار' },
-    { name: 'عظیم‌الله رحمانی', position: 'عضو هیئت نظار' },
+    { name: 'خالد احمد مؤمند', position: 'سهم‌دار / هیئت مدیره' },
+    { name: 'محمد داوود مومند', position: 'سهم‌دار / هیئت مدیره' },
+    { name: 'عبدالله مؤمند', position: 'سهم‌دار / هیئت مدیره' },
   ],
-  recipientTitle: 'به مقام محترم اعضای هیئت نظار شرکت صرافی و خدمات پولی برکت‌الله غفوری !',
+  recipientTitle: 'به مقام محترم سهمداران شرکت!',
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  licenseNo: 'DAB/7-0965',
-  companyAddress: 'کندز، مومند مارکیت، منزل دوم، دوکان ۳۰۱',
-  expiryDate: '۱۴۰۵/۰۳/۱۳',
-  bodyText: 'محترما : شرکت صرافی و خدمات پولی برکت‌الله غفوری دارنده جواز نمبر DAB/7-0965 واقع مومند مارکیت دوکان نمبر ۳۰۱ که به تاریخ ۱۴۰۵/۰۳/۱۳ جواز فعالیت شرکت ختم میگردد و به منظور فعالیت و ادامه کار صرافی و خدمات پولی، رهبری شرکت تصمیم دارد جواز فعالیت مرکزی و نمایندگی های خویش را تمدید نماید، در زمینه همکاری نموده ممنون سازید .',
-  personnelIntroText: 'سهم‌داران شرکت پس از بحث و بررسی و فیصله نهایی، افراد ذیل را به عنوان کارمندان و نماینده رسمی شرکت معرفی می‌نمایند :',
+  licenseNo: 'DAB/7-0787',
+  companyAddress: 'مومند مارکیت، دوکان نمبر ۱۴۵',
+  expiryDate: '۱۴۰۴/۱۱/۰۵',
+  bodyText: 'محترما : شرکت صرافی و خدمات پولی برکت‌الله غفوری دارنده جواز نمبر DAB/7-0787 واقع مومند مارکیت دوکان نمبر ۱۴۵ که به تاریخ ۱۴۰۴/۱۱/۰۵ جواز فعالیت شرکت ختم میگردد و به منظور فعالیت و ادامه کار صرافی و خدمات پولی، رهبری شرکت تصمیم دارد رئیس و اعضای هیئت نظار را برای شما معرفی نمایند.',
+  personnelIntroText: 'مشخصات اعضای محترم هیئت نظار معرفی‌شده به شرح ذیل می‌باشد:',
   personnelGroups: [
     {
       id: 1,
-      groupTitle: 'کارمندان دفتر مرکزی (کندز):',
+      groupTitle: 'فهرست اعضای هیئت نظار:',
       members: [
-        { id: 1, name: 'صالح‌محمد', position: 'مدیر عملیاتی / مسئول اجراآت' },
-        { id: 2, name: 'محمد فهیم', position: 'مدیر پیروی از قوانین (Compliance Officer)' },
-        { id: 3, name: 'احسان‌الله اکبری', fatherName: 'نوریالی', tazkiraNo: '4408718', position: 'کارمند بخش ارزیابی و نظارت' },
-        { id: 4, name: 'نقیب‌الله رزاقی', fatherName: 'محمد یونس', tazkiraNo: '60932-0600-1403', position: 'مدیر اجرای حواله‌جات' },
-      ]
-    },
-    {
-      id: 2,
-      groupTitle: 'معرفی نماینده و کارمندان نمایندگی کابل:',
-      location: 'کابل، سرای شهزاده، منزل سوم، دوکان ۱۸۸',
-      members: [
-        { id: 1, name: 'خالد احمد مؤمند', fatherName: 'ولی محمد', tazkiraNo: '71680-1204-1399', position: 'نماینده رسمی نمایندگی کابل' },
-        { id: 2, name: 'تاج‌الدین برکی', fatherName: 'سراج‌الدین', tazkiraNo: '42884-1201-1399', position: 'خزانه‌دار' },
-        { id: 3, name: 'بشیر احمد اخندزاده', fatherName: 'محمد عیسی', tazkiraNo: '11454-0301-1402', position: 'کارمند بخش پیروی از قوانین' },
-        { id: 4, name: 'سبحان‌الله رحمانزی', fatherName: 'نورالرحمن', tazkiraNo: '01516-0100-1405', position: 'کارمند اجرای حواله‌جات' },
-      ]
-    },
-    {
-      id: 3,
-      groupTitle: 'معرفی نماینده و کارمندان نمایندگی کندهار:',
-      location: 'کندهار، زاهد بهار مارکیت، منزل دوم، دوکان ۶۳',
-      members: [
-        { id: 1, name: 'رحمت‌الله عزیزی', fatherName: 'حاجی شاه ولی', tazkiraNo: '53204-0302-1401', position: 'نماینده رسمی نمایندگی کندهار' },
-        { id: 2, name: 'عبادالله عزیزی', fatherName: 'شاه ولی', tazkiraNo: '53126-0302-1401', position: 'کارمند بخش عملیاتی' },
-        { id: 3, name: 'احسان‌الله عزیزی', fatherName: 'شاه ولی', tazkiraNo: '53192-0302-1401', position: 'کارمند بخش پیروی از قوانین' },
-      ]
-    },
-    {
-      id: 4,
-      groupTitle: 'معرفی نماینده و کارمندان نمایندگی لوگر:',
-      location: 'لوگر، سعادت مارکیت، منزل اول، دوکان ۱۰',
-      members: [
-        { id: 1, name: 'علی‌خان احمدی', fatherName: 'عبدالولی', tazkiraNo: '98518-1101-1399', position: 'نماینده رسمی نمایندگی لوگر' },
-        { id: 2, name: 'نجیب‌الله', fatherName: 'شمس‌الله', tazkiraNo: '26530-0801-1399', position: 'کارمند بخش عملیاتی' },
-        { id: 3, name: 'سید طیب هاشمی', fatherName: 'گلا جان', tazkiraNo: '11390-1003-1399', position: 'کارمند بخش پیروی از قوانین' },
+        { id: 1, name: 'عزیزالله ناصری', fatherName: 'غلام محی الدین', tazkiraNo: '79824-1101-1402', position: 'رئیس هیئت نظار' },
+        { id: 2, name: 'محمد داود مؤمند', fatherName: 'ولی محمد', tazkiraNo: '69208-1204-1399', position: 'عضو هیئت نظار' },
+        { id: 3, name: 'احمد رامین دستگیر', fatherName: 'غلام دستگیر', tazkiraNo: '21002-0300-1400', position: 'عضو هیئت نظار' },
       ]
     }
   ],
-  closingText: 'غرض اجراآت بعدی به حضور شما محترمان معرفی گردید.',
-  signatoryName: 'صالح‌محمد',
+  closingText: 'غرض اجراآت بعدی به شما معرفی گردید.',
+  signatoryName: 'عبدالله مؤمند',
   signatoryTitle: 'مدیر عملیاتی شرکت صرافی و خدمات پولی برکت‌الله غفوری'
 };
 
@@ -114,7 +84,7 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
   const [data, setData] = useState<ProposalData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_company_proposal_v1');
+        const saved = localStorage.getItem('bg_company_proposal_v2');
         if (saved) return { ...DEFAULT_PROPOSAL_DATA, ...JSON.parse(saved) };
       } catch (e) {
         console.error(e);
@@ -130,7 +100,7 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
   // Sync with Firestore
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'company_proposal_v1');
+      const docRef = doc(db, 'settings', 'company_proposal_v2');
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remote = snapshot.data();
@@ -147,9 +117,9 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_company_proposal_v1', JSON.stringify(data));
+      localStorage.setItem('bg_company_proposal_v2', JSON.stringify(data));
       try {
-        const docRef = doc(db, 'settings', 'company_proposal_v1');
+        const docRef = doc(db, 'settings', 'company_proposal_v2');
         await setDoc(docRef, {
           proposalData: data,
           updatedAt: new Date().toISOString()
@@ -167,7 +137,7 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
   const handleReset = () => {
     if (window.confirm('آیا از بازنشانی متن پیشنهاد به حالت اولیه اطمینان دارید؟')) {
       setData(DEFAULT_PROPOSAL_DATA);
-      localStorage.removeItem('bg_company_proposal_v1');
+      localStorage.removeItem('bg_company_proposal_v2');
     }
   };
 
@@ -449,16 +419,21 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
           </div>
         </div>
 
-        {/* Recipient Title */}
-        <div className="mb-4 pt-2">
-          <h2 className="text-sm sm:text-base font-black text-blue-950 border-b border-slate-300 pb-2">
+        {/* Recipient Title & Subject Header */}
+        <div className="mb-5 border-b border-slate-300 pb-3 space-y-1.5">
+          <h2 className="text-base sm:text-lg font-black text-slate-950">
             {data.recipientTitle}
           </h2>
+          {data.subject && (
+            <div className="inline-block bg-slate-100 border border-slate-200 text-slate-900 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-md">
+              {data.subject}
+            </div>
+          )}
         </div>
 
         {/* Proposal Main Paragraphs */}
-        <div className="space-y-3 text-slate-900 leading-loose text-justify font-semibold text-xs sm:text-sm">
-          <p className="whitespace-pre-line">
+        <div className="space-y-3 text-slate-900 leading-relaxed text-justify font-semibold text-xs sm:text-sm">
+          <p className="whitespace-pre-line text-justify leading-7">
             {data.bodyText}
           </p>
           <p className="whitespace-pre-line font-bold pt-1 text-slate-950">
@@ -466,32 +441,39 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
           </p>
         </div>
 
-        {/* Introduced Personnel & Branches List */}
+        {/* Introduced Personnel / Members List (Minimalist Clean Table Format) */}
         <div className="space-y-4 my-6">
-          {data.personnelGroups.map((group, gIdx) => (
-            <div key={group.id} className="border border-slate-300 rounded-xl p-3 sm:p-4 bg-slate-50/50">
-              <h3 className="font-black text-xs sm:text-sm text-slate-900 border-b border-slate-300 pb-1.5 mb-2.5 flex items-center justify-between">
-                <span>{group.groupTitle}</span>
-                {group.location && <span className="text-[11px] font-normal text-slate-600">{group.location}</span>}
-              </h3>
+          {data.personnelGroups.map((group) => (
+            <div key={group.id} className="border border-slate-300 rounded-lg overflow-hidden">
+              {group.groupTitle && (
+                <div className="bg-slate-100 px-4 py-2 font-black text-xs sm:text-sm text-slate-950 border-b border-slate-300 flex items-center justify-between">
+                  <span>{group.groupTitle}</span>
+                  {group.location && <span className="text-[11px] font-normal text-slate-600">{group.location}</span>}
+                </div>
+              )}
 
-              <ol className="space-y-2 pr-2 text-xs sm:text-sm">
-                {group.members.map((m, mIdx) => (
-                  <li key={m.id} className="flex flex-wrap items-center gap-1.5 text-slate-900 font-semibold">
-                    <span className="font-black text-slate-600 w-5">{mIdx + 1}.</span>
-                    <span className="font-extrabold text-slate-950">{m.name}</span>
-                    {m.fatherName && <span className="text-slate-700">ولد {m.fatherName}</span>}
-                    {m.tazkiraNo && (
-                      <span className="text-slate-600 font-mono text-[11px]">
-                        (تذکره: {m.tazkiraNo})
-                      </span>
-                    )}
-                    <span className="font-bold text-blue-950 mr-auto bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                      بحیث {m.position}
-                    </span>
-                  </li>
-                ))}
-              </ol>
+              <table className="w-full text-right border-collapse text-xs sm:text-sm">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                    <th className="p-2.5 w-10 text-center border-l border-slate-200">#</th>
+                    <th className="p-2.5 border-l border-slate-200">نام و تخلص</th>
+                    <th className="p-2.5 border-l border-slate-200">ولد</th>
+                    <th className="p-2.5 border-l border-slate-200 font-mono">نمبر تذکره</th>
+                    <th className="p-2.5">سمت پیشنهادی</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {group.members.map((m, mIdx) => (
+                    <tr key={m.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="p-2.5 text-center font-bold text-slate-500 border-l border-slate-200">{mIdx + 1}</td>
+                      <td className="p-2.5 font-extrabold text-slate-950 border-l border-slate-200">{m.name}</td>
+                      <td className="p-2.5 font-semibold text-slate-800 border-l border-slate-200">{m.fatherName || '-'}</td>
+                      <td className="p-2.5 font-mono text-xs text-slate-700 border-l border-slate-200">{m.tazkiraNo || '-'}</td>
+                      <td className="p-2.5 font-bold text-blue-900 bg-blue-50/30">{m.position}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ))}
         </div>
@@ -502,18 +484,18 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
         </p>
 
         {/* Official Signatory Section */}
-        <div className="pt-10 mt-8 border-t border-slate-300 flex items-end justify-between px-4">
+        <div className="pt-8 mt-6 border-t border-slate-300 flex items-end justify-between px-4">
           <div className="text-center">
-            <div className="w-24 h-24 border-2 border-dashed border-slate-400 rounded-full flex flex-col items-center justify-center text-slate-400 text-[10px]">
+            <div className="w-24 h-24 border border-dashed border-slate-400 rounded-full flex flex-col items-center justify-center text-slate-400 text-[10px]">
               <span>محل مهر شرکت</span>
             </div>
           </div>
 
-          <div className="text-center space-y-1.5">
+          <div className="text-center space-y-1">
             <p className="font-bold text-xs text-slate-700">با احترام؛</p>
             <p className="font-black text-sm sm:text-base text-slate-950">{data.signatoryName}</p>
             <p className="text-xs font-bold text-blue-900">{data.signatoryTitle}</p>
-            <div className="pt-6 font-bold text-slate-500 text-xs border-t border-slate-400 mt-2">
+            <div className="pt-6 font-bold text-slate-500 text-xs border-t border-slate-300 mt-3 min-w-[140px]">
               امضاء و شصت
             </div>
           </div>
@@ -521,9 +503,9 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
 
         {/* Document Footer */}
         <div className="mt-8 pt-3 border-t border-slate-200 text-center text-[10px] text-slate-500 flex justify-between items-center">
-          <span>شرکت صرافی و خدمات پولی برکت‌الله غفوری</span>
-          <span>فرم رسمی پیشنهاد تمدید جواز فعالیت</span>
-          <span>جواز DAB/7-0965</span>
+          <span>{data.companyName}</span>
+          <span>فرم رسمی پیشنهاد به سهم‌داران / هیئت نظار</span>
+          <span>جواز {data.licenseNo}</span>
         </div>
       </div>
     </div>
