@@ -18,6 +18,7 @@ export interface ChecklistPersonnel {
   idNo: string;
   education: string;
   field: string;
+  infoForm: string;
   tin: string;
   criminalInquiry: string;
   sanctions: string;
@@ -33,42 +34,35 @@ export interface ChecklistData {
 }
 
 const DEFAULT_CHECKLIST_DATA: ChecklistData = {
-  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  licenseNo: '7-0965',
+  companyName: 'حاجی ولی محمد مؤمند د زامنو صرافی او پولی خدماتو شرکت',
+  licenseNo: 'DAB/7-0965',
   province: 'کندز',
   personnel: [
-    { id: 1, position: 'سهمدار و رئیس هیئت مدیره', name: 'برکت‌الله', fatherName: 'عبدالغفور', idNo: '۵۵۵۲۲-۱۱۰۴-۱۰۰۱۳۹۹', education: 'لیسانس', field: 'کامپیوتر ساینس', tin: '9003365203', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 2, position: 'رئیس هیئت نظار', name: 'بسم‌الله شیرزی', fatherName: 'دوستمحمد', idNo: '۴۵۱۸۸', education: 'لیسانس', field: 'ادبیات پشتو', tin: '9005155800', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 3, position: 'عضو هیئت نظار', name: 'برکت‌الله غفوری', fatherName: 'عبدالغفور', idNo: '۵۵۵۲۲-۱۱۰۴-۱۰۰۱۳۹۹', education: 'لیسانس', field: 'اقتصاد', tin: '9003365203', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 4, position: 'عضو هیئت نظار', name: 'عظیم‌الله رحمانی', fatherName: 'محمد آجان', idNo: '۳۵۸۰۶', education: 'لیسانس', field: 'حقوق و علوم سیاسی', tin: '9020613858', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 5, position: 'مسئول رعایت از قانون و مقررات', name: 'محمد فهیم', fatherName: 'محمد امان', idNo: '۹۷۴۸۴', education: 'لیسانس', field: 'ادبیات دری', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 6, position: 'مسئول عملیاتی', name: 'صالح‌محمد', fatherName: 'عبدالرحیم', idNo: '۴۸۴۲۴', education: 'لیسانس', field: 'حقوق و علوم سیاسی', tin: '9020613858', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 7, position: 'نماینده تخار', name: 'رحمت‌الله', fatherName: 'فیض‌الله', idNo: '۲۹۳۸۴', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 8, position: 'خزانه‌دار تخار', name: 'عبیدالله', fatherName: 'نصرالله', idNo: '۴۸۳۹۲', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 9, position: 'نماینده کابل', name: 'اجمل', fatherName: 'نورآغا', idNo: '۴۶۳۳۸', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 10, position: 'عضو نمایندگی کابل', name: 'ریحان', fatherName: 'شیرآغا', idNo: '۱۲۳۴۵', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 11, position: 'منشی و خزانه‌دار کابل', name: 'صدیق‌الله', fatherName: 'حبیب‌الله', idNo: '۶۷۸۹۰', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 12, position: 'نماینده امام‌صاحب', name: 'محمدیوسف', fatherName: 'عبدالمجید', idNo: '۹۸۶۸۰', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 13, position: 'خزانه‌دار امام‌صاحب', name: 'عبدالمجید', fatherName: 'محمدیوسف', idNo: '۵۴۳۲۱', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
-    { id: 14, position: 'نماینده کشم', name: 'عتیق‌الله', fatherName: 'شمس‌الدین', idNo: '۷۲۵۲', education: 'فارغ صنف ۱۲', field: 'عمومی', tin: '', criminalInquiry: 'پاک', sanctions: 'تطبیق' },
+    { id: 1, position: 'سهمدار', name: 'برکت‌الله', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 2, position: 'رئیس هیئت نظار', name: 'بسم‌الله شیرزی', fatherName: 'دوست‌محمد', idNo: '1402-0902-45188', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 3, position: 'عضو هیئت نظار', name: 'برکت‌الله غفوری', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', infoForm: '', tin: '9005155800', criminalInquiry: '', sanctions: '' },
+    { id: 4, position: 'عضو هیئت نظار', name: 'عظیم‌الله رحمانی', fatherName: 'محمد آجان', idNo: '1399-1105-35806', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 5, position: 'مسئول رعایت از قانون و مقررات', name: 'محمد فهیم یوسفزی', fatherName: 'محمد امان', idNo: '1399-1103-97484', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 6, position: 'مسئول عملیاتی', name: 'صالح‌محمد رحیمی', fatherName: 'عبدالرحیم', idNo: '1402-0201-48424', education: 'لیسانس', field: '', infoForm: '', tin: '9020613858', criminalInquiry: '', sanctions: '' },
   ],
   checklistItems: [
     { id: 1, text: 'اساسنامه (با تاپه شرکت و امضای سهمداران)', status: 'ارائه شده', note: '' },
-    { id: 2, text: 'فورم درخواستی (شصت و امضا) توسط سهمداران', status: 'ارائه شده', note: '' },
-    { id: 3, text: 'چارت ساختار تشکیلاتی شرکت (با تاپه شرکت و امضای هیئت نظار)', status: 'ارائه شده', note: '' },
-    { id: 4, text: 'رسید پرداخت آویز تضمین (مبلغ ۳،۳۰۰،۰۰۰ افغانی)', status: 'ارائه شده', note: 'سایر ولایات' },
-    { id: 5, text: 'فورم بازدید ساحه جهت مناسب بودن محل فعالیت', status: 'ارائه شده', note: '' },
-    { id: 6, text: 'دریافت مکتوب عدم باقیداری مالیاتی یا مکتوب ترک پیشه', status: 'ارائه شده', note: '' },
-    { id: 7, text: 'فورم تضمین سر سهمدار/سهمداران', status: 'ارائه شده', note: '' },
-    { id: 8, text: 'ارائه قرارداد خط ایجاد سیستم نرم‌افزار و فعال بودن آن', status: 'ارائه شده', note: '' },
-    { id: 9, text: 'پالیسی مبارزه علیه تطهیر پول و تمویل تروریزم (AML/CFT)', status: 'ارائه شده', note: '' },
+    { id: 2, text: 'رسید پرداخت آویز تضمین: مبلغ 6,600,000 افغانی (کاپی رنگه) در مراکز زونها (کابل، کندهار، هرات، مزار، جلال اباد، کندز و پکتیا) / مبلغ 3,300,000 افغانی (کاپی رنگه) در سایر ولایات', status: 'ارائه شده', note: '' },
+    { id: 3, text: 'فورم تضمین سر سهمدار/سهمداران', status: 'ارائه شده', note: '' },
+    { id: 4, text: 'پالیسی مبارزه علیه تطهیر پول و تمویل تروریزم (با تاپه شرکت در همه اوراق)', status: 'ارائه شده', note: '' },
+    { id: 5, text: 'فورم درخواستی (شصت و امضا) توسط سهمداران', status: 'ارائه شده', note: '' },
+    { id: 6, text: 'چارت ساختار تشکیلاتی شرکت (با تاپه شرکت و امضای هیئت نظار)', status: 'ارائه شده', note: '' },
+    { id: 7, text: 'فورم بازدید ساحه جهت مناسب بودن محل فعالیت و ارائه معلومات اتحادیه در خصوص ثبت و قرار داد دکان', status: 'ارائه شده', note: '' },
+    { id: 8, text: 'دریافت مکتوب عدم باقیداری مالیاتی شرکت و یا مکتوب ترک پیشه از جواز قبلی', status: 'ارائه شده', note: '' },
+    { id: 9, text: 'ارائه قرار داد خط ایجاد سیستم نرم افزار و فعال بودن آن قبل از صدور جواز شرکت صرافی و خدمات پولی', status: 'ارائه شده', note: '' },
   ],
   postLicenseObligations: [
-    { id: 1, subject: 'ارائه اطلاعیه آغاز فعالیت بعد از دریافت جواز فعالیت', submitted: 'خیر', note: '' },
-    { id: 2, subject: 'ثبت جواز فعالیت در ریاست ثبت مرکزی و مالکیت‌های فکری', submitted: 'خیر', note: '' },
-    { id: 3, subject: 'ارائه سرمایه کاری توسط حساب بانکی (۳۳،۳۰۰،۰۰۰ افغانی)', submitted: 'خیر', note: '' },
-    { id: 4, subject: 'تأیید صورت حساب بانکی بابت ارائه سرمایه کاری', submitted: 'خیر', note: '' },
-    { id: 5, subject: 'منظوری کارمندان', submitted: 'خیر', note: '' },
+    { id: 1, subject: 'ارائه اطلاعیه آغاز فعالیت بعد از دریافت جواز فعالیت صرافی و خدمات پولی', submitted: '', note: '' },
+    { id: 2, subject: 'ثبت جواز فعالیت در ریاست ثبت مرکزی و مالکیت های فکری', submitted: '', note: '' },
+    { id: 3, subject: 'ارائه سرمایه کاری توسط حساب بانکی: مبلغ 66,600,000 افغانی در ولایت کابل | مبلغ 53,300,000 افغانی در مرکز زونها به استثنی کابل | مبلغ 33,300,000 افغانی در سایر ولایت', submitted: '', note: '' },
+    { id: 4, subject: 'ارائه سرمایه کاری توسط حساب بانکی مبلغ 53,300,000 میلیون افغانی در مرکز زونها به استثنی کابل', submitted: '', note: '' },
+    { id: 5, subject: 'تایید صورت حساب بانکی بابت ارائه سرمایه کاری', submitted: '', note: '' },
+    { id: 6, subject: 'منظوری کارمندان', submitted: '', note: '' },
   ]
 };
 
@@ -83,7 +77,7 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
   const [data, setData] = useState<ChecklistData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_license_checklist_v1');
+        const saved = localStorage.getItem('bg_license_checklist_v2');
         if (saved) return { ...DEFAULT_CHECKLIST_DATA, ...JSON.parse(saved) };
       } catch (e) { console.error(e); }
     }
@@ -95,7 +89,7 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'license_checklist_v1');
+      const docRef = doc(db, 'settings', 'license_checklist_v2');
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -108,8 +102,8 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_license_checklist_v1', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'license_checklist_v1');
+      localStorage.setItem('bg_license_checklist_v2', JSON.stringify(data));
+      const docRef = doc(db, 'settings', 'license_checklist_v2');
       await setDoc(docRef, { checklistData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
@@ -221,11 +215,12 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
                   <th className="p-2 border border-slate-700">موقف در شرکت</th>
                   <th className="p-2 border border-slate-700">اسم</th>
                   <th className="p-2 border border-slate-700">ولد</th>
-                  <th className="p-2 border border-slate-700 w-12 text-center">عکس</th>
+                  <th className="p-2 border border-slate-700 w-10 text-center">عکس</th>
                   <th className="p-2 border border-slate-700 text-center">شماره تذکره</th>
                   <th className="p-2 border border-slate-700 text-center">سویه تحصیلی</th>
                   <th className="p-2 border border-slate-700 text-center">رشته</th>
-                  <th className="p-2 border border-slate-700 text-center">TIN</th>
+                  <th className="p-2 border border-slate-700 text-center">فورم معلومات</th>
+                  <th className="p-2 border border-slate-700 text-center">نمبر تشخصیه برویت سند TIN</th>
                   <th className="p-2 border border-slate-700 text-center">استعلام جنائی</th>
                   <th className="p-2 border border-slate-700 text-center">تطبیق تعزیرات</th>
                 </tr>
@@ -234,17 +229,18 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
                 {data.personnel.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50">
                     <td className="p-2 border border-slate-100 font-black text-slate-950">{p.position}</td>
-                    <td className="p-2 border border-slate-100">{p.name}</td>
+                    <td className="p-2 border border-slate-100 font-bold">{p.name}</td>
                     <td className="p-2 border border-slate-100">{p.fatherName}</td>
                     <td className="p-2 border border-slate-100 text-center">
-                      <div className="w-8 h-10 border border-slate-300 rounded bg-slate-100 mx-auto" />
+                      <div className="w-7 h-9 border border-slate-300 rounded bg-slate-100 mx-auto" />
                     </td>
                     <td className="p-2 border border-slate-100 text-center font-mono">{p.idNo}</td>
                     <td className="p-2 border border-slate-100 text-center">{p.education}</td>
-                    <td className="p-2 border border-slate-100 text-center">{p.field}</td>
-                    <td className="p-2 border border-slate-100 text-center font-mono">{p.tin}</td>
-                    <td className="p-2 border border-slate-100 text-center text-emerald-600">ارائه شده</td>
-                    <td className="p-2 border border-slate-100 text-center text-emerald-600">پاک</td>
+                    <td className="p-2 border border-slate-100 text-center">{p.field || '-'}</td>
+                    <td className="p-2 border border-slate-100 text-center">{p.infoForm || '-'}</td>
+                    <td className="p-2 border border-slate-100 text-center font-mono">{p.tin || '-'}</td>
+                    <td className="p-2 border border-slate-100 text-center">{p.criminalInquiry || '-'}</td>
+                    <td className="p-2 border border-slate-100 text-center">{p.sanctions || '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -253,33 +249,35 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
         </div>
 
         {/* Section 3: Signature Grid */}
-        <div className="grid grid-cols-5 gap-4 pt-8 text-center text-[9px] font-black text-slate-700">
-          <div className="space-y-12">
-            <div className="h-16 border-b border-slate-300 mx-auto w-24"></div>
-            <div>امضاء معاون آمریت</div>
+        <div className="grid grid-cols-5 gap-2 pt-8 text-center text-[9px] font-black text-slate-700">
+          <div className="space-y-4">
+            <div className="h-12 border-b border-slate-300 mx-auto w-24"></div>
+            <div>امضاء کارمند ولایتی</div>
+            <div className="text-[8px] font-normal text-slate-500">(در صورتیکه جواز مربوطه مربوط سایر ولایات باشد)</div>
           </div>
-          <div className="space-y-12">
-            <div className="h-16 border-b border-slate-300 mx-auto w-24"></div>
-            <div>امضاء مدیر ارشد جوازدهی</div>
+          <div className="space-y-4">
+            <div className="h-12 border-b border-slate-300 mx-auto w-24"></div>
+            <div>امضاء مدیر ارشد زون ساحوی</div>
+            <div className="text-[8px] font-normal text-slate-500">(در صورتیکه جواز مربوط مراکز زونها باشد)</div>
           </div>
-          <div className="space-y-12">
-            <div className="h-16 border-b border-slate-300 mx-auto w-24"></div>
+          <div className="space-y-4">
+            <div className="h-12 border-b border-slate-300 mx-auto w-24"></div>
             <div>امضاء مدیر جوازدهی</div>
           </div>
-          <div className="space-y-12">
-            <div className="h-16 border-b border-slate-300 mx-auto w-24"></div>
-            <div>امضاء مدیر ارشد زون ساحوی</div>
+          <div className="space-y-4">
+            <div className="h-12 border-b border-slate-300 mx-auto w-24"></div>
+            <div>امضاء مدیر ارشد جوازدهی</div>
           </div>
-          <div className="space-y-12">
-            <div className="h-16 border-b border-slate-300 mx-auto w-24"></div>
-            <div>امضاء کارمند ولایتی</div>
+          <div className="space-y-4">
+            <div className="h-12 border-b border-slate-300 mx-auto w-24"></div>
+            <div>امضاء معاون آمریت</div>
           </div>
         </div>
 
         {/* Section 4: Post-License Obligations */}
         <div className="space-y-4 pt-10 border-t-2 border-slate-200">
           <h3 className="text-sm font-black flex items-center gap-2 text-rose-900 border-r-4 border-rose-900 pr-3">
-            مکلفیت‌های بعد از دریافت جواز ( {data.companyName} ) - دارنده جواز {data.licenseNo}
+            مکلفیت های بعد از جواز شرکت صرافی و خدمات پولی ( برکت الله غفوری ) دارنده جواز شماره ( {data.licenseNo} ):
           </h3>
           <div className="overflow-hidden border border-slate-200 rounded-2xl">
             <table className="w-full text-[11px] text-right border-collapse">
