@@ -161,11 +161,7 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
       >
         {/* Header */}
         <div className="border-b-4 border-double border-slate-900 pb-6 text-center space-y-2">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-left text-[9px] font-bold text-slate-500 leading-tight w-40">
-              <div>FINANCIAL INSTITUTIONS SUPERVISION</div>
-              <div>Non-Bank Financial Institutions Supervision Department</div>
-            </div>
+          <div className="flex items-center justify-center mb-2">
             <div className="flex flex-col items-center">
               {customLogo ? (
                 <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain" />
@@ -174,10 +170,6 @@ export default function DabLicenseChecklist({ isEditMode = true, customLogo, onO
                   <Building2 className="w-7 h-7" />
                 </div>
               )}
-            </div>
-            <div className="text-right text-[9px] font-bold text-slate-800 leading-tight w-40">
-              <div className="text-[11px] font-black">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</div>
-              <div>مدیریت جوازدهی</div>
             </div>
           </div>
           <h1 className="text-xl font-black text-slate-900 mt-4">فورم موجودیت اسناد و شرایط برای صدور جواز فعالیت شرکت صرافی و خدمات پولی</h1>
