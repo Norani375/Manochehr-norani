@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
@@ -13,6 +13,7 @@ import DabLicenseRenewalLetter from '@/components/DabLicenseRenewalLetter';
 import MeetingMinutes from '@/components/MeetingMinutes';
 import DabLicenseChecklist from '@/components/DabLicenseChecklist';
 import EmployeeManagement from '@/components/EmployeeManagement';
+import CompanyArticles from '@/components/CompanyArticles';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
@@ -141,7 +142,7 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
 ];
 
 export default function OrgChartPage() {
-  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'employees'>('org-chart');
+  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'employees' | 'company-articles'>('org-chart');
   const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
@@ -553,6 +554,7 @@ export default function OrgChartPage() {
                 { id: 'meeting-minutes', icon: ClipboardList, label: 'صورتجلسات', color: 'text-orange-500' },
                 { id: 'license-checklist', icon: ClipboardCheck, label: 'چک‌لست اسناد', color: 'text-pink-500' },
                 { id: 'employees', icon: Users, label: 'مدیریت کارمندان', color: 'text-teal-500' },
+                { id: 'company-articles', icon: BookOpen, label: 'اساسنامه شرکت', color: 'text-amber-600' },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -655,6 +657,8 @@ export default function OrgChartPage() {
           <DabLicenseChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
         ) : activeTab === 'employees' ? (
           <EmployeeManagement customLogo={customLogo} isEditMode={isEditMode} />
+        ) : activeTab === 'company-articles' ? (
+          <CompanyArticles customLogo={customLogo} />
         ) : (
         <>
           {/* Real-time Live Dashboard Stats Widget */}
