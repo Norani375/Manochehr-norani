@@ -14,6 +14,7 @@ import MeetingMinutes from '@/components/MeetingMinutes';
 import DabLicenseChecklist from '@/components/DabLicenseChecklist';
 import EmployeeManagement from '@/components/EmployeeManagement';
 import CompanyArticles from '@/components/CompanyArticles';
+import CompanyProposal from '@/components/CompanyProposal';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
@@ -142,7 +143,7 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
 ];
 
 export default function OrgChartPage() {
-  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'employees' | 'company-articles'>('org-chart');
+  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'employees' | 'company-articles' | 'company-proposal'>('org-chart');
   const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
@@ -551,6 +552,7 @@ export default function OrgChartPage() {
                 { id: 'branch-renewal', icon: Building2, label: 'تمدید نمایندگی', color: 'text-emerald-500' },
                 { id: 'license-renewal', icon: ShieldCheck, label: 'تمدید جواز شرکت', color: 'text-purple-500' },
                 { id: 'license-renewal-letter', icon: Stamp, label: 'مکتوب رسمی', color: 'text-indigo-500' },
+                { id: 'company-proposal', icon: FileText, label: 'پیشنهاد به هیئت نظار', color: 'text-rose-500' },
                 { id: 'meeting-minutes', icon: ClipboardList, label: 'صورتجلسات', color: 'text-orange-500' },
                 { id: 'license-checklist', icon: ClipboardCheck, label: 'چک‌لست اسناد', color: 'text-pink-500' },
                 { id: 'employees', icon: Users, label: 'مدیریت کارمندان', color: 'text-teal-500' },
@@ -651,6 +653,8 @@ export default function OrgChartPage() {
           <DabLicenseRenewalForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
         ) : activeTab === 'license-renewal-letter' ? (
           <DabLicenseRenewalLetter isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+        ) : activeTab === 'company-proposal' ? (
+          <CompanyProposal customLogo={customLogo} />
         ) : activeTab === 'meeting-minutes' ? (
           <MeetingMinutes isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
         ) : activeTab === 'license-checklist' ? (
