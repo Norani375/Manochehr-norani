@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen, RefreshCw
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
@@ -12,6 +12,7 @@ import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
 import DabLicenseRenewalLetter from '@/components/DabLicenseRenewalLetter';
 import MeetingMinutes from '@/components/MeetingMinutes';
 import DabLicenseChecklist from '@/components/DabLicenseChecklist';
+import DabLicenseRenewalChecklist from '@/components/DabLicenseRenewalChecklist';
 import EmployeeManagement from '@/components/EmployeeManagement';
 import CompanyArticles from '@/components/CompanyArticles';
 import CompanyProposal from '@/components/CompanyProposal';
@@ -144,7 +145,7 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
 ];
 
 export default function OrgChartPage() {
-  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'employees' | 'company-articles' | 'company-proposal'>('org-chart');
+  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'license-renewal-checklist' | 'employees' | 'company-articles' | 'company-proposal'>('org-chart');
   const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
@@ -305,6 +306,12 @@ export default function OrgChartPage() {
           targetId: 'license-checklist-canvas',
           title: 'چک‌لست اسناد و شرایط صدور جواز فعالیت',
           filename: 'چک_لست_اسناد_جواز_برکت_الله_غفوری.pdf',
+        };
+      case 'license-renewal-checklist':
+        return {
+          targetId: 'dab-license-renewal-checklist-canvas',
+          title: 'چک‌لست اسناد و شرایط تمدید جواز فعالیت',
+          filename: 'چک_لست_تمدید_جواز_برکت_الله_غفوری.pdf',
         };
       default:
         return {
@@ -555,7 +562,8 @@ export default function OrgChartPage() {
                 { id: 'license-renewal-letter', icon: Stamp, label: 'مکتوب رسمی', color: 'text-indigo-500' },
                 { id: 'company-proposal', icon: FileText, label: 'پیشنهاد به هیئت نظار', color: 'text-rose-500' },
                 { id: 'meeting-minutes', icon: ClipboardList, label: 'صورتجلسات', color: 'text-orange-500' },
-                { id: 'license-checklist', icon: ClipboardCheck, label: 'چک‌لست اسناد', color: 'text-pink-500' },
+                { id: 'license-checklist', icon: ClipboardCheck, label: 'چک‌لست صدور جواز', color: 'text-pink-500' },
+                { id: 'license-renewal-checklist', icon: RefreshCw, label: 'چک‌لست تمدید جواز', color: 'text-emerald-600' },
                 { id: 'employees', icon: Users, label: 'مدیریت کارمندان', color: 'text-teal-500' },
                 { id: 'company-articles', icon: BookOpen, label: 'اساسنامه شرکت', color: 'text-amber-600' },
               ].map((item) => (
@@ -660,6 +668,8 @@ export default function OrgChartPage() {
           <MeetingMinutes isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
         ) : activeTab === 'license-checklist' ? (
           <DabLicenseChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+        ) : activeTab === 'license-renewal-checklist' ? (
+          <DabLicenseRenewalChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
         ) : activeTab === 'employees' ? (
           <EmployeeManagement customLogo={customLogo} isEditMode={isEditMode} />
         ) : activeTab === 'company-articles' ? (
