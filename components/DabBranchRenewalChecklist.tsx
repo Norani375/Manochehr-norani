@@ -120,7 +120,7 @@ const DEFAULT_BRANCH_RENEWAL_CHECKLIST: BranchRenewalChecklistData = {
 
 const BRANCH_PRESETS = [
   {
-    name: 'نمایندگی کابل (سرای شهزاده)',
+    name: 'نمایندگی ۱: کابل (سرای شهزاده)',
     branchNo: '۱ (کابل)',
     marketName: 'مارکیت سرای شهزاده',
     shopNo: 'منزل اول دکان ۱۸۸',
@@ -130,7 +130,7 @@ const BRANCH_PRESETS = [
     repTazkira: '1400-107-46338'
   },
   {
-    name: 'نمایندگی تخار (تالقان)',
+    name: 'نمایندگی ۲: تخار (تالقان)',
     branchNo: '۲ (تخار)',
     marketName: 'صرافی صرافان تخار',
     shopNo: 'دکان ۱۲',
@@ -140,14 +140,44 @@ const BRANCH_PRESETS = [
     repTazkira: '1400-1305-16532'
   },
   {
-    name: 'نمایندگی فیض‌آباد (بدخشان)',
-    branchNo: '۳ (بدخشان)',
+    name: 'نمایندگی ۳: کندز (امام‌صاحب)',
+    branchNo: '۳ (امام‌صاحب)',
     marketName: 'مارکیت مرکزی صرافان',
+    shopNo: 'دکان ۴۵',
+    districtProvince: 'امام‌صاحب / کندز',
+    repName: 'محمد یوسف',
+    repFather: 'عبدالمجید',
+    repTazkira: '1399-1205-98680'
+  },
+  {
+    name: 'نمایندگی ۴: بدخشان (کشم)',
+    branchNo: '۴ (کشم)',
+    marketName: 'مارکیت صرافان کشم',
     shopNo: 'دکان ۵',
+    districtProvince: 'کشم / بدخشان',
+    repName: 'عتیق‌الله',
+    repFather: 'شمس‌الدین',
+    repTazkira: '7252'
+  },
+  {
+    name: 'نمایندگی ۵: بدخشان (فیض‌آباد)',
+    branchNo: '۵ (فیض‌آباد)',
+    marketName: 'مارکیت مرکزی صرافان',
+    shopNo: 'دکان ۱۰',
     districtProvince: 'فیض‌آباد / بدخشان',
     repName: 'نظام‌الدین',
     repFather: 'محی‌الدین',
     repTazkira: '1399-1002-55412'
+  },
+  {
+    name: 'نمایندگی ۶: بلخ (مزارشریف)',
+    branchNo: '۶ (مزارشریف)',
+    marketName: 'مارکیت سرای کفایت',
+    shopNo: 'دکان ۲۴',
+    districtProvince: 'مزارشریف / بلخ',
+    repName: 'سمیع‌الله',
+    repFather: 'اسدالله',
+    repTazkira: '1401-1502-99812'
   }
 ];
 

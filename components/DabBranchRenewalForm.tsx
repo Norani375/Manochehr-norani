@@ -137,6 +137,40 @@ export const REAL_BRANCHES_PRESETS: BranchPreset[] = [
     repResVillage: 'مرکز کشم',
     educationLevel: 'baccalaureate',
   },
+  {
+    id: 'badakhshan_faizabad',
+    title: 'نمایندگی پنجم: ولایت بدخشان / فیض‌آباد (7-0965-A5)',
+    branchNo: 'پنجم',
+    branchProvince: 'بدخشان',
+    branchMarketName: 'مارکیت مرکزی صرافان',
+    branchShopNo: 'دکان ۱۰',
+    branchLocation: 'مرکز فیض‌آباد، مارکیت صرافان',
+    repName: 'نظام‌الدین',
+    repFatherName: 'محی‌الدین',
+    repTazkiraNo: '1399-1002-55412',
+    repPhone: '0700123456',
+    repResProv: 'بدخشان',
+    repResDistrict: 'فیض‌آباد',
+    repResVillage: 'مرکز',
+    educationLevel: 'higher',
+  },
+  {
+    id: 'balkh_mazar',
+    title: 'نمایندگی ششم: ولایت بلخ / مزارشریف (7-0965-A6)',
+    branchNo: 'ششم',
+    branchProvince: 'بلخ',
+    branchMarketName: 'مارکیت سرای کفایت',
+    branchShopNo: 'دکان ۲۴',
+    branchLocation: 'مزارشریف، سرای کفایت',
+    repName: 'سمیع‌الله',
+    repFatherName: 'اسدالله',
+    repTazkiraNo: '1401-1502-99812',
+    repPhone: '0799887766',
+    repResProv: 'بلخ',
+    repResDistrict: 'مزارشریف',
+    repResVillage: 'مرکز',
+    educationLevel: 'baccalaureate',
+  },
 ];
 
 const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
@@ -350,7 +384,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
               <span className="font-bold text-sm">انتخاب سریع نمایندگی‌های واقعی شرکت برکت‌الله غفوری (جواز 7-0965):</span>
             </div>
             <span className="text-xs text-blue-200 bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-800 font-mono">
-              ۵ نمایندگی رسمی فعال
+              ۶ نمایندگی رسمی فعال
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
