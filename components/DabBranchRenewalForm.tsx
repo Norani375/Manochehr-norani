@@ -377,8 +377,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
       </div>
 
       {/* Quick Branch Selection Bar */}
-      {isEditMode && (
-        <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-2xl p-4 mb-6 shadow-md print:hidden">
+      <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-2xl p-4 mb-6 shadow-md print:hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
             <div className="flex items-center gap-2">
               <Building className="w-5 h-5 text-amber-400" />
@@ -422,7 +421,6 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
             })}
           </div>
         </div>
-      )}
 
       {/* Official Form Canvas */}
       {(renderAll ? REAL_BRANCHES_PRESETS.map(p => ({...data, ...p})) : [data]).map((branchData, index) => (

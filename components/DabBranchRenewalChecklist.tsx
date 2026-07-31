@@ -488,18 +488,28 @@ export default function DabBranchRenewalChecklist({
       </div>
 
       {/* Preset bar & Quick editing inputs in edit mode */}
-      {isEditing && (
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-3 text-xs print:hidden">
+      <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-3 text-xs print:hidden">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-bold text-slate-700 dark:text-slate-300">
               بارگذاری سریع مشخصات نمایندگی:
             </span>
-            {BRANCH_PRESETS.map((p, i) => (
-              <button
-                key={i}
-                onClick={() => loadBranchPreset(p)}
-                className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:border-teal-500 text-slate-800 dark:text-slate-200 font-bold text-[11px]"
-              >
+            
+          <button
+            onClick={() => setRenderAll(true)}
+            className={`px-3 py-1.5 rounded-lg border font-bold text-[11px] ${
+              renderAll ? 'bg-teal-600 text-white border-teal-700 shadow-sm' : 'bg-white text-slate-800 border-slate-300 hover:border-teal-500'
+            }`}
+          >
+            همه نمایندگی‌ها (۶ فرم)
+          </button>
+          {BRANCH_PRESETS.map((p, i) => (
+            <button
+              key={i}
+              onClick={() => { setRenderAll(false); loadBranchPreset(p); }}
+              className={`px-2.5 py-1 rounded-lg border font-bold text-[11px] ${
+                (!renderAll && data.branchNo === p.branchNo) ? 'bg-slate-800 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-300 hover:border-teal-500'
+              }`} >
+
                 {p.name}
               </button>
             ))}
@@ -556,7 +566,6 @@ export default function DabBranchRenewalChecklist({
             </div>
           </div>
         </div>
-      )}
 
       {/* Main Document Canvas */}
       {(renderAll
