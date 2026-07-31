@@ -241,6 +241,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [data, setData] = useState<BranchRenewalData>(DEFAULT_BRANCH_RENEWAL_DATA);
   const [isSaved, setIsSaved] = useState(false);
+  const [renderAll, setRenderAll] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -388,13 +389,26 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            
+            <button
+              type="button"
+              onClick={() => setRenderAll(true)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                renderAll 
+                  ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-[1.02]' 
+                  : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
+              }`}
+            >
+              <span>همه نمایندگی‌ها (۶ فرم)</span>
+            </button>
             {REAL_BRANCHES_PRESETS.map((preset) => {
-              const isSelected = data.branchProvince === preset.branchProvince && data.repName === preset.repName;
+              const isSelected = !renderAll && data.branchProvince === preset.branchProvince && data.repName === preset.repName;
               return (
                 <button
                   key={preset.id}
                   type="button"
-                  onClick={() => handleSelectPreset(preset)}
+                  onClick={() => { setRenderAll(false); handleSelectPreset(preset); }}
+
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
                     isSelected 
                       ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-[1.02]' 
@@ -411,7 +425,8 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
       )}
 
       {/* Official Form Canvas */}
-      <div id="dab-branch-renewal-canvas" className="bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0">
+      {(renderAll ? REAL_BRANCHES_PRESETS.map(p => ({...data, ...p})) : [data]).map((branchData, index) => (
+      <div key={index} id={renderAll ? `dab-branch-renewal-canvas-${index}` : "dab-branch-renewal-canvas"} className={`bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0 ${renderAll ? 'break-after-page mb-8 print:mb-0' : ''}`}>
         
         {/* Header */}
         <div className="relative text-center mb-6 pb-4 border-b-2 border-slate-900">
@@ -484,16 +499,16 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <tr>
                   <td className="border border-slate-400 bg-slate-100 p-2 font-bold w-1/4">نام شرکت:</td>
                   <td className="border border-slate-400 p-1.5 font-bold text-blue-950" colSpan={3}>
-                    <EditableField isEditMode={isEditMode}
-                      value={data.companyName}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.companyName}
                       onChange={(val) => updateField('companyName', val)}
                       className="font-bold text-blue-900"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-100 p-2 font-bold w-1/6">شماره جواز:</td>
                   <td className="border border-slate-400 p-1.5 font-bold font-mono">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.licenseNo}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.licenseNo}
                       onChange={(val) => updateField('licenseNo', val)}
                       className="font-mono text-center"
                     />
@@ -512,29 +527,29 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 </tr>
                 <tr>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.centralProvince}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.centralProvince}
                       onChange={(val) => updateField('centralProvince', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.centralDistrict}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.centralDistrict}
                       onChange={(val) => updateField('centralDistrict', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.centralMarket}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.centralMarket}
                       onChange={(val) => updateField('centralMarket', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1" colSpan={2}>
-                    <EditableField isEditMode={isEditMode}
-                      value={data.centralShopNo}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.centralShopNo}
                       onChange={(val) => updateField('centralShopNo', val)}
                       className="text-center"
                     />
@@ -553,15 +568,15 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 </tr>
                 <tr>
                   <td className="border border-slate-400 p-1" colSpan={2}>
-                    <EditableField isEditMode={isEditMode}
-                      value={data.companyPhone}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.companyPhone}
                       onChange={(val) => updateField('companyPhone', val)}
                       className="font-mono text-center"
                     />
                   </td>
                   <td className="border border-slate-400 p-1" colSpan={3}>
-                    <EditableField isEditMode={isEditMode}
-                      value={data.companyEmail}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.companyEmail}
                       onChange={(val) => updateField('companyEmail', val)}
                       className="font-mono text-center"
                     />
@@ -594,24 +609,24 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ولایت</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.branchProvince}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.branchProvince}
                       onChange={(val) => updateField('branchProvince', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ولایت</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.repResProv}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.repResProv}
                       onChange={(val) => updateField('repResProv', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">اسم</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.repName}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.repName}
                       onChange={(val) => updateField('repName', val)}
                       className="font-bold text-blue-900 text-center"
                     />
@@ -621,24 +636,24 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">شماره نمایندگی</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.branchNo}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.branchNo}
                       onChange={(val) => updateField('branchNo', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ناحیه/ولسوالی</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.repResDistrict}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.repResDistrict}
                       onChange={(val) => updateField('repResDistrict', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">ولد</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.repFatherName}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.repFatherName}
                       onChange={(val) => updateField('repFatherName', val)}
                       className="text-center"
                     />
@@ -648,24 +663,24 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">اسم مارکیت</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.branchMarketName}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.branchMarketName}
                       onChange={(val) => updateField('branchMarketName', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">قریه</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.repResVillage}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.repResVillage}
                       onChange={(val) => updateField('repResVillage', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">نمبر تذکره</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.repTazkiraNo}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.repTazkiraNo}
                       onChange={(val) => updateField('repTazkiraNo', val)}
                       className="font-mono text-center"
                     />
@@ -675,24 +690,24 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <tr>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">شماره دکان و منزل</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.branchShopNo}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.branchShopNo}
                       onChange={(val) => updateField('branchShopNo', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">محل فعالیت</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.branchLocation}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.branchLocation}
                       onChange={(val) => updateField('branchLocation', val)}
                       className="text-center"
                     />
                   </td>
                   <td className="border border-slate-400 bg-slate-50 p-1 font-semibold">شماره تماس نماینده</td>
                   <td className="border border-slate-400 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.repPhone}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.repPhone}
                       onChange={(val) => updateField('repPhone', val)}
                       className="font-mono text-center"
                     />
@@ -721,7 +736,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                     <input
                       type="radio"
                       name="educationLevel"
-                      checked={data.educationLevel === 'baccalaureate'}
+                      checked={branchData.educationLevel === 'baccalaureate'}
                       onChange={() => updateField('educationLevel', 'baccalaureate')}
                       className="w-4 h-4 text-blue-900"
                     />
@@ -732,7 +747,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                     <input
                       type="radio"
                       name="educationLevel"
-                      checked={data.educationLevel === 'higher'}
+                      checked={branchData.educationLevel === 'higher'}
                       onChange={() => updateField('educationLevel', 'higher')}
                       className="w-4 h-4 text-blue-900"
                     />
@@ -743,7 +758,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                     <input
                       type="radio"
                       name="educationLevel"
-                      checked={data.educationLevel === 'other'}
+                      checked={branchData.educationLevel === 'other'}
                       onChange={() => updateField('educationLevel', 'other')}
                       className="w-4 h-4 text-blue-900"
                     />
@@ -754,18 +769,18 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <div className="flex items-center gap-2 text-blue-900 font-bold">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>
-                    {data.educationLevel === 'baccalaureate' ? 'بکلوریا (۱۲ پاس)' : 
-                     data.educationLevel === 'higher' ? 'دارای تحصیلات عالی (لیسانس / ماستر)' : 
-                     `سایر موارد: ${data.educationOtherText}`}
+                    {branchData.educationLevel === 'baccalaureate' ? 'بکلوریا (۱۲ پاس)' : 
+                     branchData.educationLevel === 'higher' ? 'دارای تحصیلات عالی (لیسانس / ماستر)' : 
+                     `سایر موارد: ${branchData.educationOtherText}`}
                   </span>
                 </div>
               )}
             </div>
 
-            {isEditMode && data.educationLevel === 'other' && (
+            {isEditMode && branchData.educationLevel === 'other' && (
               <div className="mt-2">
-                <EditableField isEditMode={isEditMode}
-                  value={data.educationOtherText}
+                <EditableField isEditMode={renderAll ? false : isEditMode}
+                  value={branchData.educationOtherText}
                   onChange={(val) => updateField('educationOtherText', val)}
                   placeholder="سایر موارد سطح تحصیلات..."
                 />
@@ -780,21 +795,21 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
             </p>
             <p>
               این جانب (
-              <EditableField isEditMode={isEditMode}
-                value={data.boardHeadName}
+              <EditableField isEditMode={renderAll ? false : isEditMode}
+                value={branchData.boardHeadName}
                 onChange={(val) => updateField('boardHeadName', val)}
                 className="font-bold text-blue-900 w-36 text-center text-xs"
               />
               ) ولد (
-              <EditableField isEditMode={isEditMode}
-                value={data.boardHeadFather}
+              <EditableField isEditMode={renderAll ? false : isEditMode}
+                value={branchData.boardHeadFather}
                 onChange={(val) => updateField('boardHeadFather', val)}
                 className="font-bold w-36 text-center text-xs"
               />
               ) رییس هیأت نظار شرکت صرافی و خدمات پولی (
-              <span className="font-bold">{data.companyName}</span>) دارای جواز نمبر (
-              <span className="font-bold">{data.licenseNo}</span>) از اهلیت و شهرت نیک نماینده با صلاحیت (
-              <span className="font-bold text-blue-900">{data.repName}</span>) تصدیق نموده و موصوف را منحیث نماینده رسمی شرکت به د افغانستان بانک معرفی می نمایم. همچنان بدین وسیله اقرار مینمایم که معلومات ارائه شده در فورم درخواستی هذا را با تمام هوش و حواس خویش خانه پوری نموده و درست و کامل میباشد.
+              <span className="font-bold">{branchData.companyName}</span>) دارای جواز نمبر (
+              <span className="font-bold">{branchData.licenseNo}</span>) از اهلیت و شهرت نیک نماینده با صلاحیت (
+              <span className="font-bold text-blue-900">{branchData.repName}</span>) تصدیق نموده و موصوف را منحیث نماینده رسمی شرکت به د افغانستان بانک معرفی می نمایم. همچنان بدین وسیله اقرار مینمایم که معلومات ارائه شده در فورم درخواستی هذا را با تمام هوش و حواس خویش خانه پوری نموده و درست و کامل میباشد.
             </p>
           </div>
 
@@ -852,15 +867,15 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <tr className="border-b border-slate-300">
                   <td className="border-r border-slate-300 p-2 font-bold bg-slate-50">رئیس هیئت نظار</td>
                   <td className="border-r border-slate-300 p-2 font-bold text-blue-900">
-                    {data.boardHeadName}
+                    {branchData.boardHeadName}
                   </td>
                   <td className="p-2">______________________</td>
                 </tr>
                 <tr className="border-b border-slate-300">
                   <td className="border-r border-slate-300 p-2 font-bold bg-slate-50">سهمدار</td>
                   <td className="border-r border-slate-300 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.shareholder1Name}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.shareholder1Name}
                       onChange={(val) => updateField('shareholder1Name', val)}
                       className="text-center font-bold"
                     />
@@ -870,8 +885,8 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
                 <tr>
                   <td className="border-r border-slate-300 p-2 font-bold bg-slate-50">سهمدار</td>
                   <td className="border-r border-slate-300 p-1">
-                    <EditableField isEditMode={isEditMode}
-                      value={data.shareholder2Name}
+                    <EditableField isEditMode={renderAll ? false : isEditMode}
+                      value={branchData.shareholder2Name}
                       onChange={(val) => updateField('shareholder2Name', val)}
                       className="text-center font-bold"
                     />
@@ -884,12 +899,12 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
 
           <div className="mt-4 flex flex-wrap justify-between items-center text-xs font-bold pt-2">
             <div>
-              مُهر شرکت صرافی و خدمات پولی: <span className="text-blue-900">{data.companyName}</span>
+              مُهر شرکت صرافی و خدمات پولی: <span className="text-blue-900">{branchData.companyName}</span>
             </div>
             <div>
               تاریخ: 
-              <EditableField isEditMode={isEditMode}
-                value={data.formDate}
+              <EditableField isEditMode={renderAll ? false : isEditMode}
+                value={branchData.formDate}
                 onChange={(val) => updateField('formDate', val)}
                 className="inline-block mx-2 text-center font-mono w-32"
               />
@@ -952,14 +967,15 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
 
           <div className="text-center space-y-1.5 min-w-[200px]">
             <div className="font-bold text-slate-700 text-xs">با احترام؛</div>
-            <div className="font-black text-sm text-slate-950">{data.repName || "محمد اشرف ولد محمد مراد"}</div>
-            <div className="text-xs font-bold text-blue-900">{`نماینده باصلاحیت نمایندگی ${data.branchProvince}`}</div>
+            <div className="font-black text-sm text-slate-950">{branchData.repName || "محمد اشرف ولد محمد مراد"}</div>
+            <div className="text-xs font-bold text-blue-900">{`نماینده باصلاحیت نمایندگی ${branchData.branchProvince}`}</div>
             <div className="pt-6 font-bold text-slate-600 text-[10px] border-t border-slate-300 mt-2">
               امضاء و شصت
             </div>
           </div>
         </div>
       </div>
+      ))}
     </div>
   );
 }
