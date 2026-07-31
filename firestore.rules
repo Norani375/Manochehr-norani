@@ -1,38 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Default deny catch-all
     match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // Helper functions
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
-    }
-
-    // Personnel collection - allow read and write for organizational chart records
-    match /personnel/{personnelKey} {
-      allow read: if true;
-      allow create, update: if request.resource.data.keys().hasAll(['id', 'name', 'title', 'category', 'key'])
-        && request.resource.data.id is string
-        && request.resource.data.name is string
-        && request.resource.data.title is string
-        && request.resource.data.category is string;
-      allow delete: if true;
-    }
-
-    // Settings collection
-    match /settings/{settingId} {
-      allow read: if true;
-      allow create, update: if true; // Loosened for various document types
-      allow delete: if true;
-    }
-
-    // Employees collection - Comprehensive records
-    match /employees/{employeeId} {
-      allow read: if true;
-      allow create, update, delete: if true; // Loosened for demo/preview, should be tightened later
+      allow read, write: if true;
     }
   }
 }

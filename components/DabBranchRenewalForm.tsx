@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon, Download } from 'lucide-react';
 
 export interface BranchRenewalData {
@@ -244,6 +246,23 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
   const [renderAll, setRenderAll] = useState(false);
 
   useEffect(() => {
+    try {
+      const docRef = doc(db, 'settings', 'branch_renewal_form_v1');
+      const unsubscribe = onSnapshot(docRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const remoteData = snapshot.data();
+          if (remoteData?.formData) {
+            setData(prev => ({ ...prev, ...remoteData.formData }));
+          }
+        }
+      });
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Firebase load error:", error);
+    }
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setLocalLogo(localStorage.getItem('custom_company_logo'));
       try {
@@ -266,13 +285,15 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
 
   const customLogo = propLogo !== undefined ? propLogo : localLogo;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       localStorage.setItem('dab_branch_renewal_data', JSON.stringify(data));
+      const docRef = doc(db, 'settings', 'branch_renewal_form_v1');
+      await setDoc(docRef, { formData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 3000);
+      setTimeout(() => setIsSaved(false), 2000);
     } catch (e) {
-      console.error('Failed to save data', e);
+      console.error('Failed to save', e);
     }
   };
 

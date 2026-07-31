@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { UserCheck, Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, Image as ImageIcon, Download } from 'lucide-react';
 
 export interface Guarantor {
@@ -129,6 +131,23 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
+    try {
+      const docRef = doc(db, 'settings', 'guarantee_form_v1');
+      const unsubscribe = onSnapshot(docRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const remoteData = snapshot.data();
+          if (remoteData?.formData) {
+            setFormData(prev => ({ ...prev, ...remoteData.formData }));
+          }
+        }
+      });
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Firebase load error:", error);
+    }
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setLocalLogo(localStorage.getItem('custom_company_logo'));
       try {
@@ -151,9 +170,11 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
 
   const customLogo = propLogo !== undefined ? propLogo : localLogo;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       localStorage.setItem('dab_guarantee_form_data', JSON.stringify(formData));
+      const docRef = doc(db, 'settings', 'guarantee_form_v1');
+      await setDoc(docRef, { formData, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (e) {

@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { Building, FileText, Printer, RotateCcw, Save, Plus, Trash2, Image as ImageIcon, Download } from 'lucide-react';
 
 export interface LicenseRenewalShareholder {
@@ -232,6 +234,23 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
+    try {
+      const docRef = doc(db, 'settings', 'license_renewal_form_v1');
+      const unsubscribe = onSnapshot(docRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const remoteData = snapshot.data();
+          if (remoteData?.formData) {
+            setData(prev => ({ ...prev, ...remoteData.formData }));
+          }
+        }
+      });
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Firebase load error:", error);
+    }
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setLocalLogo(localStorage.getItem('custom_company_logo'));
       try {
@@ -254,9 +273,11 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
 
   const customLogo = propLogo !== undefined ? propLogo : localLogo;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       localStorage.setItem('dab_license_renewal_data', JSON.stringify(data));
+      const docRef = doc(db, 'settings', 'license_renewal_form_v1');
+      await setDoc(docRef, { formData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (e) {
