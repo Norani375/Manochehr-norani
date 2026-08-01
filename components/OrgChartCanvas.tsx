@@ -122,14 +122,15 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
 };
 
 interface OrgChartCanvasProps {
+  companyId?: string;
   customLogo?: string | null;
 }
 
-export default function OrgChartCanvas({ customLogo }: OrgChartCanvasProps) {
+export default function OrgChartCanvas({ customLogo , companyId = "default" }: OrgChartCanvasProps) {
   const [data, setData] = useState<OrgChartData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_org_chart_v2');
+        const saved = localStorage.getItem(`bg_org_chart_v2_${companyId}`);
         if (saved) return { ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) };
       } catch (e) {
         console.error(e);
@@ -145,7 +146,7 @@ export default function OrgChartCanvas({ customLogo }: OrgChartCanvasProps) {
   // Sync with Firestore
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'org_chart_v2');
+      const docRef = doc(db, 'settings', `org_chart_v2_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remote = snapshot.data();
@@ -162,9 +163,9 @@ export default function OrgChartCanvas({ customLogo }: OrgChartCanvasProps) {
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_org_chart_v2', JSON.stringify(data));
+      localStorage.setItem(`bg_org_chart_v2_${companyId}`, JSON.stringify(data));
       try {
-        const docRef = doc(db, 'settings', 'org_chart_v2');
+        const docRef = doc(db, 'settings', `org_chart_v2_${companyId}`);
         await setDoc(docRef, {
           orgChartData: data,
           updatedAt: new Date().toISOString()
@@ -182,7 +183,7 @@ export default function OrgChartCanvas({ customLogo }: OrgChartCanvasProps) {
   const handleReset = () => {
     if (window.confirm('آیا از بازنشانی چارت تشکیلاتی به حالت مطابق سند رسمی اطمینان دارید؟')) {
       setData(DEFAULT_ORG_CHART_DATA);
-      localStorage.removeItem('bg_org_chart_v2');
+      localStorage.removeItem(`bg_org_chart_v2_${companyId}`);
     }
   };
 

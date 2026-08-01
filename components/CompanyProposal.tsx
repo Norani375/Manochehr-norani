@@ -69,14 +69,15 @@ const DEFAULT_PROPOSAL_DATA: ProposalData = {
 };
 
 interface CompanyProposalProps {
+  companyId?: string;
   customLogo?: string | null;
 }
 
-export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
+export default function CompanyProposal({ customLogo, companyId = 'default' }: CompanyProposalProps) {
   const [data, setData] = useState<ProposalData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_company_proposal_v3');
+        const saved = localStorage.getItem(`bg_company_proposal_v3_${companyId}`);
         if (saved) return { ...DEFAULT_PROPOSAL_DATA, ...JSON.parse(saved) };
       } catch (e) {
         console.error(e);
@@ -92,7 +93,7 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
   // Sync with Firestore
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'company_proposal_v3');
+      const docRef = doc(db, 'settings', `company_proposal_v3_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remote = snapshot.data();
@@ -109,9 +110,9 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_company_proposal_v3', JSON.stringify(data));
+      localStorage.setItem(`bg_company_proposal_v3_${companyId}`, JSON.stringify(data));
       try {
-        const docRef = doc(db, 'settings', 'company_proposal_v3');
+        const docRef = doc(db, 'settings', `company_proposal_v3_${companyId}`);
         await setDoc(docRef, {
           proposalData: data,
           updatedAt: new Date().toISOString()
@@ -129,7 +130,7 @@ export default function CompanyProposal({ customLogo }: CompanyProposalProps) {
   const handleReset = () => {
     if (window.confirm('آیا از بازنشانی متن پیشنهاد به حالت اولیه اطمینان دارید؟')) {
       setData(DEFAULT_PROPOSAL_DATA);
-      localStorage.removeItem('bg_company_proposal_v2');
+      localStorage.removeItem(`bg_company_proposal_v2_${companyId}`);
     }
   };
 

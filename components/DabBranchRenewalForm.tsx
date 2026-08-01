@@ -239,7 +239,7 @@ const EditableField = ({ isEditMode, value, onChange, placeholder, className = "
   return <span className={`inline-block py-1 font-bold text-blue-900 border-b border-transparent ${className}`}>{value || '---'}</span>;
 };
 
-export default function DabBranchRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf }: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
+export default function DabBranchRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [data, setData] = useState<BranchRenewalData>(DEFAULT_BRANCH_RENEWAL_DATA);
   const [isSaved, setIsSaved] = useState(false);
@@ -247,7 +247,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'branch_renewal_form_v1');
+      const docRef = doc(db, 'settings', `branch_renewal_form_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -264,9 +264,9 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLocalLogo(localStorage.getItem('custom_company_logo'));
+      setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
       try {
-        const saved = localStorage.getItem('dab_branch_renewal_data');
+        const saved = localStorage.getItem(`dab_branch_renewal_data_${companyId}`);
         if (saved) setData(JSON.parse(saved));
       } catch (e) {
         console.error('Failed to load DAB branch renewal form', e);
@@ -274,7 +274,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
     }, 0);
 
     const handleLogoUpdate = () => {
-      setLocalLogo(localStorage.getItem('custom_company_logo'));
+      setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
     };
     window.addEventListener('custom_logo_updated', handleLogoUpdate);
     return () => {
@@ -287,8 +287,8 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('dab_branch_renewal_data', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'branch_renewal_form_v1');
+      localStorage.setItem(`dab_branch_renewal_data_${companyId}`, JSON.stringify(data));
+      const docRef = doc(db, 'settings', `branch_renewal_form_v1_${companyId}`);
       await setDoc(docRef, { formData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
@@ -300,7 +300,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
   const handleReset = () => {
     if (confirm('آیا مطمئن هستید که می‌خواهید تمام مقادیر این فورم به اطلاعات پیش‌فرض بازگردد؟')) {
       setData(DEFAULT_BRANCH_RENEWAL_DATA);
-      localStorage.removeItem('dab_branch_renewal_data');
+      localStorage.removeItem(`dab_branch_renewal_data_${companyId}`);
     }
   };
 

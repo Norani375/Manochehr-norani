@@ -105,17 +105,18 @@ const DEFAULT_LETTER_DATA: LicenseRenewalLetterData = {
 };
 
 interface DabLicenseRenewalLetterProps {
+  companyId?: string;
   isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
   onExportPdf?: () => void;
 }
 
-export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: DabLicenseRenewalLetterProps) {
+export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf, companyId = 'default' }: DabLicenseRenewalLetterProps) {
   const [data, setData] = useState<LicenseRenewalLetterData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_dab_license_renewal_letter_v2');
+        const saved = localStorage.getItem(`bg_dab_license_renewal_letter_v2_${companyId}`);
         if (saved) {
           const parsed = JSON.parse(saved);
           return { ...DEFAULT_LETTER_DATA, ...parsed };
@@ -133,7 +134,7 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
   // Firestore Sync
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'license_renewal_letter_v2');
+      const docRef = doc(db, 'settings', `license_renewal_letter_v2_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -153,10 +154,10 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_dab_license_renewal_letter_v2', JSON.stringify(data));
+      localStorage.setItem(`bg_dab_license_renewal_letter_v2_${companyId}`, JSON.stringify(data));
       
       try {
-        const docRef = doc(db, 'settings', 'license_renewal_letter_v2');
+        const docRef = doc(db, 'settings', `license_renewal_letter_v2_${companyId}`);
         await setDoc(docRef, {
           letterData: data,
           updatedAt: new Date().toISOString()
@@ -175,7 +176,7 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
   const handleReset = () => {
     if (window.confirm('آیا از بازنشانی مکتوب تمدید جواز به متن دقیق سند رسمی اطمینان دارید؟')) {
       setData(DEFAULT_LETTER_DATA);
-      localStorage.removeItem('bg_dab_license_renewal_letter_v2');
+      localStorage.removeItem(`bg_dab_license_renewal_letter_v2_${companyId}`);
     }
   };
 

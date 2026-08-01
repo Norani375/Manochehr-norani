@@ -67,8 +67,8 @@ export interface CompanySettings {
 }
 
 // Sync all personnel to Firestore
-export async function savePersonnelToFirestore(personnelList: PersonnelNode[]) {
-  const path = 'personnel';
+export async function savePersonnelToFirestore(personnelList: PersonnelNode[], companyId: string = 'default') {
+  const path = `companies/${companyId}/personnel`;
   try {
     for (const p of personnelList) {
       await setDoc(doc(db, path, p.key), {
@@ -85,10 +85,10 @@ export async function savePersonnelToFirestore(personnelList: PersonnelNode[]) {
 }
 
 // Save single node update
-export async function saveSinglePersonnelToFirestore(p: PersonnelNode) {
-  const path = `personnel/${p.key}`;
+export async function saveSinglePersonnelToFirestore(p: PersonnelNode, companyId: string = 'default') {
+  const path = `companies/${companyId}/personnel/${p.key}`;
   try {
-    await setDoc(doc(db, 'personnel', p.key), {
+    await setDoc(doc(db, `companies/${companyId}/personnel`, p.key), {
       id: p.id,
       name: p.name,
       title: p.title,
@@ -101,20 +101,20 @@ export async function saveSinglePersonnelToFirestore(p: PersonnelNode) {
 }
 
 // Delete single node
-export async function deletePersonnelFromFirestore(key: string) {
-  const path = `personnel/${key}`;
+export async function deletePersonnelFromFirestore(key: string, companyId: string = 'default') {
+  const path = `companies/${companyId}/personnel/${key}`;
   try {
-    await deleteDoc(doc(db, 'personnel', key));
+    await deleteDoc(doc(db, `companies/${companyId}/personnel`, key));
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, path);
   }
 }
 
 // Save company settings
-export async function saveSettingsToFirestore(settings: CompanySettings) {
-  const path = 'settings/company';
+export async function saveSettingsToFirestore(settings: Partial<CompanySettings>, companyId: string = 'default') {
+  const path = `companies/${companyId}/settings/company`;
   try {
-    await setDoc(doc(db, 'settings', 'company'), {
+    await setDoc(doc(db, `companies/${companyId}/settings`, 'company'), {
       issueDate: settings.issueDate,
       customLogo: settings.customLogo || null
     });
@@ -124,8 +124,8 @@ export async function saveSettingsToFirestore(settings: CompanySettings) {
 }
 
 // Subscribe to real-time personnel updates
-export function subscribePersonnel(callback: (list: PersonnelNode[]) => void) {
-  const path = 'personnel';
+export function subscribePersonnel(callback: (list: PersonnelNode[]) => void, companyId: string = 'default') {
+  const path = `companies/${companyId}/personnel`;
   return onSnapshot(
     collection(db, path),
     (snapshot) => {
@@ -151,10 +151,10 @@ export function subscribePersonnel(callback: (list: PersonnelNode[]) => void) {
 }
 
 // Subscribe to real-time settings updates
-export function subscribeSettings(callback: (settings: CompanySettings) => void) {
-  const path = 'settings/company';
+export function subscribeSettings(callback: (settings: CompanySettings) => void, companyId: string = 'default') {
+  const path = `companies/${companyId}/settings/company`;
   return onSnapshot(
-    doc(db, 'settings', 'company'),
+    doc(db, `companies/${companyId}/settings`, 'company'),
     (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.data();
@@ -190,10 +190,10 @@ export interface EmployeeRecord {
 }
 
 // Save employee record
-export async function saveEmployee(employee: EmployeeRecord) {
-  const path = `employees/${employee.id}`;
+export async function saveEmployee(employee: EmployeeRecord, companyId: string = 'default') {
+  const path = `companies/${companyId}/employees/${employee.id}`;
   try {
-    await setDoc(doc(db, 'employees', employee.id), {
+    await setDoc(doc(db, `companies/${companyId}/employees`, employee.id), {
       ...employee,
       updatedAt: new Date().toISOString()
     });
@@ -203,18 +203,18 @@ export async function saveEmployee(employee: EmployeeRecord) {
 }
 
 // Delete employee record
-export async function deleteEmployee(id: string) {
-  const path = `employees/${id}`;
+export async function deleteEmployee(id: string, companyId: string = 'default') {
+  const path = `companies/${companyId}/employees/${id}`;
   try {
-    await deleteDoc(doc(db, 'employees', id));
+    await deleteDoc(doc(db, `companies/${companyId}/employees`, id));
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, path);
   }
 }
 
 // Subscribe to employees
-export function subscribeEmployees(callback: (employees: EmployeeRecord[]) => void) {
-  const path = 'employees';
+export function subscribeEmployees(callback: (employees: EmployeeRecord[]) => void, companyId: string = 'default') {
+  const path = `companies/${companyId}/employees`;
   return onSnapshot(
     collection(db, path),
     (snapshot) => {
@@ -473,10 +473,10 @@ export const DEFAULT_EMPLOYEES: EmployeeRecord[] = [
 ];
 
 // Save multiple employees (seeding)
-export async function seedEmployees(employees: EmployeeRecord[]) {
+export async function seedEmployees(employees: EmployeeRecord[], companyId: string = 'default') {
   try {
     for (const emp of employees) {
-      await setDoc(doc(db, 'employees', emp.id), {
+      await setDoc(doc(db, `companies/${companyId}/employees`, emp.id), {
         ...emp,
         updatedAt: new Date().toISOString()
       });

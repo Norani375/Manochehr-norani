@@ -228,14 +228,14 @@ const DEFAULT_LICENSE_RENEWAL_DATA: DabLicenseRenewalData = {
   assessorDate: '',
 };
 
-export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf }: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
+export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [data, setData] = useState<DabLicenseRenewalData>(DEFAULT_LICENSE_RENEWAL_DATA);
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'license_renewal_form_v1');
+      const docRef = doc(db, 'settings', `license_renewal_form_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -252,9 +252,9 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLocalLogo(localStorage.getItem('custom_company_logo'));
+      setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
       try {
-        const saved = localStorage.getItem('dab_license_renewal_data');
+        const saved = localStorage.getItem(`dab_license_renewal_data_${companyId}`);
         if (saved) setData(JSON.parse(saved));
       } catch (e) {
         console.error('Failed to load DAB license renewal data', e);
@@ -262,7 +262,7 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
     }, 0);
 
     const handleLogoUpdate = () => {
-      setLocalLogo(localStorage.getItem('custom_company_logo'));
+      setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
     };
     window.addEventListener('custom_logo_updated', handleLogoUpdate);
     return () => {
@@ -275,8 +275,8 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('dab_license_renewal_data', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'license_renewal_form_v1');
+      localStorage.setItem(`dab_license_renewal_data_${companyId}`, JSON.stringify(data));
+      const docRef = doc(db, 'settings', `license_renewal_form_v1_${companyId}`);
       await setDoc(docRef, { formData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
@@ -288,7 +288,7 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
   const handleReset = () => {
     if (confirm('آیا اطمینان دارید که می‌خواهید تمام اطلاعات این فورم به حالت اولیه بازگردد؟')) {
       setData(DEFAULT_LICENSE_RENEWAL_DATA);
-      localStorage.removeItem('dab_license_renewal_data');
+      localStorage.removeItem(`dab_license_renewal_data_${companyId}`);
     }
   };
 

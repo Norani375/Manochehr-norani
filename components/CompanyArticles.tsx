@@ -38,15 +38,16 @@ const DEFAULT_ARTICLES_DATA: CompanyArticlesData = {
 };
 
 interface CompanyArticlesProps {
+  companyId?: string;
   customLogo?: string | null;
 }
 
-export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
+export default function CompanyArticles({ customLogo, companyId = 'default' }: CompanyArticlesProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [data, setData] = useState<CompanyArticlesData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_company_articles_v1');
+        const saved = localStorage.getItem(`bg_company_articles_v1_${companyId}`);
         if (saved) return { ...DEFAULT_ARTICLES_DATA, ...JSON.parse(saved) };
       } catch (e) { console.error(e); }
     }
@@ -57,7 +58,7 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'company_articles_v1');
+      const docRef = doc(db, 'settings', `company_articles_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -70,8 +71,8 @@ export default function CompanyArticles({ customLogo }: CompanyArticlesProps) {
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_company_articles_v1', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'company_articles_v1');
+      localStorage.setItem(`bg_company_articles_v1_${companyId}`, JSON.stringify(data));
+      const docRef = doc(db, 'settings', `company_articles_v1_${companyId}`);
       await setDoc(docRef, { articlesData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);

@@ -58,7 +58,7 @@ const DEFAULT_EMPLOYEE: EmployeeRecord = {
   updatedAt: new Date().toISOString(),
 };
 
-export default function EmployeeManagement({ customLogo, isEditMode = true }: EmployeeManagementProps) {
+export default function EmployeeManagement({ customLogo, isEditMode = true, companyId = 'default' }: EmployeeManagementProps & { companyId?: string }) {
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [editingEmployee, setEditingEmployee] = useState<EmployeeRecord | null>(null);
@@ -80,9 +80,9 @@ export default function EmployeeManagement({ customLogo, isEditMode = true }: Em
         setSelectedEmployeeId(first.id);
         setEditingEmployee({ ...first });
       }
-    });
+    }, companyId);
     return () => unsubscribe();
-  }, [selectedEmployeeId]);
+  }, [selectedEmployeeId, companyId]);
 
   const handleSelectEmployee = (emp: EmployeeRecord) => {
     setSelectedEmployeeId(emp.id);

@@ -72,17 +72,18 @@ const DEFAULT_MEETING_DATA: MeetingMinutesData = {
 };
 
 interface MeetingMinutesProps {
+  companyId?: string;
   isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
   onExportPdf?: () => void;
 }
 
-export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: MeetingMinutesProps) {
+export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLogoModal, onExportPdf , companyId = "default" }: MeetingMinutesProps) {
   const [data, setData] = useState<MeetingMinutesData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_meeting_minutes_v1');
+        const saved = localStorage.getItem(`bg_meeting_minutes_v1_${companyId}`);
         if (saved) return { ...DEFAULT_MEETING_DATA, ...JSON.parse(saved) };
       } catch (e) { console.error(e); }
     }
@@ -94,7 +95,7 @@ export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLo
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'meeting_minutes_v1');
+      const docRef = doc(db, 'settings', `meeting_minutes_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -107,8 +108,8 @@ export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLo
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_meeting_minutes_v1', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'meeting_minutes_v1');
+      localStorage.setItem(`bg_meeting_minutes_v1_${companyId}`, JSON.stringify(data));
+      const docRef = doc(db, 'settings', `meeting_minutes_v1_${companyId}`);
       await setDoc(docRef, { meetingData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
@@ -118,7 +119,7 @@ export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLo
   const handleReset = () => {
     if (confirm('آیا از بازنشانی صورتجلسه اطمینان دارید؟')) {
       setData(DEFAULT_MEETING_DATA);
-      localStorage.removeItem('bg_meeting_minutes_v1');
+      localStorage.removeItem(`bg_meeting_minutes_v1_${companyId}`);
     }
   };
 

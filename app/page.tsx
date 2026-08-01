@@ -21,6 +21,7 @@ import OrgChartCanvas from '@/components/OrgChartCanvas';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
+import { useCompany } from '@/lib/companyContext';
 import { 
   subscribePersonnel, 
   subscribeSettings, 
@@ -158,6 +159,7 @@ export default function OrgChartPage() {
   const [issueDate, setIssueDate] = useState('۱۴۰۴/۰۱/۰۱');
   const [selectedBranchFilter, setSelectedBranchFilter] = useState<string>('all');
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
+  const { companies, activeCompanyId, setActiveCompanyId, addCompany } = useCompany();
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -206,7 +208,7 @@ export default function OrgChartPage() {
         // Seed default personnel data to Firestore if database collection is empty
         savePersonnelToFirestore(DEFAULT_ORG_DATA);
       }
-    });
+    }, activeCompanyId);
 
     // Subscribe to Firestore Settings
     const unsubscribeSettings = subscribeSettings((settings) => {
@@ -231,7 +233,7 @@ export default function OrgChartPage() {
       if (missingAny) {
         isSeeding = true;
         console.log('Seeding missing employees...');
-        await seedEmployees(DEFAULT_EMPLOYEES);
+        await seedEmployees(DEFAULT_EMPLOYEES, activeCompanyId);
         isSeeding = false;
       }
     });
@@ -240,7 +242,7 @@ export default function OrgChartPage() {
       const updatedLogo = localStorage.getItem('custom_company_logo');
       const currentIssueDate = localStorage.getItem('org_chart_issue_date') || '۱۴۰۴/۰۱/۰۱';
       setCustomLogo(updatedLogo);
-      saveSettingsToFirestore({ issueDate: currentIssueDate, customLogo: updatedLogo });
+      saveSettingsToFirestore({ issueDate: currentIssueDate, customLogo: updatedLogo }, activeCompanyId);
     };
     window.addEventListener('custom_logo_updated', handleLogoUpdate);
 
@@ -261,13 +263,13 @@ export default function OrgChartPage() {
       localStorage.removeItem('custom_company_logo');
     }
     window.dispatchEvent(new Event('custom_logo_updated'));
-    saveSettingsToFirestore({ issueDate, customLogo: logoDataUrl });
+    saveSettingsToFirestore({ issueDate, customLogo: logoDataUrl }, activeCompanyId);
   };
 
   const handleIssueDateChange = (newDate: string) => {
     setIssueDate(newDate);
     localStorage.setItem('org_chart_issue_date', newDate);
-    saveSettingsToFirestore({ issueDate: newDate, customLogo });
+    saveSettingsToFirestore({ issueDate: newDate, customLogo }, activeCompanyId);
   };
 
   const getPdfExportConfig = () => {
@@ -363,7 +365,7 @@ export default function OrgChartPage() {
       category: 'branch'
     };
     savePersonnel([...personnel, newNode]);
-    saveSinglePersonnelToFirestore(newNode);
+    saveSinglePersonnelToFirestore(newNode, activeCompanyId);
     setEditingNode(newNode);
   };
 
@@ -371,7 +373,7 @@ export default function OrgChartPage() {
     if (confirm('آیا از حذف این رکورد اطمینان دارید؟')) {
       const nextData = personnel.filter(p => p.key !== key);
       savePersonnel(nextData);
-      deletePersonnelFromFirestore(key);
+      deletePersonnelFromFirestore(key, activeCompanyId);
       if (editingNode?.key === key) setEditingNode(null);
     }
   };
@@ -530,8 +532,30 @@ export default function OrgChartPage() {
                     <Building2 className="w-6 h-6" />
                   </div>
                 )}
-                <div className="min-w-0">
-                  <h1 className="font-black text-sm text-slate-900 dark:text-white leading-tight truncate">برکت‌الله غفوری</h1>
+                <div className="min-w-0 flex flex-col group/company">
+                  <div className="flex items-center gap-1">
+                    <select 
+                      value={activeCompanyId}
+                      onChange={(e) => {
+                        if (e.target.value === 'ADD_NEW') {
+                          const name = prompt('نام شرکت جدید را وارد کنید:');
+                          if (name) {
+                            const newId = 'company_' + Date.now();
+                            addCompany({ id: newId, name, licenseNo: '' });
+                            setActiveCompanyId(newId);
+                          }
+                        } else {
+                          setActiveCompanyId(e.target.value);
+                        }
+                      }}
+                      className="bg-transparent font-black text-sm text-slate-900 dark:text-white leading-tight truncate focus:outline-none appearance-none cursor-pointer max-w-[150px]"
+                    >
+                      {companies.map(c => (
+                        <option key={c.id} value={c.id} className="text-slate-900">{c.name}</option>
+                      ))}
+                      <option value="ADD_NEW" className="text-blue-600 font-bold">+ افزودن شرکت جدید</option>
+                    </select>
+                  </div>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mt-0.5">خدمات صرافی و پولی</p>
                 </div>
               </div>
@@ -663,27 +687,27 @@ export default function OrgChartPage() {
       <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-x-auto">
         {/* Conditional Content Rendering */}
         {activeTab === 'guarantee-form' ? (
-          <DabGuaranteeForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <DabGuaranteeForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'branch-renewal' ? (
-          <DabBranchRenewalForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <DabBranchRenewalForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'license-renewal' ? (
-          <DabLicenseRenewalForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <DabLicenseRenewalForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'license-renewal-letter' ? (
-          <DabLicenseRenewalLetter isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <DabLicenseRenewalLetter isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'company-proposal' ? (
-          <CompanyProposal customLogo={customLogo} />
+          <CompanyProposal customLogo={customLogo}  companyId={activeCompanyId}/>
         ) : activeTab === 'meeting-minutes' ? (
-          <MeetingMinutes isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <MeetingMinutes isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'license-checklist' ? (
-          <DabLicenseChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <DabLicenseChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'license-renewal-checklist' ? (
-          <DabLicenseRenewalChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <DabLicenseRenewalChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'branch-renewal-checklist' ? (
-          <DabBranchRenewalChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)} />
+          <DabBranchRenewalChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
         ) : activeTab === 'employees' ? (
-          <EmployeeManagement customLogo={customLogo} isEditMode={isEditMode} />
+          <EmployeeManagement customLogo={customLogo} isEditMode={isEditMode}  companyId={activeCompanyId}/>
         ) : activeTab === 'company-articles' ? (
-          <CompanyArticles customLogo={customLogo} />
+          <CompanyArticles customLogo={customLogo}  companyId={activeCompanyId}/>
         ) : (
           <OrgChartCanvas customLogo={customLogo} />
         )}

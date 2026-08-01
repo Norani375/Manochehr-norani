@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import './globals.css'; // Global styles
+import { CompanyProvider } from '@/lib/companyContext';
 
 export const metadata: Metadata = {
   title: 'Barakatullah Ghafoori Org Chart',
@@ -18,26 +19,25 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
                   var win = typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : self);
                   if (!win) return;
                   
-                  var _fetch = win.fetch;
-                  var target = win;
-                  var desc = Object.getOwnPropertyDescriptor(win, 'fetch');
+                  var _currentFetch = win.fetch;
                   
-                  if (!desc && Object.getPrototypeOf(win)) {
-                    var proto = Object.getPrototypeOf(win);
-                    var protoDesc = Object.getOwnPropertyDescriptor(proto, 'fetch');
-                    if (protoDesc) {
-                      target = proto;
-                      desc = protoDesc;
-                    }
+                  function patchFetchOn(obj) {
+                    if (!obj) return;
+                    try {
+                      var desc = Object.getOwnPropertyDescriptor(obj, 'fetch');
+                      if (desc && !desc.configurable) return;
+                      Object.defineProperty(obj, 'fetch', {
+                        get: function() { return _currentFetch; },
+                        set: function(v) { _currentFetch = v; },
+                        configurable: true,
+                        enumerable: true
+                      });
+                    } catch (e) {}
                   }
-                  
-                  if (desc && desc.configurable) {
-                    Object.defineProperty(target, 'fetch', {
-                      get: function() { return _fetch; },
-                      set: function(v) { _fetch = v; },
-                      configurable: true,
-                      enumerable: true
-                    });
+
+                  patchFetchOn(win);
+                  if (win.Window && win.Window.prototype) {
+                    patchFetchOn(win.Window.prototype);
                   }
                 } catch (e) {}
               })();
@@ -45,7 +45,11 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
           }}
         />
       </head>
-      <body className="font-sans" suppressHydrationWarning>{children}</body>
+      <body className="font-sans" suppressHydrationWarning>
+        <CompanyProvider>
+          {children}
+        </CompanyProvider>
+      </body>
     </html>
   );
 }

@@ -67,18 +67,19 @@ const DEFAULT_CHECKLIST_DATA: ChecklistData = {
 };
 
 interface DabLicenseChecklistProps {
+  companyId?: string;
   isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
   onExportPdf?: () => void;
 }
 
-export default function DabLicenseChecklist({ isEditMode: initialEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: DabLicenseChecklistProps) {
+export default function DabLicenseChecklist({ isEditMode: initialEditMode = true, customLogo, onOpenLogoModal, onExportPdf , companyId = "default" }: DabLicenseChecklistProps) {
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [data, setData] = useState<ChecklistData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_license_checklist_v5');
+        const saved = localStorage.getItem(`bg_license_checklist_v5_${companyId}`);
         if (saved) return { ...DEFAULT_CHECKLIST_DATA, ...JSON.parse(saved) };
       } catch (e) { console.error(e); }
     }
@@ -90,7 +91,7 @@ export default function DabLicenseChecklist({ isEditMode: initialEditMode = true
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'license_checklist_v5');
+      const docRef = doc(db, 'settings', `license_checklist_v5_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -103,8 +104,8 @@ export default function DabLicenseChecklist({ isEditMode: initialEditMode = true
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_license_checklist_v5', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'license_checklist_v5');
+      localStorage.setItem(`bg_license_checklist_v5_${companyId}`, JSON.stringify(data));
+      const docRef = doc(db, 'settings', `license_checklist_v5_${companyId}`);
       await setDoc(docRef, { checklistData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);

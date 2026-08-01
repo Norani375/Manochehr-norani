@@ -234,6 +234,7 @@ const BRANCH_PRESETS = [
 ];
 
 interface DabBranchRenewalChecklistProps {
+  companyId?: string;
   isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
@@ -245,7 +246,7 @@ export default function DabBranchRenewalChecklist({
   customLogo,
   onOpenLogoModal,
   onExportPdf,
-}: DabBranchRenewalChecklistProps) {
+  companyId = "default" }: DabBranchRenewalChecklistProps) {
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [data, setData] = useState<BranchRenewalChecklistData>(() => {
     if (typeof window !== "undefined") {

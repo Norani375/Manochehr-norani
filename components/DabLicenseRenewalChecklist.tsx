@@ -69,18 +69,19 @@ const DEFAULT_RENEWAL_CHECKLIST_DATA: RenewalChecklistData = {
 };
 
 interface DabLicenseRenewalChecklistProps {
+  companyId?: string;
   isEditMode?: boolean;
   customLogo?: string | null;
   onOpenLogoModal?: () => void;
   onExportPdf?: () => void;
 }
 
-export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode = true, customLogo, onOpenLogoModal, onExportPdf }: DabLicenseRenewalChecklistProps) {
+export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode = true, customLogo, onOpenLogoModal, onExportPdf , companyId = "default" }: DabLicenseRenewalChecklistProps) {
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [data, setData] = useState<RenewalChecklistData>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('bg_license_renewal_checklist_v1');
+        const saved = localStorage.getItem(`bg_license_renewal_checklist_v1_${companyId}`);
         if (saved) return { ...DEFAULT_RENEWAL_CHECKLIST_DATA, ...JSON.parse(saved) };
       } catch (e) { console.error(e); }
     }
@@ -91,7 +92,7 @@ export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'license_renewal_checklist_v1');
+      const docRef = doc(db, 'settings', `license_renewal_checklist_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -106,8 +107,8 @@ export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('bg_license_renewal_checklist_v1', JSON.stringify(data));
-      const docRef = doc(db, 'settings', 'license_renewal_checklist_v1');
+      localStorage.setItem(`bg_license_renewal_checklist_v1_${companyId}`, JSON.stringify(data));
+      const docRef = doc(db, 'settings', `license_renewal_checklist_v1_${companyId}`);
       await setDoc(docRef, { checklistData: data, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);

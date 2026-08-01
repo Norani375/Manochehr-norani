@@ -125,14 +125,14 @@ const EditableField = ({ isEditMode, value, onChange, placeholder, className = "
   return <span className={`inline-block py-1 font-bold text-blue-900 border-b border-transparent ${className}`}>{value || '---'}</span>;
 };
 
-export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf }: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void } = {}) {
+export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [formData, setFormData] = useState<GuaranteeFormData>(DEFAULT_FORM_DATA);
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     try {
-      const docRef = doc(db, 'settings', 'guarantee_form_v1');
+      const docRef = doc(db, 'settings', `guarantee_form_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -149,9 +149,9 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLocalLogo(localStorage.getItem('custom_company_logo'));
+      setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
       try {
-        const saved = localStorage.getItem('dab_guarantee_form_data');
+        const saved = localStorage.getItem(`dab_guarantee_form_data_${companyId}`);
         if (saved) setFormData(JSON.parse(saved));
       } catch (e) {
         console.error('Failed to load DAB guarantee form from storage', e);
@@ -159,7 +159,7 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
     }, 0);
 
     const handleLogoUpdate = () => {
-      setLocalLogo(localStorage.getItem('custom_company_logo'));
+      setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
     };
     window.addEventListener('custom_logo_updated', handleLogoUpdate);
     return () => {
@@ -172,8 +172,8 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
 
   const handleSave = async () => {
     try {
-      localStorage.setItem('dab_guarantee_form_data', JSON.stringify(formData));
-      const docRef = doc(db, 'settings', 'guarantee_form_v1');
+      localStorage.setItem(`dab_guarantee_form_data_${companyId}`, JSON.stringify(formData));
+      const docRef = doc(db, 'settings', `guarantee_form_v1_${companyId}`);
       await setDoc(docRef, { formData, updatedAt: new Date().toISOString() }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
@@ -185,7 +185,7 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
   const handleReset = () => {
     if (confirm('آیا اطمینان دارید که می‌خواهید تمام مقادیر این فورم به حالت اولیه بازگردد؟')) {
       setFormData(DEFAULT_FORM_DATA);
-      localStorage.removeItem('dab_guarantee_form_data');
+      localStorage.removeItem(`dab_guarantee_form_data_${companyId}`);
     }
   };
 
