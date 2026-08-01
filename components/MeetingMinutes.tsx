@@ -94,6 +94,16 @@ export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLo
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(`bg_meeting_minutes_v1_${companyId}`);
+        if (saved) {
+          setData({ ...DEFAULT_MEETING_DATA, ...JSON.parse(saved) });
+        } else {
+          setData(DEFAULT_MEETING_DATA);
+        }
+      } catch (e) { console.error(e); }
+    }
     try {
       const docRef = doc(db, 'settings', `meeting_minutes_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -104,7 +114,7 @@ export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLo
       });
       return () => unsubscribe();
     } catch (e) { console.warn(e); }
-  }, []);
+  }, [companyId]);
 
   const handleSave = async () => {
     try {

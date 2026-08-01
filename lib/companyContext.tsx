@@ -10,6 +10,7 @@ export interface CompanyInfo {
 interface CompanyContextType {
   companies: CompanyInfo[];
   activeCompanyId: string;
+  activeCompany: CompanyInfo;
   setActiveCompanyId: (id: string) => void;
   addCompany: (company: CompanyInfo) => void;
   updateCompany: (id: string, updates: Partial<CompanyInfo>) => void;
@@ -67,10 +68,13 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const activeCompany = companies.find(c => c.id === activeCompanyId) || companies[0] || DEFAULT_COMPANIES[0];
+
   return (
     <CompanyContext.Provider value={{
       companies,
       activeCompanyId,
+      activeCompany,
       setActiveCompanyId: handleSetActiveCompanyId,
       addCompany,
       updateCompany,
@@ -83,7 +87,6 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
 
 export function useCompany() {
   const context = useContext(CompanyContext);
-  console.log('useCompany called! context is:', !!context);
   if (!context) {
     throw new Error('useCompany must be used within a CompanyProvider');
   }

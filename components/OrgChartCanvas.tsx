@@ -145,6 +145,18 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
 
   // Sync with Firestore
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(`bg_org_chart_v2_${companyId}`);
+        if (saved) {
+          setData({ ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) });
+        } else {
+          setData(DEFAULT_ORG_CHART_DATA);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     try {
       const docRef = doc(db, 'settings', `org_chart_v2_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -159,7 +171,7 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
     } catch (e) {
       console.warn(e);
     }
-  }, []);
+  }, [companyId]);
 
   const handleSave = async () => {
     try {

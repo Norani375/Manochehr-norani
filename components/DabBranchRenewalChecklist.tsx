@@ -251,7 +251,7 @@ export default function DabBranchRenewalChecklist({
   const [data, setData] = useState<BranchRenewalChecklistData>(() => {
     if (typeof window !== "undefined") {
       try {
-        const saved = localStorage.getItem("bg_branch_renewal_checklist_v1");
+        const saved = localStorage.getItem(`bg_branch_renewal_checklist_v1_${companyId}`);
         if (saved)
           return { ...DEFAULT_BRANCH_RENEWAL_CHECKLIST, ...JSON.parse(saved) };
       } catch (e) {
@@ -265,8 +265,20 @@ export default function DabBranchRenewalChecklist({
   const [renderAll, setRenderAll] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem(`bg_branch_renewal_checklist_v1_${companyId}`);
+        if (saved) {
+          setData({ ...DEFAULT_BRANCH_RENEWAL_CHECKLIST, ...JSON.parse(saved) });
+        } else {
+          setData(DEFAULT_BRANCH_RENEWAL_CHECKLIST);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     try {
-      const docRef = doc(db, "settings", "branch_renewal_checklist_v1");
+      const docRef = doc(db, "settings", `branch_renewal_checklist_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
         if (snapshot.exists()) {
           const remoteData = snapshot.data();
@@ -279,15 +291,15 @@ export default function DabBranchRenewalChecklist({
     } catch (e) {
       console.warn(e);
     }
-  }, []);
+  }, [companyId]);
 
   const handleSave = async () => {
     try {
       localStorage.setItem(
-        "bg_branch_renewal_checklist_v1",
+        `bg_branch_renewal_checklist_v1_${companyId}`,
         JSON.stringify(data),
       );
-      const docRef = doc(db, "settings", "branch_renewal_checklist_v1");
+      const docRef = doc(db, "settings", `branch_renewal_checklist_v1_${companyId}`);
       await setDoc(
         docRef,
         { checklistData: data, updatedAt: new Date().toISOString() },

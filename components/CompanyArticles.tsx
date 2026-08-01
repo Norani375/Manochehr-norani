@@ -57,6 +57,16 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(`bg_company_articles_v1_${companyId}`);
+        if (saved) {
+          setData({ ...DEFAULT_ARTICLES_DATA, ...JSON.parse(saved) });
+        } else {
+          setData(DEFAULT_ARTICLES_DATA);
+        }
+      } catch (e) { console.error(e); }
+    }
     try {
       const docRef = doc(db, 'settings', `company_articles_v1_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -67,7 +77,7 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
       });
       return () => unsubscribe();
     } catch (e) { console.warn(e); }
-  }, []);
+  }, [companyId]);
 
   const handleSave = async () => {
     try {

@@ -260,14 +260,18 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
     } catch (error) {
       console.error("Firebase load error:", error);
     }
-  }, []);
+  }, [companyId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
       try {
         const saved = localStorage.getItem(`dab_branch_renewal_data_${companyId}`);
-        if (saved) setData(JSON.parse(saved));
+        if (saved) {
+          setData(JSON.parse(saved));
+        } else {
+          setData(DEFAULT_BRANCH_RENEWAL_DATA);
+        }
       } catch (e) {
         console.error('Failed to load DAB branch renewal form', e);
       }
@@ -281,7 +285,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
       clearTimeout(timer);
       window.removeEventListener('custom_logo_updated', handleLogoUpdate);
     };
-  }, []);
+  }, [companyId]);
 
   const customLogo = propLogo !== undefined ? propLogo : localLogo;
 

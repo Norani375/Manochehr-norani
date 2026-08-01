@@ -90,6 +90,16 @@ export default function DabLicenseChecklist({ isEditMode: initialEditMode = true
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(`bg_license_checklist_v5_${companyId}`);
+        if (saved) {
+          setData({ ...DEFAULT_CHECKLIST_DATA, ...JSON.parse(saved) });
+        } else {
+          setData(DEFAULT_CHECKLIST_DATA);
+        }
+      } catch (e) { console.error(e); }
+    }
     try {
       const docRef = doc(db, 'settings', `license_checklist_v5_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -100,7 +110,7 @@ export default function DabLicenseChecklist({ isEditMode: initialEditMode = true
       });
       return () => unsubscribe();
     } catch (e) { console.warn(e); }
-  }, []);
+  }, [companyId]);
 
   const handleSave = async () => {
     try {

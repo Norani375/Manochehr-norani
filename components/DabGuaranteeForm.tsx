@@ -145,14 +145,18 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
     } catch (error) {
       console.error("Firebase load error:", error);
     }
-  }, []);
+  }, [companyId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLocalLogo(localStorage.getItem(`custom_company_logo_${companyId}`));
       try {
         const saved = localStorage.getItem(`dab_guarantee_form_data_${companyId}`);
-        if (saved) setFormData(JSON.parse(saved));
+        if (saved) {
+          setFormData(JSON.parse(saved));
+        } else {
+          setFormData(DEFAULT_FORM_DATA);
+        }
       } catch (e) {
         console.error('Failed to load DAB guarantee form from storage', e);
       }
@@ -166,7 +170,7 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
       clearTimeout(timer);
       window.removeEventListener('custom_logo_updated', handleLogoUpdate);
     };
-  }, []);
+  }, [companyId]);
 
   const customLogo = propLogo !== undefined ? propLogo : localLogo;
 

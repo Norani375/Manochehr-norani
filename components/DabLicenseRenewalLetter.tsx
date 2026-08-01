@@ -133,6 +133,18 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
 
   // Firestore Sync
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(`bg_dab_license_renewal_letter_v2_${companyId}`);
+        if (saved) {
+          setData({ ...DEFAULT_LETTER_DATA, ...JSON.parse(saved) });
+        } else {
+          setData(DEFAULT_LETTER_DATA);
+        }
+      } catch (e) {
+        console.error('Failed to load letter data from localStorage:', e);
+      }
+    }
     try {
       const docRef = doc(db, 'settings', `license_renewal_letter_v2_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -150,7 +162,7 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
     } catch (e) {
       console.warn('Firestore offline fallback:', e);
     }
-  }, []);
+  }, [companyId]);
 
   const handleSave = async () => {
     try {

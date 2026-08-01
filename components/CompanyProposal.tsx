@@ -92,6 +92,18 @@ export default function CompanyProposal({ customLogo, companyId = 'default' }: C
 
   // Sync with Firestore
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(`bg_company_proposal_v3_${companyId}`);
+        if (saved) {
+          setData({ ...DEFAULT_PROPOSAL_DATA, ...JSON.parse(saved) });
+        } else {
+          setData(DEFAULT_PROPOSAL_DATA);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     try {
       const docRef = doc(db, 'settings', `company_proposal_v3_${companyId}`);
       const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -106,7 +118,7 @@ export default function CompanyProposal({ customLogo, companyId = 'default' }: C
     } catch (e) {
       console.warn(e);
     }
-  }, []);
+  }, [companyId]);
 
   const handleSave = async () => {
     try {

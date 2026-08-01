@@ -173,56 +173,61 @@ export default function OrgChartPage() {
   // Connection & Sync state
   const [isDbConnected, setIsDbConnected] = useState(false);
 
-  // Load persisted state and connect to Firebase Firestore
+  // Load persisted state and connect to Firebase Firestore for the active company
   useEffect(() => {
     // Verify connection to Firestore
     testFirestoreConnection().then(() => {
       setIsDbConnected(true);
     });
 
-    const initTimer = setTimeout(() => {
-      try {
-        const savedPersonnel = localStorage.getItem('bg_org_chart_data');
-        if (savedPersonnel) {
-          setPersonnel(JSON.parse(savedPersonnel));
-        }
-        const savedIssueDate = localStorage.getItem('org_chart_issue_date');
-        if (savedIssueDate) {
-          setIssueDate(savedIssueDate);
-        }
-        const savedLogo = localStorage.getItem('custom_company_logo');
-        if (savedLogo) {
-          setCustomLogo(savedLogo);
-        }
-      } catch (e) {
-        console.error('Failed to load local storage state', e);
+    // Reset or load company-specific local state
+    try {
+      const savedPersonnel = localStorage.getItem(`bg_org_chart_data_${activeCompanyId}`);
+      if (savedPersonnel) {
+        setPersonnel(JSON.parse(savedPersonnel));
+      } else {
+        setPersonnel(DEFAULT_ORG_DATA);
       }
-    }, 0);
+      const savedIssueDate = localStorage.getItem(`org_chart_issue_date_${activeCompanyId}`);
+      if (savedIssueDate) {
+        setIssueDate(savedIssueDate);
+      } else {
+        setIssueDate('۱۴۰۴/۰۱/۰۱');
+      }
+      const savedLogo = localStorage.getItem(`custom_company_logo_${activeCompanyId}`);
+      setCustomLogo(savedLogo || null);
+    } catch (e) {
+      console.error('Failed to load local storage state for company', e);
+    }
 
-    // Subscribe to Firestore Personnel collection
+    // Subscribe to Firestore Personnel collection for activeCompanyId
     const unsubscribePersonnel = subscribePersonnel((list) => {
       if (list && list.length > 0) {
         setPersonnel(list);
-        localStorage.setItem('bg_org_chart_data', JSON.stringify(list));
+        localStorage.setItem(`bg_org_chart_data_${activeCompanyId}`, JSON.stringify(list));
       } else {
-        // Seed default personnel data to Firestore if database collection is empty
-        savePersonnelToFirestore(DEFAULT_ORG_DATA);
+        // Seed default personnel data to Firestore if database collection is empty for this company
+        savePersonnelToFirestore(DEFAULT_ORG_DATA, activeCompanyId);
       }
     }, activeCompanyId);
 
-    // Subscribe to Firestore Settings
+    // Subscribe to Firestore Settings for activeCompanyId
     const unsubscribeSettings = subscribeSettings((settings) => {
       if (settings.issueDate) {
         setIssueDate(settings.issueDate);
-        localStorage.setItem('org_chart_issue_date', settings.issueDate);
+        localStorage.setItem(`org_chart_issue_date_${activeCompanyId}`, settings.issueDate);
       }
-      if (settings.customLogo) {
+      if (settings.customLogo !== undefined) {
         setCustomLogo(settings.customLogo);
-        localStorage.setItem('custom_company_logo', settings.customLogo);
+        if (settings.customLogo) {
+          localStorage.setItem(`custom_company_logo_${activeCompanyId}`, settings.customLogo);
+        } else {
+          localStorage.removeItem(`custom_company_logo_${activeCompanyId}`);
+        }
       }
-    });
+    }, activeCompanyId);
 
-    // Subscribe to employees and seed missing ones if necessary
+    // Subscribe to employees and seed missing ones if necessary for activeCompanyId
     let isSeeding = false;
     const unsubscribeEmployees = subscribeEmployees(async (list) => {
       if (isSeeding) return;
@@ -230,37 +235,36 @@ export default function OrgChartPage() {
       const existingIds = new Set(list.map(e => e.id));
       const missingAny = DEFAULT_EMPLOYEES.some(de => !existingIds.has(de.id));
       
-      if (missingAny) {
+      if (missingAny && list.length === 0) {
         isSeeding = true;
-        console.log('Seeding missing employees...');
+        console.log('Seeding missing employees for company...', activeCompanyId);
         await seedEmployees(DEFAULT_EMPLOYEES, activeCompanyId);
         isSeeding = false;
       }
-    });
+    }, activeCompanyId);
 
     const handleLogoUpdate = () => {
-      const updatedLogo = localStorage.getItem('custom_company_logo');
-      const currentIssueDate = localStorage.getItem('org_chart_issue_date') || '۱۴۰۴/۰۱/۰۱';
+      const updatedLogo = localStorage.getItem(`custom_company_logo_${activeCompanyId}`);
+      const currentIssueDate = localStorage.getItem(`org_chart_issue_date_${activeCompanyId}`) || '۱۴۰۴/۰۱/۰۱';
       setCustomLogo(updatedLogo);
       saveSettingsToFirestore({ issueDate: currentIssueDate, customLogo: updatedLogo }, activeCompanyId);
     };
     window.addEventListener('custom_logo_updated', handleLogoUpdate);
 
     return () => {
-      clearTimeout(initTimer);
       unsubscribePersonnel();
       unsubscribeSettings();
       unsubscribeEmployees();
       window.removeEventListener('custom_logo_updated', handleLogoUpdate);
     };
-  }, []);
+  }, [activeCompanyId]);
 
   const handleSaveLogo = (logoDataUrl: string | null) => {
     setCustomLogo(logoDataUrl);
     if (logoDataUrl) {
-      localStorage.setItem('custom_company_logo', logoDataUrl);
+      localStorage.setItem(`custom_company_logo_${activeCompanyId}`, logoDataUrl);
     } else {
-      localStorage.removeItem('custom_company_logo');
+      localStorage.removeItem(`custom_company_logo_${activeCompanyId}`);
     }
     window.dispatchEvent(new Event('custom_logo_updated'));
     saveSettingsToFirestore({ issueDate, customLogo: logoDataUrl }, activeCompanyId);
@@ -268,7 +272,7 @@ export default function OrgChartPage() {
 
   const handleIssueDateChange = (newDate: string) => {
     setIssueDate(newDate);
-    localStorage.setItem('org_chart_issue_date', newDate);
+    localStorage.setItem(`org_chart_issue_date_${activeCompanyId}`, newDate);
     saveSettingsToFirestore({ issueDate: newDate, customLogo }, activeCompanyId);
   };
 
@@ -335,11 +339,11 @@ export default function OrgChartPage() {
   const savePersonnel = (newData: PersonnelNode[]) => {
     setPersonnel(newData);
     try {
-      localStorage.setItem('bg_org_chart_data', JSON.stringify(newData));
+      localStorage.setItem(`bg_org_chart_data_${activeCompanyId}`, JSON.stringify(newData));
     } catch (e) {
       console.error('Failed to save org chart to storage', e);
     }
-    savePersonnelToFirestore(newData);
+    savePersonnelToFirestore(newData, activeCompanyId);
   };
 
   const handleReset = () => {
@@ -351,7 +355,7 @@ export default function OrgChartPage() {
   const handleUpdateNode = (updated: PersonnelNode) => {
     const nextData = personnel.map(p => p.key === updated.key ? updated : p);
     savePersonnel(nextData);
-    saveSinglePersonnelToFirestore(updated);
+    saveSinglePersonnelToFirestore(updated, activeCompanyId);
     setEditingNode(null);
   };
 

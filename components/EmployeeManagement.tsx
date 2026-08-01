@@ -73,16 +73,28 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
   const signatureInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    setSelectedEmployeeId(null);
+    setEditingEmployee(null);
     const unsubscribe = subscribeEmployees((data) => {
       setEmployees(data);
-      if (data.length > 0 && !selectedEmployeeId) {
+      if (data.length > 0) {
         const first = data[0];
-        setSelectedEmployeeId(first.id);
-        setEditingEmployee({ ...first });
+        setSelectedEmployeeId((prevId) => {
+          if (prevId && data.some(e => e.id === prevId)) {
+            const current = data.find(e => e.id === prevId);
+            if (current) setEditingEmployee({ ...current });
+            return prevId;
+          }
+          setEditingEmployee({ ...first });
+          return first.id;
+        });
+      } else {
+        setSelectedEmployeeId(null);
+        setEditingEmployee(null);
       }
     }, companyId);
     return () => unsubscribe();
-  }, [selectedEmployeeId, companyId]);
+  }, [companyId]);
 
   const handleSelectEmployee = (emp: EmployeeRecord) => {
     setSelectedEmployeeId(emp.id);
@@ -110,7 +122,7 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
 
     setIsSaving(true);
     try {
-      await saveEmployee(editingEmployee);
+      await saveEmployee(editingEmployee, companyId);
       setToastMessage('اطلاعات با موفقیت ذخیره شد');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -126,7 +138,7 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
     if (!confirm('آیا از حذف این کارمند اطمینان دارید؟')) return;
     
     try {
-      await deleteEmployee(id);
+      await deleteEmployee(id, companyId);
       if (selectedEmployeeId === id) {
         setSelectedEmployeeId(null);
         setEditingEmployee(null);
