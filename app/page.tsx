@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen, RefreshCw, GitBranch
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen, RefreshCw, GitBranch, Grid
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
@@ -152,6 +152,7 @@ export default function OrgChartPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
   const [isEditMode, setIsEditMode] = useState(false);
+  const [snapGridEnabled, setSnapGridEnabled] = useState(true);
   const [editingNode, setEditingNode] = useState<PersonnelNode | null>(null);
 
   // Logo and Header Dates state
@@ -786,7 +787,36 @@ export default function OrgChartPage() {
           
           {/* Org Chart Layout Canvas */}
       <div className="max-w-7xl mx-auto overflow-x-auto pb-12 print:overflow-visible">
-        <div id="org-chart-export-canvas" className="min-w-[950px] flex flex-col items-center py-6 px-4 bg-white dark:bg-slate-900 rounded-2xl">
+        <div 
+          id="org-chart-export-canvas" 
+          className={`min-w-[950px] flex flex-col items-center py-6 px-4 bg-white dark:bg-slate-900 rounded-2xl relative transition-all ${
+            isEditMode && snapGridEnabled
+              ? 'bg-[linear-gradient(to_right,#80808018_1px,transparent_1px),linear-gradient(to_bottom,#80808018_1px,transparent_1px)] bg-[size:24px_24px] dark:bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] print:![background-image:none] ring-2 ring-amber-400/40'
+              : ''
+          }`}
+        >
+          {/* Snap-to-Grid Blueprint Alignment Info Banner in Edit Mode */}
+          {isEditMode && (
+            <div className="w-full max-w-4xl mb-4 py-2 px-4 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/40 rounded-xl flex items-center justify-between text-xs font-bold text-amber-900 dark:text-amber-300 print:hidden dir-rtl">
+              <div className="flex items-center gap-2">
+                <Grid className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <span>خطوط راهنمای شبکه و تراز چارت (Snap-to-Grid Blueprint Alignment) فعال است</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSnapGridEnabled(!snapGridEnabled)}
+                  className={`px-3 py-1 rounded-lg text-[11px] font-extrabold transition-all cursor-pointer border ${
+                    snapGridEnabled
+                      ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-sm'
+                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  {snapGridEnabled ? 'مخفی کردن خطوط شبکه (Grid Lines)' : 'نمایش خطوط شبکه'}
+                </button>
+              </div>
+            </div>
+          )}
           
           {/* Printable Official Header Banner with Custom Logo & Issue Date */}
           <div className="w-full max-w-4xl mb-6 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] shadow-sm flex flex-wrap items-center justify-between gap-6 text-slate-900 text-right dir-rtl">
