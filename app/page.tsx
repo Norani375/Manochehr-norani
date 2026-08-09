@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen, RefreshCw, GitBranch, Grid
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen, RefreshCw, GitBranch, Grid, Settings2, LogOut, Key
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
@@ -22,6 +22,7 @@ import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
 import { useCompany } from '@/lib/companyContext';
+import { useAuth } from '@/lib/AuthContext';
 import { 
   subscribePersonnel, 
   subscribeSettings, 
@@ -147,13 +148,158 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
 ];
 
 export default function OrgChartPage() {
+  const { user, logout, changePassword } = useAuth();
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'license-renewal-checklist' | 'branch-renewal-checklist' | 'employees' | 'company-articles' | 'company-proposal'>('org-chart');
   const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
   const [isEditMode, setIsEditMode] = useState(false);
   const [snapGridEnabled, setSnapGridEnabled] = useState(true);
+  const [showGridLines, setShowGridLines] = useState(true);
+  const [gridDensity, setGridDensity] = useState<'small' | 'medium' | 'large'>('medium');
+  const [isGridSettingsOpen, setIsGridSettingsOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<PersonnelNode | null>(null);
+
+  // Dragging, Magnetic Grid Snapping & Bounding Constraints state for #org-chart-export-canvas
+  const [nodePositions, setNodePositions] = useState<Record<string, { x: number; y: number }>>({});
+  const [draggingNodeKey, setDraggingNodeKey] = useState<string | null>(null);
+  const [dragStart, setDragStart] = useState<{ mouseX: number; mouseY: number; initialX: number; initialY: number } | null>(null);
+  const [snappedIndicator, setSnappedIndicator] = useState<{ key: string; x: number; y: number } | null>(null);
+
+  const getGridStep = (density: 'small' | 'medium' | 'large') => {
+    if (density === 'small') return 12;
+    if (density === 'large') return 48;
+    return 24; // medium
+  };
+
+  const snapValue = (val: number, step: number) => {
+    return Math.round(val / step) * step;
+  };
+
+  const handleNodePointerDown = (e: React.PointerEvent, nodeKey: string) => {
+    if (!isEditMode) return;
+    if ((e.target as HTMLElement).closest('button, input, a, svg')) return;
+
+    const canvasEl = document.getElementById('org-chart-export-canvas');
+    const nodeEl = e.currentTarget as HTMLElement;
+    if (!canvasEl || !nodeEl) return;
+
+    e.stopPropagation();
+
+    try {
+      nodeEl.setPointerCapture(e.pointerId);
+    } catch (_) {}
+
+    const currentPos = nodePositions[nodeKey] || { x: 0, y: 0 };
+    setDraggingNodeKey(nodeKey);
+    setDragStart({
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      initialX: currentPos.x,
+      initialY: currentPos.y,
+    });
+  };
+
+  const handleNodePointerMove = (e: React.PointerEvent, nodeKey: string) => {
+    if (!isEditMode || draggingNodeKey !== nodeKey || !dragStart) return;
+
+    const canvasEl = document.getElementById('org-chart-export-canvas');
+    const nodeEl = e.currentTarget as HTMLElement;
+    if (!canvasEl || !nodeEl) return;
+
+    const deltaX = e.clientX - dragStart.mouseX;
+    const deltaY = e.clientY - dragStart.mouseY;
+
+    const rawX = dragStart.initialX + deltaX;
+    const rawY = dragStart.initialY + deltaY;
+
+    // Bounding constraints relative to #org-chart-export-canvas
+    const nodeRect = nodeEl.getBoundingClientRect();
+    const canvasRect = canvasEl.getBoundingClientRect();
+
+    const currentX = nodePositions[nodeKey]?.x || 0;
+    const currentY = nodePositions[nodeKey]?.y || 0;
+
+    const origLeft = nodeRect.left - canvasRect.left - currentX;
+    const origTop = nodeRect.top - canvasRect.top - currentY;
+
+    const padding = 16;
+    const minX = -origLeft + padding;
+    const maxX = canvasRect.width - origLeft - nodeRect.width - padding;
+    const minY = -origTop + padding;
+    const maxY = canvasRect.height - origTop - nodeRect.height - padding;
+
+    // Apply strict bounding box constraints to keep nodes inside visible canvas area
+    const boundedX = Math.max(minX, Math.min(maxX, rawX));
+    const boundedY = Math.max(minY, Math.min(maxY, rawY));
+
+    // Apply magnetic snap to nearest grid intersection
+    const step = getGridStep(gridDensity);
+    const finalX = snapGridEnabled ? snapValue(boundedX, step) : boundedX;
+    const finalY = snapGridEnabled ? snapValue(boundedY, step) : boundedY;
+
+    setNodePositions((prev) => ({
+      ...prev,
+      [nodeKey]: { x: finalX, y: finalY },
+    }));
+
+    if (snapGridEnabled) {
+      setSnappedIndicator({ key: nodeKey, x: finalX, y: finalY });
+    }
+  };
+
+  const handleNodePointerUp = (e: React.PointerEvent, nodeKey: string) => {
+    if (draggingNodeKey === nodeKey) {
+      try {
+        const nodeEl = e.currentTarget as HTMLElement;
+        if (nodeEl.hasPointerCapture(e.pointerId)) {
+          nodeEl.releasePointerCapture(e.pointerId);
+        }
+      } catch (_) {}
+      setDraggingNodeKey(null);
+      setDragStart(null);
+      setSnappedIndicator(null);
+
+      try {
+        localStorage.setItem(`bg_node_positions_${activeCompanyId}`, JSON.stringify(nodePositions));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleResetNodePositions = () => {
+    setNodePositions({});
+    try {
+      localStorage.removeItem(`bg_node_positions_${activeCompanyId}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getNodeDragProps = (nodeKey: string) => {
+    const currentPos = nodePositions[nodeKey];
+    const isDragging = draggingNodeKey === nodeKey;
+
+    return {
+      onPointerDown: (e: React.PointerEvent) => handleNodePointerDown(e, nodeKey),
+      onPointerMove: (e: React.PointerEvent) => handleNodePointerMove(e, nodeKey),
+      onPointerUp: (e: React.PointerEvent) => handleNodePointerUp(e, nodeKey),
+      style: {
+        transform: currentPos ? `translate3d(${currentPos.x}px, ${currentPos.y}px, 0)` : undefined,
+        touchAction: isEditMode ? ('none' as const) : ('auto' as const),
+        transition: isDragging ? 'none' : 'transform 0.15s cubic-bezier(0.2, 0, 0, 1)',
+        zIndex: isDragging ? 40 : undefined,
+      },
+      classNameAddons: isEditMode
+        ? `select-none cursor-grab active:cursor-grabbing ${isDragging ? 'ring-2 ring-amber-500 shadow-2xl scale-102 z-40' : ''}`
+        : '',
+    };
+  };
 
   // Logo and Header Dates state
   const [customLogo, setCustomLogo] = useState<string | null>(null);
@@ -197,6 +343,12 @@ export default function OrgChartPage() {
       }
       const savedLogo = localStorage.getItem(`custom_company_logo_${activeCompanyId}`);
       setCustomLogo(savedLogo || null);
+      const savedPositions = localStorage.getItem(`bg_node_positions_${activeCompanyId}`);
+      if (savedPositions) {
+        setNodePositions(JSON.parse(savedPositions));
+      } else {
+        setNodePositions({});
+      }
     } catch (e) {
       console.error('Failed to load local storage state for company', e);
     }
@@ -680,6 +832,40 @@ export default function OrgChartPage() {
             ))}
           </div>
 
+          {/* User Profile Actions */}
+          {user && (
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+              <div className="flex items-center gap-2 px-1 pb-1">
+                <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                  <User className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300 truncate">
+                  {user.email}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsChangePasswordOpen(true)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors"
+                >
+                  <Key className="w-3.5 h-3.5" />
+                  <span>تغییر رمز</span>
+                </button>
+                <button
+                  onClick={async () => {
+                    if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
+                      await logout();
+                    }
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-bold bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>خروج</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Sidebar Footer */}
           <div className="pt-2 text-center">
             <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">سامانه مدیریت صرافی برکت‌الله غفوری</p>
@@ -790,30 +976,93 @@ export default function OrgChartPage() {
         <div 
           id="org-chart-export-canvas" 
           className={`min-w-[950px] flex flex-col items-center py-6 px-4 bg-white dark:bg-slate-900 rounded-2xl relative transition-all ${
-            isEditMode && snapGridEnabled
-              ? 'bg-[linear-gradient(to_right,#80808018_1px,transparent_1px),linear-gradient(to_bottom,#80808018_1px,transparent_1px)] bg-[size:24px_24px] dark:bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] print:![background-image:none] ring-2 ring-amber-400/40'
+            isEditMode && showGridLines
+              ? `bg-[linear-gradient(to_right,#80808018_1px,transparent_1px),linear-gradient(to_bottom,#80808018_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] print:![background-image:none] ${gridDensity === 'small' ? 'bg-[size:12px_12px]' : gridDensity === 'large' ? 'bg-[size:48px_48px]' : 'bg-[size:24px_24px]'}`
               : ''
-          }`}
+          } ${isEditMode && snapGridEnabled ? 'ring-2 ring-amber-400/40' : ''}`}
         >
           {/* Snap-to-Grid Blueprint Alignment Info Banner in Edit Mode */}
           {isEditMode && (
-            <div className="w-full max-w-4xl mb-4 py-2 px-4 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/40 rounded-xl flex items-center justify-between text-xs font-bold text-amber-900 dark:text-amber-300 print:hidden dir-rtl">
+            <div className="w-full max-w-4xl mb-4 py-2 px-4 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/40 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-900 dark:text-amber-300 print:hidden dir-rtl">
               <div className="flex items-center gap-2">
-                <Grid className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                <span>خطوط راهنمای شبکه و تراز چارت (Snap-to-Grid Blueprint Alignment) فعال است</span>
+                <Grid className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span>
+                  {snapGridEnabled 
+                    ? 'تراز چسبندگی مغناطیسی به شبکه (Magnetic Snap to Grid) و محدودکننده کادر فعال است' 
+                    : 'تنظیمات شبکه و تراز چارت'}
+                </span>
+                {snappedIndicator && snapGridEnabled && (
+                  <span className="px-2.5 py-0.5 bg-amber-500 text-slate-950 font-black rounded-full text-[10px] shadow-sm animate-pulse">
+                    تراز شده (X: {snappedIndicator?.x}px, Y: {snappedIndicator?.y}px)
+                  </span>
+                )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 relative">
                 <button
                   type="button"
-                  onClick={() => setSnapGridEnabled(!snapGridEnabled)}
-                  className={`px-3 py-1 rounded-lg text-[11px] font-extrabold transition-all cursor-pointer border ${
-                    snapGridEnabled
-                      ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-sm'
-                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
-                  }`}
+                  onClick={() => setIsGridSettingsOpen(!isGridSettingsOpen)}
+                  className="px-3 py-1.5 flex items-center gap-2 rounded-lg text-[11px] font-extrabold transition-all cursor-pointer border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
                 >
-                  {snapGridEnabled ? 'مخفی کردن خطوط شبکه (Grid Lines)' : 'نمایش خطوط شبکه'}
+                  <Settings2 className="w-3.5 h-3.5" />
+                  تنظیمات شبکه (Grid)
                 </button>
+                
+                {isGridSettingsOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden text-slate-800 dark:text-slate-200">
+                    <div className="p-3 border-b border-slate-100 dark:border-slate-700">
+                      <h4 className="font-bold text-sm">تنظیمات تراز شبکه</h4>
+                    </div>
+                    <div className="p-3 flex flex-col gap-3">
+                      <label className="flex items-center justify-between cursor-pointer">
+                        <span className="text-xs font-semibold">تراز خودکار (Snap to Grid)</span>
+                        <div className="relative inline-flex items-center">
+                          <input type="checkbox" className="sr-only peer" checked={snapGridEnabled} onChange={() => setSnapGridEnabled(!snapGridEnabled)} />
+                          <div className="w-8 h-4 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:-translate-x-4 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-slate-600 peer-checked:bg-amber-500"></div>
+                        </div>
+                      </label>
+                      <label className="flex items-center justify-between cursor-pointer">
+                        <span className="text-xs font-semibold">نمایش خطوط (Show Grid)</span>
+                        <div className="relative inline-flex items-center">
+                          <input type="checkbox" className="sr-only peer" checked={showGridLines} onChange={() => setShowGridLines(!showGridLines)} />
+                          <div className="w-8 h-4 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:-translate-x-4 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-slate-600 peer-checked:bg-amber-500"></div>
+                        </div>
+                      </label>
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+                        <span className="text-xs font-semibold block mb-2">تراکم خطوط (Density)</span>
+                        <div className="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-1">
+                          <button
+                            onClick={() => setGridDensity('small')}
+                            className={`flex-1 py-1 px-2 text-[10px] font-bold rounded-md transition-all ${gridDensity === 'small' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                          >
+                            کوچک
+                          </button>
+                          <button
+                            onClick={() => setGridDensity('medium')}
+                            className={`flex-1 py-1 px-2 text-[10px] font-bold rounded-md transition-all ${gridDensity === 'medium' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                          >
+                            متوسط
+                          </button>
+                          <button
+                            onClick={() => setGridDensity('large')}
+                            className={`flex-1 py-1 px-2 text-[10px] font-bold rounded-md transition-all ${gridDensity === 'large' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                          >
+                            بزرگ
+                          </button>
+                        </div>
+                      </div>
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+                        <button
+                          type="button"
+                          onClick={handleResetNodePositions}
+                          className="w-full py-1.5 px-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5 text-amber-500" />
+                          <span>بازنشانی جابه‌جایی گره‌ها</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -907,31 +1156,45 @@ export default function OrgChartPage() {
           )}
           
           {/* Level 1: President */}
-          {president && (
-            <div className="flex flex-col items-center relative group">
-              <div 
-                onClick={() => isEditMode && president && setEditingNode(president)}
-                className={`bg-slate-900 dark:bg-slate-800 text-white rounded-[2rem] p-6 shadow-2xl border border-slate-800 dark:border-slate-700 w-80 text-center relative transition-all duration-300 ${
-                  isEditMode ? 'cursor-pointer hover:ring-4 hover:ring-amber-400/30 hover:scale-105' : ''
-                } ${matchesSearch(president) ? 'ring-4 ring-blue-500' : ''}`}
-              >
-                {isEditMode && (
-                  <div className="absolute -top-3 -right-3 bg-amber-500 text-slate-950 p-2 rounded-2xl shadow-xl border-4 border-white dark:border-slate-800">
-                    <Edit3 className="w-4 h-4" />
+          {president && (() => {
+            const dragProps = getNodeDragProps(president!.key);
+            return (
+              <div className="flex flex-col items-center relative group">
+                <div 
+                  onPointerDown={dragProps.onPointerDown}
+                  onPointerMove={dragProps.onPointerMove}
+                  onPointerUp={dragProps.onPointerUp}
+                  style={dragProps.style}
+                  onClick={() => isEditMode && setEditingNode(president!)}
+                  className={`bg-slate-900 dark:bg-slate-800 text-white rounded-[2rem] p-6 shadow-2xl border border-slate-800 dark:border-slate-700 w-80 text-center relative transition-all duration-300 ${
+                    isEditMode ? 'hover:ring-4 hover:ring-amber-400/30' : ''
+                  } ${matchesSearch(president!) ? 'ring-4 ring-blue-500' : ''} ${dragProps.classNameAddons}`}
+                >
+                  {isEditMode && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingNode(president!);
+                      }}
+                      className="absolute -top-3 -right-3 bg-amber-500 text-slate-950 p-2 rounded-2xl shadow-xl border-4 border-white dark:border-slate-800 z-10 hover:bg-amber-400 cursor-pointer"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                  )}
+                  <div className="inline-flex p-3 bg-blue-500/20 rounded-2xl mb-3 text-blue-400">
+                    <Award className="w-7 h-7" />
                   </div>
-                )}
-                <div className="inline-flex p-3 bg-blue-500/20 rounded-2xl mb-3 text-blue-400">
-                  <Award className="w-7 h-7" />
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-blue-400 font-black mb-1">{president!.title}</div>
+                  <div className="text-xl font-black tracking-tight">{president!.name}</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 font-bold tracking-widest uppercase">Chairman & Founder</div>
                 </div>
-                <div className="text-[11px] uppercase tracking-[0.2em] text-blue-400 font-black mb-1">{president?.title}</div>
-                <div className="text-xl font-black tracking-tight">{president?.name}</div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 font-bold tracking-widest uppercase">Chairman & Founder</div>
-              </div>
 
-              {/* Vertical connector */}
-              <div className={`h-8 w-px ${themeStyle.connector} opacity-50`}></div>
-            </div>
-          )}
+                {/* Vertical connector */}
+                <div className={`h-8 w-px ${themeStyle.connector} opacity-50`}></div>
+              </div>
+            );
+          })()}
 
           {/* Level 2: Board of Supervisors Box */}
           <div className="flex flex-col items-center relative w-full max-w-5xl">
@@ -947,29 +1210,43 @@ export default function OrgChartPage() {
 
               {/* Board Members Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                {boardMembers.map((member) => (
-                  <div 
-                    key={member.key}
-                    onClick={() => isEditMode && setEditingNode(member)}
-                    className={`bg-white dark:bg-slate-900 rounded-[1.5rem] p-5 shadow-sm border transition-all duration-300 relative ${
-                      isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400 hover:scale-102' : ''
-                    } ${matchesSearch(member) ? 'border-blue-500 ring-4 ring-blue-500/10' : 'border-slate-100 dark:border-slate-800'}`}
-                  >
-                    {isEditMode && (
-                      <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1.5 rounded-xl">
-                        <Edit3 className="w-3.5 h-3.5" />
+                {boardMembers.map((member) => {
+                  const dragProps = getNodeDragProps(member.key);
+                  return (
+                    <div 
+                      key={member.key}
+                      onPointerDown={dragProps.onPointerDown}
+                      onPointerMove={dragProps.onPointerMove}
+                      onPointerUp={dragProps.onPointerUp}
+                      style={dragProps.style}
+                      onClick={() => isEditMode && setEditingNode(member)}
+                      className={`bg-white dark:bg-slate-900 rounded-[1.5rem] p-5 shadow-sm border transition-all duration-300 relative ${
+                        isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
+                      } ${matchesSearch(member) ? 'border-blue-500 ring-4 ring-blue-500/10' : 'border-slate-100 dark:border-slate-800'} ${dragProps.classNameAddons}`}
+                    >
+                      {isEditMode && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingNode(member);
+                          }}
+                          className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1.5 rounded-xl z-10 hover:bg-amber-400 cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="p-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                          <UserCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Board</span>
                       </div>
-                    )}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="p-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                        <UserCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Board</span>
+                      <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{member.title}</div>
+                      <div className="text-sm font-black text-slate-900 dark:text-white">{member.name}</div>
                     </div>
-                    <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{member.title}</div>
-                    <div className="text-sm font-black text-slate-900 dark:text-white">{member.name}</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Vertical Connector Down to Sub-units */}
@@ -982,25 +1259,39 @@ export default function OrgChartPage() {
                 
                 {/* Left Side: Operations Manager & Regional Reps */}
                 <div className="flex flex-col items-center">
-                  {operations && (
-                    <div 
-                      onClick={() => isEditMode && operations && setEditingNode(operations)}
-                      className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
-                        isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
-                      } ${matchesSearch(operations) ? 'ring-4 ring-blue-500/30' : ''}`}
-                    >
-                      {isEditMode && (
-                        <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1.5 rounded-xl">
-                          <Edit3 className="w-3.5 h-3.5" />
+                  {operations && (() => {
+                    const dragProps = getNodeDragProps(operations!.key);
+                    return (
+                      <div 
+                        onPointerDown={dragProps.onPointerDown}
+                        onPointerMove={dragProps.onPointerMove}
+                        onPointerUp={dragProps.onPointerUp}
+                        style={dragProps.style}
+                        onClick={() => isEditMode && setEditingNode(operations!)}
+                        className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
+                          isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
+                        } ${matchesSearch(operations!) ? 'ring-4 ring-blue-500/30' : ''} ${dragProps.classNameAddons}`}
+                      >
+                        {isEditMode && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingNode(operations!);
+                            }}
+                            className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1.5 rounded-xl z-10 hover:bg-amber-400 cursor-pointer"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
+                          <Briefcase className="w-5 h-5" />
                         </div>
-                      )}
-                      <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
-                        <Briefcase className="w-5 h-5" />
+                        <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{operations!.title}</div>
+                        <div className="text-base font-black">{operations!.name}</div>
                       </div>
-                      <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{operations?.title}</div>
-                      <div className="text-base font-black">{operations?.name}</div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* Regional Representatives - Peer Level under Operations Manager */}
                   <div className="w-full mt-4">
@@ -1049,50 +1340,64 @@ export default function OrgChartPage() {
                           ? 'grid-cols-1 max-w-sm mx-auto' 
                           : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
                       }`}>
-                        {filteredBranches.map((branch) => (
-                          <div key={branch.key} className="flex flex-col items-center">
-                            {/* Individual drop line to node */}
-                            <div className="w-1 h-4 bg-blue-600 dark:bg-blue-400"></div>
+                        {filteredBranches.map((branch) => {
+                          const dragProps = getNodeDragProps(branch.key);
+                          return (
+                            <div key={branch.key} className="flex flex-col items-center">
+                              {/* Individual drop line to node */}
+                              <div className="w-1 h-4 bg-blue-600 dark:bg-blue-400"></div>
 
-                            <div 
-                              onClick={() => isEditMode && setEditingNode(branch)}
-                              className={`bg-white dark:bg-slate-900 rounded-2xl p-4 border text-center shadow-sm relative transition-all duration-300 w-full ${
-                                isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
-                              } ${matchesSearch(branch) ? 'border-blue-500 ring-2 ring-blue-500/10' : 'border-slate-100 dark:border-slate-800'} ${
-                                selectedBranchFilter === branch.key ? 'border-blue-600 ring-4 ring-blue-600/10' : ''
-                              }`}
-                            >
-                              {isEditMode && (
-                                <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded-lg">
-                                  <Edit3 className="w-3 h-3" />
+                              <div 
+                                onPointerDown={dragProps.onPointerDown}
+                                onPointerMove={dragProps.onPointerMove}
+                                onPointerUp={dragProps.onPointerUp}
+                                style={dragProps.style}
+                                onClick={() => isEditMode && setEditingNode(branch)}
+                                className={`bg-white dark:bg-slate-900 rounded-2xl p-4 border text-center shadow-sm relative transition-all duration-300 w-full ${
+                                  isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
+                                } ${matchesSearch(branch) ? 'border-blue-500 ring-2 ring-blue-500/10' : 'border-slate-100 dark:border-slate-800'} ${
+                                  selectedBranchFilter === branch.key ? 'border-blue-600 ring-4 ring-blue-600/10' : ''
+                                } ${dragProps.classNameAddons}`}
+                              >
+                                {isEditMode && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingNode(branch);
+                                    }}
+                                    className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded-lg z-10 hover:bg-amber-400 cursor-pointer"
+                                  >
+                                    <Edit3 className="w-3 h-3" />
+                                  </button>
+                                )}
+
+                                <div className="flex items-center justify-end mb-2">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedBranchFilter(selectedBranchFilter === branch.key ? 'all' : branch.key);
+                                    }}
+                                    className={`p-1.5 rounded-lg transition-all ${
+                                      selectedBranchFilter === branch.key
+                                        ? 'bg-blue-600 text-white shadow-md'
+                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-400'
+                                    }`}
+                                  >
+                                    <Filter className="w-3.5 h-3.5" />
+                                  </button>
                                 </div>
-                              )}
 
-                              <div className="flex items-center justify-end mb-2">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedBranchFilter(selectedBranchFilter === branch.key ? 'all' : branch.key);
-                                  }}
-                                  className={`p-1.5 rounded-lg transition-all ${
-                                    selectedBranchFilter === branch.key
-                                      ? 'bg-blue-600 text-white shadow-md'
-                                      : 'bg-slate-50 dark:bg-slate-800 text-slate-400'
-                                  }`}
-                                >
-                                  <Filter className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-
-                              <div className="text-[11px] font-black text-blue-600 dark:text-blue-400 mb-1">{branch.title}</div>
-                              <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">{branch.name}</div>
-                              <div className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md mt-2 border border-blue-100 dark:border-blue-900/40 inline-block">
-                                گزارش به: مدیر بخش عملیاتی
+                                <div className="text-[11px] font-black text-blue-600 dark:text-blue-400 mb-1">{branch.title}</div>
+                                <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">{branch.name}</div>
+                                <div className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md mt-2 border border-blue-100 dark:border-blue-900/40 inline-block">
+                                  گزارش به: مدیر بخش عملیاتی
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -1100,25 +1405,39 @@ export default function OrgChartPage() {
 
                 {/* Right Side: Compliance Officer */}
                 <div className="flex flex-col items-center justify-start">
-                  {compliance && (
-                    <div 
-                      onClick={() => isEditMode && compliance && setEditingNode(compliance)}
-                      className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
-                        isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-amber-400' : ''
-                      } ${matchesSearch(compliance) ? 'ring-4 ring-blue-500/30' : ''}`}
-                    >
-                      {isEditMode && (
-                        <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1.5 rounded-xl">
-                          <Edit3 className="w-3.5 h-3.5" />
+                  {compliance && (() => {
+                    const dragProps = getNodeDragProps(compliance!.key);
+                    return (
+                      <div 
+                        onPointerDown={dragProps.onPointerDown}
+                        onPointerMove={dragProps.onPointerMove}
+                        onPointerUp={dragProps.onPointerUp}
+                        style={dragProps.style}
+                        onClick={() => isEditMode && setEditingNode(compliance!)}
+                        className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
+                          isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
+                        } ${matchesSearch(compliance!) ? 'ring-4 ring-blue-500/30' : ''} ${dragProps.classNameAddons}`}
+                      >
+                        {isEditMode && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingNode(compliance!);
+                            }}
+                            className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1.5 rounded-xl z-10 hover:bg-amber-400 cursor-pointer"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
+                          <Shield className="w-5 h-5" />
                         </div>
-                      )}
-                      <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
-                        <Shield className="w-5 h-5" />
+                        <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{compliance!.title}</div>
+                        <div className="text-base font-black">{compliance!.name}</div>
                       </div>
-                      <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{compliance?.title}</div>
-                      <div className="text-base font-black">{compliance?.name}</div>
-                    </div>
-                  )}
+                    );
+                  })()}
                   <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-2xl text-[11px] font-medium text-amber-800 dark:text-amber-400 text-center max-w-xs leading-relaxed">
                     {compliance?.description || 'مسئول مستقیم رعایت مقررات و قوانین بانکی (AML/CFT) با مسیر گزارش‌دهی مستقیم به هیئت نظار.'}
                   </div>
@@ -1243,6 +1562,71 @@ export default function OrgChartPage() {
         logoUrl={customLogo}
         onSaveLogo={handleSaveLogo}
       />
+
+      {/* Change Password Modal */}
+      {isChangePasswordOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <h3 className="font-black text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                <Key className="w-5 h-5 text-amber-500" />
+                تغییر رمز عبور
+              </h3>
+              <button onClick={() => setIsChangePasswordOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              {passwordError && (
+                <div className="p-3 text-sm font-semibold text-red-700 bg-red-100 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-center">
+                  {passwordError}
+                </div>
+              )}
+              <div className="space-y-1">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">رمز عبور جدید</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 dark:text-white text-left outline-none transition-all"
+                  placeholder="••••••••"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+            <div className="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex gap-3">
+              <button
+                onClick={() => setIsChangePasswordOpen(false)}
+                className="flex-1 py-3 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                انصراف
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    setPasswordError(null);
+                    if (newPassword.length < 6) {
+                      setPasswordError('رمز عبور باید حداقل ۶ کاراکتر باشد.');
+                      return;
+                    }
+                    await changePassword(newPassword);
+                    setIsChangePasswordOpen(false);
+                    setNewPassword('');
+                    alert('رمز عبور با موفقیت تغییر یافت.');
+                  } catch (e: any) {
+                    console.error(e);
+                    setPasswordError('خطایی رخ داد. آیا اخیراً وارد شده‌اید؟ (نیاز به لاگین مجدد)');
+                  }
+                }}
+                disabled={!newPassword}
+                className="flex-1 py-3 px-4 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              >
+                ذخیره رمز جدید
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* High Quality PDF Export Modal */}
       <ExportPdfModal

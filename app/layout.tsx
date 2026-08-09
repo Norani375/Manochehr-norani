@@ -1,6 +1,8 @@
 import type {Metadata} from 'next';
 import './globals.css'; // Global styles
 import { CompanyProvider } from '@/lib/companyContext';
+import { AuthProvider } from '@/lib/AuthContext';
+import AuthGuard from '@/components/AuthGuard';
 
 export const metadata: Metadata = {
   title: 'Barakatullah Ghafoori Org Chart',
@@ -46,10 +48,15 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         />
       </head>
       <body className="font-sans" suppressHydrationWarning>
-        <CompanyProvider>
-          {children}
-        </CompanyProvider>
+        <AuthProvider>
+          <AuthGuard>
+            <CompanyProvider>
+              {children}
+            </CompanyProvider>
+          </AuthGuard>
+        </AuthProvider>
       </body>
     </html>
   );
 }
+
