@@ -198,7 +198,7 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
           </div>
 
           <div className="pt-2">
-            <h2 className="text-base sm:text-lg font-bold text-slate-700">اساسنامه شرکت صرافی و خدمات پولی برکت‌الله غفوری</h2>
+            <h2 className="text-base sm:text-lg font-bold text-slate-700">اساسنامه شرکت صرافی و خدمات پولی</h2>
           </div>
 
           <div className="text-xs text-slate-600 pt-2 flex flex-wrap items-center justify-center gap-4 font-sans">

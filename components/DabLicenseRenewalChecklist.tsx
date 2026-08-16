@@ -319,7 +319,7 @@ export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode
           </div>
 
           <h1 className="text-xl font-black text-slate-900 mt-4 leading-relaxed">
-            فورم موجودیت اسناد و شرایط برای تمدید جواز فعالیت شرکت صرافی و خدمات پولی برکت الله غفوری
+            فورم موجودیت اسناد و شرایط برای تمدید جواز فعالیت شرکت صرافی و خدمات پولی
           </h1>
           <div className="inline-block bg-emerald-50 border border-emerald-300 px-6 py-1.5 rounded-full text-xs font-black text-emerald-950 shadow-xs">
             چک لست معلومات شرکت صرافی وخدمات پولی ( {data.companyName} ) جواز شماره ( {data.licenseNo} ) واقع ولایت ( {data.province} )

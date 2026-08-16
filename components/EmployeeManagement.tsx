@@ -447,8 +447,8 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
                       <img src={customLogo || "/assets/dab_logo.png"} alt="Logo" className="max-w-full max-h-full" />
                     </div>
                     <div className="text-center flex-1">
-                      <h1 className="text-2xl font-black mb-2 tracking-tight">شرکت صرافی و خدمات پولی برکت الله غفوری</h1>
-                      <p className="text-lg font-black mb-1 opacity-80">Barakatullah Ghafouri Money Exchange</p>
+                      <h1 className="text-2xl font-black mb-2 tracking-tight">شرکت صرافی و خدمات پولی</h1>
+                      <p className="text-lg font-black mb-1 opacity-80">Money Services & Exchange Company</p>
                       <p className="text-sm font-bold text-slate-600">DAB License No: DAB/7-0965</p>
                       <div className="mt-6 inline-block bg-slate-900 text-white px-10 py-2 rounded-full text-base font-black">
                         فورم خلص سوانح و معلومات پرسونل
@@ -543,7 +543,7 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
 
                     <div className="col-span-12 mt-24 text-center border-t-2 border-slate-200 pt-8">
                       <p className="text-[12px] text-slate-500 font-bold leading-relaxed">
-                        این سند به عنوان خلص سوانح رسمی در آرشیف شرکت صرافی برکت‌الله غفوری محفوظ می‌باشد.<br/>
+                        این سند به عنوان خلص سوانح رسمی در آرشیف شرکت محفوظ می‌باشد.<br/>
                         تائید کننده: بخش منابع انسانی و مدیریت عملیاتی
                       </p>
                     </div>

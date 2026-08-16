@@ -273,7 +273,7 @@ export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLo
 
           <div className="text-center space-y-2">
             <h1 className="text-xl font-black text-slate-900">صورتجلسه مجمع عمومی عادی سالانه</h1>
-            <div className="text-xs font-bold text-slate-700">شرکت صرافی و خدمات پولی برکت‌الله غفوری (جواز: {data.licenseNo})</div>
+            <div className="text-xs font-bold text-slate-700">{data.companyName} (جواز: {data.licenseNo})</div>
             <p className="text-[11px] font-bold text-slate-600">{data.companyAddress}</p>
             <div className="inline-block bg-slate-100 border border-slate-300 text-slate-900 px-6 py-1 rounded-full text-xs font-black mt-1">
               رسمی / محرمانه

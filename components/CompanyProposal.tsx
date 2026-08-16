@@ -51,7 +51,7 @@ const DEFAULT_PROPOSAL_DATA: ProposalData = {
   companyAddress: 'ولایت کندز، مومند مارکیت، منزل دوم، دکان نمبر ۳۰۱',
   expiryDate: '۱۴۰۴/۱۱/۰۵',
   recipientTitle: 'به مقام محترم سهمداران شرکت!',
-  bodyText: 'محترماً؛ شرکت صرافی و خدمات پولی برکت‌الله غفوری به منظور فعالیت و ادامهٔ کار صرافی و خدمات پولی، رهبری شرکت افراد ذیل را به محضر مقام شما معرفی می‌نماید:',
+  bodyText: 'محترماً؛ به منظور فعالیت و ادامهٔ کار صرافی و خدمات پولی، رهبری شرکت افراد ذیل را به محضر مقام شما معرفی می‌نماید:',
   closingText: 'غرض اجراآت بعدی به شما معرفی گردید.',
   signatoryName: 'صالح محمد رحیمی',
   signatoryTitle: 'مدیر عملیاتی',
@@ -409,8 +409,8 @@ export default function CompanyProposal({ customLogo, companyId = 'default' }: C
             <img src={customLogo} alt="Logo" className="w-20 h-20 mx-auto object-contain mb-2" />
           ) : (
             <div className="w-16 h-16 mx-auto rounded-full bg-[#1e3a8a] text-amber-400 flex flex-col items-center justify-center font-black text-xs shadow-md border-2 border-amber-400/50 mb-2">
-              <span className="text-sm">برکت الله</span>
-              <span className="text-[9px] text-white">غفوری</span>
+              <Building2 className="w-7 h-7 mb-0.5" />
+              <span className="text-[9px] text-white">لوگو</span>
             </div>
           )}
           

@@ -483,7 +483,7 @@ export default function DabLicenseChecklist({ isEditMode: initialEditMode = true
         <div className="space-y-4 pt-10 border-t-2 border-slate-200">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-black flex items-center gap-2 text-rose-900 border-r-4 border-rose-900 pr-3">
-              مکلفیت های بعد از جواز شرکت صرافی و خدمات پولی ( برکت الله غفوری ) دارنده جواز شماره ( {data.licenseNo} ):
+              مکلفیت های بعد از جواز شرکت صرافی و خدمات پولی دارنده جواز شماره ( {data.licenseNo} ):
             </h3>
             {isEditing && (
               <button onClick={addObligation} className="text-xs bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg border border-rose-200 font-bold flex items-center gap-1 hover:bg-rose-100">

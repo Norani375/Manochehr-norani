@@ -774,8 +774,8 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
 
           <div className="text-center space-y-1.5 min-w-[200px]">
             <div className="font-bold text-slate-700 text-xs">با احترام؛</div>
-            <div className="font-black text-sm text-slate-950">برکت‌الله ولد عبدالغفور</div>
-            <div className="text-xs font-bold text-blue-900">رئیس شرکت صرافی و خدمات پولی برکت‌الله غفوری</div>
+            <div className="font-black text-sm text-slate-950">رئیس شرکت</div>
+            <div className="text-xs font-bold text-blue-900">{formData.companyName || "شرکت صرافی و خدمات پولی"}</div>
             <div className="pt-6 font-bold text-slate-600 text-[10px] border-t border-slate-300 mt-2">
               امضاء و شصت
             </div>

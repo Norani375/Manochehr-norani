@@ -1458,8 +1458,8 @@ export default function OrgChartPage() {
 
             <div className="text-center space-y-1.5 min-w-[240px]">
               <div className="font-bold text-slate-700 text-sm">با احترام؛</div>
-              <div className="font-black text-lg text-slate-950">برکت‌الله ولد عبدالغفور</div>
-              <div className="text-xs font-bold text-blue-900">رئیس هیئت مدیره و مالک شرکت صرافی و خدمات پولی برکت‌الله غفوری</div>
+              <div className="font-black text-lg text-slate-950">رئیس هیئت مدیره و مالک شرکت</div>
+              <div className="text-xs font-bold text-blue-900">شرکت صرافی و خدمات پولی</div>
               <div className="pt-10 font-bold text-slate-600 text-xs border-t border-slate-300 mt-2">
                 امضاء و شصت
               </div>

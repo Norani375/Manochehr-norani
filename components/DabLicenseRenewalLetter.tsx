@@ -537,7 +537,7 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
 
             {/* Dari Header Right */}
             <div className="text-right text-[11px] font-bold text-slate-800 leading-tight">
-              <div className="font-extrabold text-slate-950 text-xs">شرکت صرافی و خدمات پولی برکت‌الله غفوری</div>
+              <div className="font-extrabold text-slate-950 text-xs">{data.companyName}</div>
               <div className="font-mono text-slate-700">جواز: {data.licenseNo}</div>
             </div>
 
