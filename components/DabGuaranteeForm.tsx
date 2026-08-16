@@ -174,6 +174,12 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
 
   const customLogo = propLogo !== undefined ? propLogo : localLogo;
 
+  const handleRemoveLogo = () => {
+    localStorage.removeItem(`custom_company_logo_${companyId}`);
+    setLocalLogo(null);
+    window.dispatchEvent(new Event('custom_logo_updated'));
+  };
+
   const handleSave = async () => {
     try {
       localStorage.setItem(`dab_guarantee_form_data_${companyId}`, JSON.stringify(formData));
@@ -320,13 +326,27 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
                 <span className="text-xs font-black text-blue-950 block">برکت‌الله غفوری</span>
                 <span className="text-[10px] text-slate-600 font-bold block">لوگوی اختصاصی فورم تضمین</span>
                 {onOpenLogoModal && (
-                  <button
-                    type="button"
-                    onClick={onOpenLogoModal}
-                    className="text-[10px] text-blue-700 hover:underline font-bold print:hidden cursor-pointer"
-                  >
-                    تغییر لوگو
-                  </button>
+                  <div className="flex items-center gap-2 mt-1 print:hidden">
+                    <button
+                      type="button"
+                      onClick={onOpenLogoModal}
+                      className="text-[10px] text-blue-700 hover:underline font-bold cursor-pointer"
+                    >
+                      تغییر لوگو
+                    </button>
+                    {customLogo && (
+                      <>
+                        <span className="text-slate-300">|</span>
+                        <button
+                          type="button"
+                          onClick={handleRemoveLogo}
+                          className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
+                        >
+                          حذف لوگو
+                        </button>
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
