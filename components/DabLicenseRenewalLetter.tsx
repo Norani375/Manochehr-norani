@@ -41,15 +41,15 @@ export interface LicenseRenewalLetterData {
 }
 
 const DEFAULT_LETTER_DATA: LicenseRenewalLetterData = {
-  letterNo: '۱۴۰۵/BG-۱۰۵',
-  letterDate: '۱۴۰۵/۰۲/۲۰',
+  letterNo: '1405/BG-105',
+  letterDate: '1405/02/20',
   attachment: 'ضمیمه فرم‌ها و اسناد',
   recipientTitle: 'به آمریت محترم ساحوی زون شمالشرق !',
   recipientAttention: 'قابل توجه مدیریت محترم نظارت از موسسات مالی و غیر بانکی !',
   subject: 'در مورد تمدید جواز فعالیت شرکت و نمایندگی های آن !',
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
   licenseNo: '7-0965',
-  companyAddressHeader: 'ولایت کندز، مومند مارکیت، منزل دوم، دکان نمبر ۳۰۱',
+  companyAddressHeader: 'ولایت کندز، مومند مارکیت، منزل دوم، دکان نمبر 301',
   mainBodyParagraph1: 'محترما : شرکت صرافی و خدمات پولی برکت‌الله غفوری دارنده جواز نمبر 7-0965 واقع مومند مارکیت دوکان نمبر 301 که به تاریخ 1405/03/13 جواز فعالیت شرکت ختم میگردد و به منظور فعالیت و ادامه کار صرافی و خدمات پولی رهبری شرکت تصمیم دارد جواز فعالیت مرکزی و نمایندگی های خویش را تمدید نماید در زمینه همکاری نموده ممنون سازید .',
   mainBodyParagraph2: 'سهم داران شرکت پس از بحث و بررسی و فیصله نهایی افراد ذیل را به عنوان کارمندان و نماینده رسمی شرکت معرفی مینمایند .',
   personnelGroups: [
@@ -57,7 +57,7 @@ const DEFAULT_LETTER_DATA: LicenseRenewalLetterData = {
       id: 1,
       groupTitle: 'کارمندان دفتر مرکزی:',
       members: [
-        { id: 1, name: 'برکت‌الله', position: 'رئیس' },
+        { id: 1, name: 'برکت‌الله غفوری', position: 'رئیس و سهمدار اصلی' },
         { id: 2, name: 'بسم‌الله شیرزی', position: 'رئیس هیئت نظار' },
         { id: 3, name: 'برکت‌الله غفوری', position: 'عضو هیئت نظار' },
         { id: 4, name: 'عظیم‌الله رحمانی', position: 'عضو هیئت نظار' },
@@ -77,7 +77,7 @@ const DEFAULT_LETTER_DATA: LicenseRenewalLetterData = {
       id: 3,
       groupTitle: 'معرفی نماینده و کارمندان نمایندگی کابل:',
       members: [
-        { id: 1, name: 'اجمل', position: 'نماینده' },
+        { id: 1, name: 'اجمل احمدی', position: 'نماینده' },
         { id: 2, name: 'ریحان', position: 'عضو نمایندگی' },
         { id: 3, name: 'صدیق‌الله', position: 'منشی و خزانه‌دار' },
       ]

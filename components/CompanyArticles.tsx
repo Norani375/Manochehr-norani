@@ -23,15 +23,15 @@ interface CompanyArticlesData {
 
 const DEFAULT_ARTICLES_DATA: CompanyArticlesData = {
   companyName: 'شرکت صرافی و خدمات پولی برکت الله غفوری',
-  address: 'دوکان (301) منزل (دوم) مارکیت (مؤمند) ناحیه (3) ولایت (کندز) زون (شمالشرق)',
-  dateStr: 'جوزا ۱۴۰۵',
+  address: 'دوکان (301) منزل (2) مارکیت (مؤمند) ناحیه (3) ولایت (کندز) زون (شمالشرق)',
+  dateStr: 'جوزا 1405',
   shareholders: [
     {
       id: 1,
       name: 'برکت‌الله غفوری',
       fatherName: 'عبدالغفور',
       percentage: '100%',
-      capitalAmount: '۳۰,۰۰۰,۰۰۰',
+      capitalAmount: '30,000,000',
       tazkiraNo: '1399-1104-55522',
     }
   ]

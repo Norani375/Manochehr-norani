@@ -45,7 +45,7 @@ const DEFAULT_RENEWAL_CHECKLIST_DATA: RenewalChecklistData = {
   companyName: 'شرکت صرافی و خدمات پولی برکت الله غفوری',
   licenseNo: 'DAB/7-0965',
   province: 'کندز',
-  dateStr: '۱۴۰۴/۰۱/۰۱',
+  dateStr: '1404/01/01',
   personnel: [
     { id: 1, position: 'سهمدار', name: 'برکتالله', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
     { id: 2, position: 'رئیس هیئت نظار', name: 'بسمالله شیرزی', fatherName: 'دوستمحمد', idNo: '1402-0902-45188', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },

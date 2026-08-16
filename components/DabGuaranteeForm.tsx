@@ -115,7 +115,7 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
     expiryDate: '1405/03/13',
     email: 'info@barakatullah-exchange.af',
     issuingAuthority: 'مرجع مربوطه',
-    businessAddress: 'ولایت کندز، مارکیت مهمند، منزل دوم، دکان نمبر ۳۰۱',
+    businessAddress: 'ولایت کندز، مارکیت مهمند، منزل دوم، دکان نمبر 301',
   },
   shareholders: [
     { id: 1, name: 'برکت‌الله', fatherName: 'عبدالغفور', tazkiraNo: '55522' },

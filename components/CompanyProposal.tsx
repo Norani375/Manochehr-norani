@@ -42,14 +42,14 @@ export interface ProposalData {
 }
 
 const DEFAULT_PROPOSAL_DATA: ProposalData = {
-  proposalNo: '۱۴۰۴/P-۱۰۷',
-  proposalDate: '۱۴۰۴/۱۱/۰۱',
+  proposalNo: '1404/P-107',
+  proposalDate: '1404/11/01',
   approvalStatusText: 'متن پیشنهاد منظور است',
   subject: 'موضوع: معرفی رئیس و اعضای هیئت نظار',
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
   licenseNo: 'DAB/7-0965',
-  companyAddress: 'ولایت کندز، مومند مارکیت، منزل دوم، دکان نمبر ۳۰۱',
-  expiryDate: '۱۴۰۴/۱۱/۰۵',
+  companyAddress: 'ولایت کندز، مومند مارکیت، منزل 2، دکان نمبر 301',
+  expiryDate: '1404/11/05',
   recipientTitle: 'به مقام محترم سهمداران شرکت!',
   bodyText: 'محترماً؛ به منظور فعالیت و ادامهٔ کار صرافی و خدمات پولی، رهبری شرکت افراد ذیل را به محضر مقام شما معرفی می‌نماید:',
   closingText: 'غرض اجراآت بعدی به شما معرفی گردید.',
@@ -57,14 +57,12 @@ const DEFAULT_PROPOSAL_DATA: ProposalData = {
   signatoryTitle: 'مدیر عملیاتی',
   approvalIntroText: 'سهمداران شرکت پیشنهاد فوق را پس از بررسی و تأیید، افراد ذیل را به عنوان رئیس و اعضای هیئت نظار شرکت احکام می‌نمایند:',
   members: [
-    { id: 1, name: 'بسم‌الله شیرزی', position: 'رئیس هیئت نظار' },
-    { id: 2, name: 'برکت‌الله غفوری', position: 'عضو هیئت نظار' },
-    { id: 3, name: 'عظیم‌الله رحمانی', position: 'عضو هیئت نظار' },
+    { id: 1, name: 'بسم‌الله شیرزی', position: 'رئیس هیئت نظار', tazkiraNo: '0087654-0201-34210' },
+    { id: 2, name: 'برکت‌الله غفوری', position: 'عضو هیئت نظار', tazkiraNo: '1399-1104-55522' },
+    { id: 3, name: 'عظیم‌الله رحمانی', position: 'عضو هیئت نظار', tazkiraNo: '0054321-1504-12980' },
   ],
   shareholders: [
-    { id: 1, name: 'خالد احمد مؤمند' },
-    { id: 2, name: 'محمد داوود مومند' },
-    { id: 3, name: 'عبدالله مؤمند' },
+    { id: 1, name: 'برکت‌الله غفوری (دارنده 100٪ اسهام)' },
   ]
 };
 
