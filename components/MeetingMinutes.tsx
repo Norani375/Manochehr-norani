@@ -258,34 +258,24 @@ export default function MeetingMinutes({ isEditMode = true, customLogo, onOpenLo
         className="bg-white text-slate-950 p-8 sm:p-12 border border-slate-200 rounded-2xl shadow-lg max-w-4xl mx-auto space-y-8 print:border-none print:shadow-none print:p-0 font-sans leading-relaxed"
       >
         {/* Official Header */}
-        <div className="border-b-2 border-slate-900 pb-6">
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="text-left text-[11px] font-bold text-slate-800 leading-tight">
-              <div className="font-extrabold text-slate-950 text-xs text-nowrap">Barakatullah Ghafouri</div>
-              <div>Money Exchange & MSP Co.</div>
-            </div>
-
-            <div className="flex flex-col items-center justify-center text-center">
-              {customLogo ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain rounded-full border border-slate-200 p-0.5" />
-              ) : (
-                <div className="w-14 h-14 bg-blue-950 text-amber-400 rounded-full flex items-center justify-center border-2 border-amber-400/60">
-                  <Building2 className="w-7 h-7" />
-                </div>
-              )}
-            </div>
-
-            <div className="text-right text-[11px] font-bold text-slate-800 leading-tight">
-              <div className="font-extrabold text-slate-950 text-xs text-nowrap">شرکت صرافی و خدمات پولی برکت‌الله غفوری</div>
-              <div className="font-mono text-slate-700">جواز: {data.licenseNo}</div>
-            </div>
+        <div className="border-b-2 border-slate-900 pb-6 text-center">
+          {/* Centered Logo */}
+          <div className="flex flex-col items-center justify-center mb-3">
+            {customLogo ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={customLogo} alt="Logo" className="w-20 h-20 object-contain rounded-2xl border-2 border-slate-300 p-1 shadow-md bg-white" />
+            ) : (
+              <div className="w-16 h-16 bg-blue-950 text-amber-400 rounded-2xl flex items-center justify-center border-2 border-amber-400/60 shadow-md">
+                <Building2 className="w-8 h-8" />
+              </div>
+            )}
           </div>
 
           <div className="text-center space-y-2">
             <h1 className="text-xl font-black text-slate-900">صورتجلسه مجمع عمومی عادی سالانه</h1>
+            <div className="text-xs font-bold text-slate-700">شرکت صرافی و خدمات پولی برکت‌الله غفوری (جواز: {data.licenseNo})</div>
             <p className="text-[11px] font-bold text-slate-600">{data.companyAddress}</p>
-            <div className="inline-block bg-slate-100 border border-slate-300 text-slate-900 px-6 py-1 rounded-full text-xs font-black">
+            <div className="inline-block bg-slate-100 border border-slate-300 text-slate-900 px-6 py-1 rounded-full text-xs font-black mt-1">
               رسمی / محرمانه
             </div>
           </div>
