@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, Edit3, Save, RotateCcw, Download, Printer, ShieldCheck, Briefcase, 
-  Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2
+  Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2, Search
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
 import { db } from '@/lib/firebase';
@@ -142,6 +142,25 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const isNodeMatch = (name: string, title: string, id: string) => {
+    if (!searchTerm.trim()) return false;
+    const term = searchTerm.toLowerCase().trim();
+    return (
+      name.toLowerCase().includes(term) ||
+      title.toLowerCase().includes(term) ||
+      id.toLowerCase().includes(term)
+    );
+  };
+
+  const getNodeHighlightClass = (name: string, title: string, id: string) => {
+    if (!searchTerm.trim()) return '';
+    const match = isNodeMatch(name, title, id);
+    return match
+      ? 'ring-4 ring-amber-400 ring-offset-2 scale-105 transition-all duration-300 bg-amber-50 dark:bg-amber-950/60 border-amber-500 shadow-2xl z-10'
+      : 'opacity-30 transition-all duration-300';
+  };
 
   // Sync with Firestore
   useEffect(() => {
@@ -230,6 +249,26 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* Dedicated Search Bar */}
+          <div className="relative flex items-center min-w-[200px] sm:min-w-[230px]">
+            <Search className="w-4 h-4 absolute right-3 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="جستجوی پرسنل (نام، سمت، شناسه)..."
+              className="w-full pl-8 pr-9 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute left-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           <button
             onClick={() => setIsEditMode(!isEditMode)}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
@@ -442,7 +481,7 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             
             {/* LEVEL 1: President Box (Centered Dark Blue Box) */}
             <div className="flex flex-col items-center relative">
-              <div className="bg-[#1e3a8a] text-white rounded-2xl px-8 py-5 text-center shadow-lg border border-blue-900 min-w-[240px] sm:min-w-[280px]">
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl px-8 py-5 text-center shadow-lg border border-blue-900 min-w-[240px] sm:min-w-[280px] ${getNodeHighlightClass(data.president.name, data.president.title, data.president.id)}`}>
                 <div className="text-lg sm:text-xl font-black tracking-tight">{data.president.name}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.president.title}</div>
               </div>
@@ -465,19 +504,19 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto items-stretch">
               
               {/* Right Box (RTL Index 0 in image: برکت‌الله - عضو هیئت نظار) */}
-              <div className="bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px]">
+              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeHighlightClass(data.boardMembers[2]?.name || '', data.boardMembers[2]?.title || '', data.boardMembers[2]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{data.boardMembers[2]?.name || 'برکت‌الله'}</div>
                 <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1">{data.boardMembers[2]?.title || 'عضو هیئت نظار'}</div>
               </div>
 
               {/* Middle Box (RTL Index 1 in image: بسم‌الله شیرزی - رئیس هیئت نظار - FILLED DARK BLUE) */}
-              <div className="bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg flex flex-col justify-center min-h-[90px] transform sm:-translate-y-1">
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg flex flex-col justify-center min-h-[90px] transform sm:-translate-y-1 ${getNodeHighlightClass(data.boardMembers[1]?.name || '', data.boardMembers[1]?.title || '', data.boardMembers[1]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black tracking-tight">{data.boardMembers[1]?.name || 'بسم‌الله شیرزی'}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.boardMembers[1]?.title || 'رئیس هیئت نظار'}</div>
               </div>
 
               {/* Left Box (RTL Index 2 in image: عظیم‌الله رحمانی - عضو هیئت نظار) */}
-              <div className="bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px]">
+              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeHighlightClass(data.boardMembers[0]?.name || '', data.boardMembers[0]?.title || '', data.boardMembers[0]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{data.boardMembers[0]?.name || 'عظیم‌الله رحمانی'}</div>
                 <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1">{data.boardMembers[0]?.title || 'عضو هیئت نظار'}</div>
               </div>
@@ -497,13 +536,13 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
               
               {/* Right Box (RTL: صالح‌محمد - مسئول عملیاتی) */}
-              <div className="bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg">
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeHighlightClass(data.executives[1]?.name || '', data.executives[1]?.title || '', data.executives[1]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black tracking-tight">{data.executives[1]?.name || 'صالح‌محمد'}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.executives[1]?.title || 'مسئول عملیاتی'}</div>
               </div>
 
               {/* Left Box (RTL: محمد فهیم - مسئول پیروی از قوانین) */}
-              <div className="bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg">
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeHighlightClass(data.executives[0]?.name || '', data.executives[0]?.title || '', data.executives[0]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black tracking-tight">{data.executives[0]?.name || 'محمد فهیم'}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.executives[0]?.title || 'مسئول پیروی از قوانین'}</div>
               </div>
@@ -538,7 +577,7 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
               {data.branches.map((br) => (
                 <div 
                   key={br.id}
-                  className="bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 text-center shadow-sm flex flex-col justify-between space-y-2 min-h-[120px]"
+                  className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 text-center shadow-sm flex flex-col justify-between space-y-2 min-h-[120px] ${getNodeHighlightClass(br.name, br.title, br.id)}`}
                 >
                   <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-1.5 flex flex-col items-center">
                     <span>{br.name}</span>
