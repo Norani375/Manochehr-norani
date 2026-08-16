@@ -374,14 +374,14 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse border border-slate-900 text-xs">
                     <thead>
-                      <tr className="bg-slate-200 text-slate-900 font-bold text-center">
-                        <th className="border border-slate-900 p-2 w-[35%]">اسم و محل فعالیت تشبث</th>
-                        <th className="border border-slate-900 p-2 w-[22%]">سکونت اصلی</th>
-                        <th className="border border-slate-900 p-2 w-[22%]">سکونت فعلی</th>
-                        <th className="border border-slate-900 p-2 w-[21%] bg-slate-50" rowSpan={7}>
-                          <div className="h-full min-h-[160px] border-2 border-dashed border-slate-400 bg-white rounded flex flex-col items-center justify-center text-center p-2 text-slate-500">
-                            <ImageIcon className="w-6 h-6 mb-1 text-slate-300" />
-                            <span className="text-[10px] leading-tight font-bold">
+                      <tr className="bg-slate-200 text-slate-900 font-bold text-center text-xs">
+                        <th className="border border-slate-900 py-1.5 px-2 w-[35%]">اسم و محل فعالیت تشبث</th>
+                        <th className="border border-slate-900 py-1.5 px-2 w-[22%]">سکونت اصلی</th>
+                        <th className="border border-slate-900 py-1.5 px-2 w-[22%]">سکونت فعلی</th>
+                        <th className="border border-slate-900 py-1.5 px-2 w-[21%] bg-slate-50" rowSpan={7}>
+                          <div className="h-full min-h-[140px] border border-dashed border-slate-400 bg-white rounded flex flex-col items-center justify-center text-center p-1.5 text-slate-500">
+                            <ImageIcon className="w-5 h-5 mb-1 text-slate-300" />
+                            <span className="text-[9px] leading-tight font-bold">
                               عکس تضمین‌کننده در اینجا نصب و با مهر تضمین‌کننده تاپه گردد.
                             </span>
                           </div>
