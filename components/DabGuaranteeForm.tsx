@@ -125,10 +125,11 @@ const EditableField = ({ isEditMode, value, onChange, placeholder, className = "
   return <span className={`inline-block py-1 font-bold text-blue-900 border-b border-transparent ${className}`}>{value || '---'}</span>;
 };
 
-export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
+export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [formData, setFormData] = useState<GuaranteeFormData>(DEFAULT_FORM_DATA);
   const [isSaved, setIsSaved] = useState(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(initialEditMode);
 
   useEffect(() => {
     try {
@@ -249,6 +250,17 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsEditMode(!isEditMode)}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+              isEditMode 
+                ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100' 
+                : 'bg-blue-50 text-blue-900 border-blue-300 hover:bg-blue-100'
+            }`}
+          >
+            {isEditMode ? 'قفل و پیش‌نمایش' : 'فعال‌سازی ویرایش'}
+          </button>
+
           {onOpenLogoModal && isEditMode && (
             <button
               type="button"
@@ -315,65 +327,11 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
             </div>
             <h1 className="text-xl font-black text-slate-900 mt-2 mb-1">د افغانستان بانک</h1>
             <h2 className="text-base font-extrabold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-            <h3 className="text-sm font-bold text-slate-700 mb-2">مدیریت جوازدهی</h3>
+            <h3 className="text-sm font-bold text-slate-700 mb-3">مدیریت جوازدهی</h3>
           </div>
 
-          <div className="flex items-center justify-between gap-4 mb-3">
-            {/* Dedicated Form Logo Container */}
-            <div className="flex items-center gap-3 bg-slate-50 border border-slate-300 p-2 rounded-xl text-right">
-              {customLogo ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={customLogo}
-                  alt="لوگوی اختصاصی شرکت"
-                  className="w-16 h-16 object-contain border border-slate-200 rounded-lg p-0.5 bg-white shadow-xs"
-                />
-              ) : (
-                <div className="w-16 h-16 bg-blue-900 text-amber-400 rounded-lg flex flex-col items-center justify-center font-bold p-1">
-                  <Building className="w-7 h-7" />
-                  <span className="text-[9px] mt-0.5 font-sans">لوگوی شرکت</span>
-                </div>
-              )}
-              <div className="hidden sm:block">
-                <span className="text-xs font-black text-blue-950 block">برکت‌الله غفوری</span>
-                <span className="text-[10px] text-slate-600 font-bold block">لوگوی شرکت صرافی</span>
-                {onOpenLogoModal && (
-                  <div className="flex items-center gap-2 mt-1 print:hidden">
-                    <button
-                      type="button"
-                      onClick={onOpenLogoModal}
-                      className="text-[10px] text-blue-700 hover:underline font-bold cursor-pointer"
-                    >
-                      تغییر لوگو
-                    </button>
-                    {customLogo && (
-                      <>
-                        <span className="text-slate-300">|</span>
-                        <button
-                          type="button"
-                          onClick={handleRemoveLogo}
-                          className="text-[10px] text-rose-600 hover:underline font-bold cursor-pointer"
-                        >
-                          حذف لوگو
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="inline-block bg-slate-100 border border-slate-400 font-extrabold text-slate-900 px-6 py-2 rounded-lg text-base">
-              فورم تضمین سر سهمدار / سهمداران شرکت صرافی و خدمات پولی
-            </div>
-
-            {/* Official Emblem Badge */}
-            <div className="hidden sm:flex flex-col items-center justify-center p-2 bg-slate-50 border border-slate-300 rounded-xl text-center w-24">
-              <div className="w-10 h-10 rounded-full bg-blue-900 text-amber-400 flex items-center justify-center font-black text-xs border-2 border-amber-400/50">
-                DAB
-              </div>
-              <span className="text-[9px] font-bold text-slate-700 mt-1">رسمی بانک</span>
-            </div>
+          <div className="inline-block bg-slate-100 border border-slate-400 font-extrabold text-slate-900 px-6 py-2 rounded-lg text-base">
+            فورم تضمین سر سهمدار / سهمداران شرکت صرافی و خدمات پولی
           </div>
         </div>
 
