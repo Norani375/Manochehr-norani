@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
-import { Building, FileText, Printer, RotateCcw, Save, Plus, Trash2, Image as ImageIcon, Download } from 'lucide-react';
+import { Building, FileText, Printer, RotateCcw, Save, Plus, Trash2, Image as ImageIcon, Download, FileCode } from 'lucide-react';
+import { exportElementToWord } from '@/lib/wordExport';
 
 export interface LicenseRenewalShareholder {
   id: number;
@@ -228,7 +229,21 @@ const DEFAULT_LICENSE_RENEWAL_DATA: DabLicenseRenewalData = {
   assessorDate: '',
 };
 
-export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
+export default function DabLicenseRenewalForm({ 
+  isEditMode = true, 
+  customLogo: propLogo, 
+  onOpenLogoModal, 
+  onExportPdf, 
+  onExportWord,
+  companyId = "default"
+}: { 
+  isEditMode?: boolean; 
+  customLogo?: string | null; 
+  onOpenLogoModal?: () => void; 
+  onExportPdf?: () => void; 
+  onExportWord?: () => void;
+  companyId?: string 
+} = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [data, setData] = useState<DabLicenseRenewalData>(DEFAULT_LICENSE_RENEWAL_DATA);
   const [isSaved, setIsSaved] = useState(false);
@@ -455,6 +470,26 @@ export default function DabLicenseRenewalForm({ isEditMode = true, customLogo: p
               <RotateCcw className="w-4 h-4" />
             </button>
           )}
+
+          <button
+            onClick={() => {
+              if (onExportWord) {
+                onExportWord();
+              } else {
+                exportElementToWord({
+                  elementId: 'dab-license-renewal-canvas',
+                  filename: 'فورم_درخواست_تمدید_جواز_DAB.doc',
+                  title: 'فورم درخواستی تمدید جواز فعالیت صرافی و خدمات پولی (د افغانستان بانک)',
+                  orientation: 'portrait'
+                });
+              }
+            }}
+            className="flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
+            title="استخراج این فرم به عنوان فایل Word قابل ویرایش (.doc)"
+          >
+            <FileCode className="w-4 h-4 text-blue-200" />
+            استخراج به Word
+          </button>
 
           {onExportPdf && (
             <button

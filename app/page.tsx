@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, UserCheck, ShieldCheck, Printer, Search, Briefcase, 
-  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen, RefreshCw, GitBranch, Grid, Settings2, LogOut, Key
+  Award, Shield, Edit3, Plus, Trash2, RotateCcw, Sun, Moon, Contrast, Check, X, User, FileText, Network, Image as ImageIcon, Download, Eye, Activity, Users, Database, Filter, Layers, EyeOff, Menu, ChevronRight, ChevronLeft, Stamp, ClipboardList, ClipboardCheck, BookOpen, RefreshCw, GitBranch, Grid, Settings2, LogOut, Key, FileCode
 } from 'lucide-react';
 import DabGuaranteeForm from '@/components/DabGuaranteeForm';
 import DabBranchRenewalForm from '@/components/DabBranchRenewalForm';
@@ -308,8 +308,15 @@ export default function OrgChartPage() {
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const { companies, activeCompanyId, setActiveCompanyId, addCompany } = useCompany();
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [exportInitialFormat, setExportInitialFormat] = useState<'pdf' | 'word'>('pdf');
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const handleOpenExport = (format: 'pdf' | 'word' = 'pdf') => {
+    setExportInitialFormat(format);
+    setIsPdfModalOpen(true);
+    setIsMobileSidebarOpen(false);
+  };
 
   // Dynamic Real-time Dashboard Stats Calculations
   const totalPersonnelCount = personnel.length;
@@ -435,55 +442,73 @@ export default function OrgChartPage() {
         return {
           targetId: 'dab-official-form',
           title: 'فورم تعهدنامه و تضمین سر سهمدار (د افغانستان بانک)',
-          filename: 'فورم_تضمین_سر_سهمدار_برکت_الله_غفوری_DAB.pdf',
+          filename: 'فورم_تضمین_سر_سهمدار_DAB.pdf',
         };
       case 'branch-renewal':
         return {
           targetId: 'dab-branch-renewal-canvas',
           title: 'فورم درخواست تمدید نمایندگی (د افغانستان بانک)',
-          filename: 'فورم_تمدید_نمایندگی_برکت_الله_غفوری_DAB.pdf',
+          filename: 'فورم_تمدید_نمایندگی_DAB.pdf',
         };
       case 'license-renewal':
         return {
           targetId: 'dab-license-renewal-canvas',
           title: 'فورم ارزیابی و تمدید جواز شرکت صرافی (د افغانستان بانک)',
-          filename: 'فورم_تمدید_جواز_شرکت_برکت_الله_غفوری_DAB.pdf',
+          filename: 'فورم_تمدید_جواز_شرکت_DAB.pdf',
         };
       case 'license-renewal-letter':
         return {
           targetId: 'dab-license-renewal-letter-canvas',
           title: 'مکتوب رسمی درخواست تمدید جواز فعالیت (د افغانستان بانک)',
-          filename: 'مکتوب_تمدید_جواز_برکت_الله_غفوری_DAB.pdf',
+          filename: 'مکتوب_تمدید_جواز_DAB.pdf',
+        };
+      case 'company-proposal':
+        return {
+          targetId: 'company-proposal-canvas',
+          title: 'پیشنهاد و احکام تعیین هیئت نظار شرکت',
+          filename: 'پیشنهاد_هیئت_نظار_DAB.pdf',
         };
       case 'meeting-minutes':
         return {
           targetId: 'meeting-minutes-canvas',
-          title: 'صورتجلسه مجمع عمومی عادی سالانه شرکت برکت‌الله غفوری',
-          filename: 'صورتجلسه_مجمع_عمومی_برکت_الله_غفوری.pdf',
+          title: 'صورتجلسه مجمع عمومی عادی سالانه شرکت',
+          filename: 'صورتجلسه_مجمع_عمومی_شرکت.pdf',
         };
       case 'license-checklist':
         return {
           targetId: 'license-checklist-canvas',
           title: 'چک‌لست اسناد و شرایط صدور جواز فعالیت',
-          filename: 'چک_لست_اسناد_جواز_برکت_الله_غفوری.pdf',
+          filename: 'چک_لست_اسناد_جواز.pdf',
         };
       case 'license-renewal-checklist':
         return {
           targetId: 'dab-license-renewal-checklist-canvas',
           title: 'چک‌لست اسناد و شرایط تمدید جواز فعالیت',
-          filename: 'چک_لست_تمدید_جواز_برکت_الله_غفوری.pdf',
+          filename: 'چک_لست_تمدید_جواز.pdf',
         };
       case 'branch-renewal-checklist':
         return {
           targetId: 'dab-branch-renewal-checklist-canvas',
           title: 'چک‌لست اسناد تمدید نمایندگی شرکت',
-          filename: 'چک_لست_تمدید_نمایندگی_برکت_الله_غفوری.pdf',
+          filename: 'چک_لست_تمدید_نمایندگی.pdf',
+        };
+      case 'employees':
+        return {
+          targetId: 'employee-management-cv-canvas',
+          title: 'خلص سوانح و مدیریت معلومات پرسونل',
+          filename: 'خلص_سوانح_پرسونل.pdf',
+        };
+      case 'company-articles':
+        return {
+          targetId: 'company-articles-canvas',
+          title: 'اساسنامه رسمی شرکت صرافی و خدمات پولی',
+          filename: 'اساسنامه_شرکت_صرافی.pdf',
         };
       default:
         return {
-          targetId: 'org-chart-export-canvas',
-          title: 'چارت تشکیلاتی و ساختار سازمانی شرکت صرافی برکت‌الله غفوری',
-          filename: 'چارت_سازمانی_برکت_الله_غفوری_د_افغانستان_بانک.pdf',
+          targetId: 'org-chart-exact-canvas',
+          title: 'چارت تشکیلاتی و ساختار سازمانی شرکت صرافی',
+          filename: 'چارت_سازمانی_شرکت_صرافی.pdf',
         };
     }
   };
@@ -629,14 +654,24 @@ export default function OrgChartPage() {
             ) : (
               <Building2 className="w-6 h-6 text-amber-400 shrink-0" />
             )}
-            <span className="font-extrabold text-xs sm:text-sm truncate max-w-[200px]">برکت‌الله غفوری</span>
+            <span className="font-extrabold text-xs sm:text-sm truncate max-w-[200px]">
+              {companies.find(c => c.id === activeCompanyId)?.name || 'شرکت صرافی'}
+            </span>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
-            onClick={() => setIsPdfModalOpen(true)}
-            className="p-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+            onClick={() => handleOpenExport('word')}
+            className="p-2 bg-blue-800 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+            title="استخراج به ورد (Word)"
+          >
+            <FileCode className="w-4 h-4" />
+            <span className="hidden sm:inline">Word</span>
+          </button>
+          <button
+            onClick={() => handleOpenExport('pdf')}
+            className="p-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
             title="خروجی PDF"
           >
             <Download className="w-4 h-4" />
@@ -644,7 +679,7 @@ export default function OrgChartPage() {
           </button>
           <button
             onClick={() => window.print()}
-            className="p-2 bg-blue-900 hover:bg-blue-800 text-white rounded-lg text-xs transition-all cursor-pointer"
+            className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs transition-all cursor-pointer"
             title="چاپ"
           >
             <Printer className="w-4 h-4" />
@@ -793,19 +828,26 @@ export default function OrgChartPage() {
 
         <div className="p-6 pt-0 space-y-4">
           {/* Quick Actions */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-1.5">
             <button
               onClick={() => { setIsPrintPreviewOpen(true); setIsMobileSidebarOpen(false); }}
-              className="flex flex-col items-center justify-center gap-1 p-3 bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-2xl border border-slate-100 dark:border-slate-700 transition-all group"
+              className="flex flex-col items-center justify-center gap-1 p-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-2xl border border-slate-100 dark:border-slate-700 transition-all group cursor-pointer"
             >
-              <Eye className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <Eye className="w-4 h-4 transition-transform group-hover:scale-110" />
               <span className="text-[10px] font-bold">پیش‌نمایش</span>
             </button>
             <button
-              onClick={() => { setIsPdfModalOpen(true); setIsMobileSidebarOpen(false); }}
-              className="flex flex-col items-center justify-center gap-1 p-3 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-2xl border border-emerald-100 dark:border-emerald-800 transition-all group"
+              onClick={() => handleOpenExport('word')}
+              className="flex flex-col items-center justify-center gap-1 p-2.5 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-2xl border border-blue-100 dark:border-blue-800 transition-all group cursor-pointer"
             >
-              <Download className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <FileCode className="w-4 h-4 transition-transform group-hover:scale-110" />
+              <span className="text-[10px] font-bold">خروجی Word</span>
+            </button>
+            <button
+              onClick={() => handleOpenExport('pdf')}
+              className="flex flex-col items-center justify-center gap-1 p-2.5 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-2xl border border-emerald-100 dark:border-emerald-800 transition-all group cursor-pointer"
+            >
+              <Download className="w-4 h-4 transition-transform group-hover:scale-110" />
               <span className="text-[10px] font-bold">خروجی PDF</span>
             </button>
           </div>
@@ -868,7 +910,7 @@ export default function OrgChartPage() {
 
           {/* Sidebar Footer */}
           <div className="pt-2 text-center">
-            <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">سامانه مدیریت صرافی برکت‌الله غفوری</p>
+            <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">سامانه جامع مدیریت اسناد و تشکیلات صرافی</p>
             <p className="text-[9px] text-slate-500 font-mono mt-0.5 tracking-tight">V 2.5.0 • 7-0965</p>
           </div>
         </div>
@@ -878,27 +920,78 @@ export default function OrgChartPage() {
       <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-x-auto">
         {/* Conditional Content Rendering */}
         {activeTab === 'guarantee-form' ? (
-          <DabGuaranteeForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <DabGuaranteeForm 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            onExportWord={() => handleOpenExport('word')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'branch-renewal' ? (
-          <DabBranchRenewalForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <DabBranchRenewalForm 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            onExportWord={() => handleOpenExport('word')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'license-renewal' ? (
-          <DabLicenseRenewalForm isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <DabLicenseRenewalForm 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            onExportWord={() => handleOpenExport('word')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'license-renewal-letter' ? (
-          <DabLicenseRenewalLetter isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <DabLicenseRenewalLetter 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'company-proposal' ? (
-          <CompanyProposal customLogo={customLogo}  companyId={activeCompanyId}/>
+          <CompanyProposal customLogo={customLogo} companyId={activeCompanyId}/>
         ) : activeTab === 'meeting-minutes' ? (
-          <MeetingMinutes isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <MeetingMinutes 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'license-checklist' ? (
-          <DabLicenseChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <DabLicenseChecklist 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'license-renewal-checklist' ? (
-          <DabLicenseRenewalChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <DabLicenseRenewalChecklist 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'branch-renewal-checklist' ? (
-          <DabBranchRenewalChecklist isEditMode={isEditMode} customLogo={customLogo} onOpenLogoModal={() => setIsLogoModalOpen(true)} onExportPdf={() => setIsPdfModalOpen(true)}  companyId={activeCompanyId}/>
+          <DabBranchRenewalChecklist 
+            isEditMode={isEditMode} 
+            customLogo={customLogo} 
+            onOpenLogoModal={() => setIsLogoModalOpen(true)} 
+            onExportPdf={() => handleOpenExport('pdf')} 
+            companyId={activeCompanyId}
+          />
         ) : activeTab === 'employees' ? (
-          <EmployeeManagement customLogo={customLogo} isEditMode={isEditMode}  companyId={activeCompanyId}/>
+          <EmployeeManagement customLogo={customLogo} isEditMode={isEditMode} companyId={activeCompanyId}/>
         ) : activeTab === 'company-articles' ? (
-          <CompanyArticles customLogo={customLogo}  companyId={activeCompanyId}/>
+          <CompanyArticles customLogo={customLogo} companyId={activeCompanyId}/>
         ) : (
           <OrgChartCanvas customLogo={customLogo} />
         )}
@@ -1628,13 +1721,14 @@ export default function OrgChartPage() {
         </div>
       )}
 
-      {/* High Quality PDF Export Modal */}
+      {/* High Quality PDF & Word Export Modal */}
       <ExportPdfModal
         isOpen={isPdfModalOpen}
         onClose={() => setIsPdfModalOpen(false)}
         targetElementId={getPdfExportConfig().targetId}
         defaultTitle={getPdfExportConfig().title}
         defaultFilename={getPdfExportConfig().filename}
+        initialFormat={exportInitialFormat}
       />
 
       {/* Full-Screen Print Preview Simulation Modal */}

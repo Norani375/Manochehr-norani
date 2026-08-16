@@ -170,7 +170,10 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
       </div>
 
       {/* A4 Printable Document Container */}
-      <div className="bg-white text-slate-900 shadow-2xl rounded-2xl p-8 sm:p-14 border border-slate-200 print:shadow-none print:border-none print:p-0 print:w-full font-serif leading-relaxed text-sm">
+      <div 
+        id="company-articles-canvas"
+        className="bg-white text-slate-900 shadow-2xl rounded-2xl p-8 sm:p-14 border border-slate-200 print:shadow-none print:border-none print:p-0 print:w-full font-serif leading-relaxed text-sm"
+      >
         
         {/* Header / Emblem */}
         <div className="text-center space-y-3 pb-8 border-b-2 border-slate-900">

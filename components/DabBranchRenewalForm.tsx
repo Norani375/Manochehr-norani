@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
-import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon, Download } from 'lucide-react';
+import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon, Download, FileCode } from 'lucide-react';
+import { exportElementToWord } from '@/lib/wordExport';
 
 export interface BranchRenewalData {
   // Section 1: Company details
@@ -239,7 +240,21 @@ const EditableField = ({ isEditMode, value, onChange, placeholder, className = "
   return <span className={`inline-block py-1 font-bold text-blue-900 border-b border-transparent ${className}`}>{value || '---'}</span>;
 };
 
-export default function DabBranchRenewalForm({ isEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
+export default function DabBranchRenewalForm({ 
+  isEditMode = true, 
+  customLogo: propLogo, 
+  onOpenLogoModal, 
+  onExportPdf, 
+  onExportWord,
+  companyId = "default"
+}: { 
+  isEditMode?: boolean; 
+  customLogo?: string | null; 
+  onOpenLogoModal?: () => void; 
+  onExportPdf?: () => void; 
+  onExportWord?: () => void;
+  companyId?: string 
+} = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [data, setData] = useState<BranchRenewalData>(DEFAULT_BRANCH_RENEWAL_DATA);
   const [isSaved, setIsSaved] = useState(false);
@@ -380,6 +395,26 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
             </button>
           )}
 
+          <button
+            onClick={() => {
+              if (onExportWord) {
+                onExportWord();
+              } else {
+                exportElementToWord({
+                  elementId: 'dab-branch-renewal-form',
+                  filename: 'فورم_درخواست_تمدید_نمایندگی_DAB.doc',
+                  title: 'فورم درخواستی تمدید فعالیت نمایندگی (د افغانستان بانک)',
+                  orientation: 'portrait'
+                });
+              }
+            }}
+            className="flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
+            title="استخراج این فرم به عنوان فایل Word قابل ویرایش (.doc)"
+          >
+            <FileCode className="w-4 h-4 text-blue-200" />
+            استخراج به Word
+          </button>
+
           {onExportPdf && (
             <button
               onClick={onExportPdf}
@@ -406,7 +441,7 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
           <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
             <div className="flex items-center gap-2">
               <Building className="w-5 h-5 text-amber-400" />
-              <span className="font-bold text-sm">انتخاب سریع نمایندگی‌های واقعی شرکت برکت‌الله غفوری (جواز 7-0965):</span>
+              <span className="font-bold text-sm">انتخاب سریع نمایندگی‌های شرکت:</span>
             </div>
             <span className="text-xs text-blue-200 bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-800 font-mono">
               ۶ نمایندگی رسمی فعال

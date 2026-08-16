@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
-import { UserCheck, Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, Image as ImageIcon, Download } from 'lucide-react';
+import { UserCheck, Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, Image as ImageIcon, Download, FileCode } from 'lucide-react';
+import { exportElementToWord } from '@/lib/wordExport';
 
 export interface Guarantor {
   id: number;
@@ -145,7 +146,21 @@ const EditableField = ({ isEditMode, value, onChange, placeholder, className = "
   return <span className={`inline-block py-1 font-bold text-blue-900 border-b border-transparent ${className}`}>{value || '---'}</span>;
 };
 
-export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, customLogo: propLogo, onOpenLogoModal, onExportPdf , companyId = "default"}: { isEditMode?: boolean; customLogo?: string | null; onOpenLogoModal?: () => void; onExportPdf?: () => void ; companyId?: string } = {}) {
+export default function DabGuaranteeForm({ 
+  isEditMode: initialEditMode = true, 
+  customLogo: propLogo, 
+  onOpenLogoModal, 
+  onExportPdf, 
+  onExportWord,
+  companyId = "default"
+}: { 
+  isEditMode?: boolean; 
+  customLogo?: string | null; 
+  onOpenLogoModal?: () => void; 
+  onExportPdf?: () => void; 
+  onExportWord?: () => void;
+  companyId?: string 
+} = {}) {
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [formData, setFormData] = useState<GuaranteeFormData>(DEFAULT_FORM_DATA);
   const [isSaved, setIsSaved] = useState(false);
@@ -311,6 +326,26 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
               <RotateCcw className="w-4 h-4" />
             </button>
           )}
+
+          <button
+            onClick={() => {
+              if (onExportWord) {
+                onExportWord();
+              } else {
+                exportElementToWord({
+                  elementId: 'dab-official-form',
+                  filename: 'فورم_تضمین_سر_سهمدار_DAB.doc',
+                  title: 'فورم تعهدنامه و تضمین سر سهمدار (د افغانستان بانک)',
+                  orientation: 'portrait'
+                });
+              }
+            }}
+            className="flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-xs"
+            title="استخراج این فرم به عنوان فایل Word قابل ویرایش (.doc)"
+          >
+            <FileCode className="w-4 h-4 text-blue-200" />
+            استخراج به Word
+          </button>
 
           {onExportPdf && (
             <button

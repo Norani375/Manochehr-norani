@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, Edit3, Save, RotateCcw, Download, Printer, ShieldCheck, Briefcase, 
-  Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2, Search
+  Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2, Search, FileCode, Loader2
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
+import { exportElementToWord } from '@/lib/wordExport';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -32,8 +33,8 @@ export interface OrgChartData {
 
 const DEFAULT_ORG_CHART_DATA: OrgChartData = {
   headerTitle: 'چارت تشکیلاتی',
-  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  companySubEng: 'Barakatullah Ghafouri Money Exchange & MSP Co. — DAB/7-0965',
+  companyName: 'شرکت صرافی و خدمات پولی',
+  companySubEng: 'Money Exchange & MSP Services Co. — DAB Official Standard',
   
   president: {
     id: 'pres-1',
@@ -233,12 +234,29 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
     try {
       await exportElementToPdf({
         elementId: 'org-chart-exact-canvas',
-        filename: 'چارت_تشکیلاتی_برکت_الله_غفوری.pdf',
+        filename: 'چارت_سازمانی_شرکت_صرافی.pdf',
         orientation: 'portrait'
       });
     } catch (error) {
       console.error(error);
       alert('خطا در دانلود فایل PDF.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleWordExport = async () => {
+    setIsExporting(true);
+    try {
+      await exportElementToWord({
+        elementId: 'org-chart-exact-canvas',
+        filename: 'چارت_سازمانی_شرکت_صرافی.doc',
+        title: 'چارت تشکیلاتی و ساختار سازمانی شرکت صرافی',
+        orientation: 'portrait'
+      });
+    } catch (error) {
+      console.error(error);
+      alert('خطا در دانلود فایل Word.');
     } finally {
       setIsExporting(false);
     }
@@ -302,9 +320,19 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
           )}
 
           <button
+            onClick={handleWordExport}
+            disabled={isExporting}
+            className="px-3.5 py-2 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-60 cursor-pointer"
+            title="استخراج به مایکروسافت ورد"
+          >
+            <FileCode className="w-4 h-4 text-blue-200" />
+            <span>{isExporting ? 'در حال خروجی...' : 'دانلود Word'}</span>
+          </button>
+
+          <button
             onClick={handlePdfExport}
             disabled={isExporting}
-            className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-60"
+            className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-60 cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>{isExporting ? 'در حال خروجی...' : 'دانلود PDF'}</span>

@@ -434,6 +434,7 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
               {/* Print Preview */}
               <div className="bg-slate-100 dark:bg-slate-950/50 p-6 rounded-3xl overflow-y-auto max-h-[85vh] custom-scrollbar shadow-inner border border-slate-200/50 dark:border-slate-800">
                 <div 
+                  id="employee-management-cv-canvas"
                   ref={printableRef}
                   className="bg-white mx-auto w-[210mm] min-h-[297mm] p-12 text-slate-950 font-serif relative shadow-2xl origin-top scale-[0.6] sm:scale-[0.8] xl:scale-[0.5] 2xl:scale-[0.6] mb-[-250px] transition-transform"
                   style={{ direction: 'rtl' }}
