@@ -453,52 +453,30 @@ export default function DabBranchRenewalForm({ isEditMode = true, customLogo: pr
         
         {/* Header */}
         <div className="relative text-center mb-6 pb-4 border-b-2 border-slate-900">
-          {/* Company Logo and Official DAB Emblem */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 px-2">
-            {/* Custom Company Logo Container */}
-            <div className="flex items-center gap-3 bg-slate-50 border border-slate-300 p-2.5 rounded-2xl shadow-xs">
-              {customLogo ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={customLogo}
-                  alt="لوگوی شرکت"
-                  className="w-16 h-16 object-contain border border-slate-200 rounded-xl p-0.5 bg-white shadow-xs"
-                />
-              ) : (
-                <div className="w-16 h-16 bg-blue-900 text-amber-400 rounded-xl flex flex-col items-center justify-center font-bold p-1">
-                  <Building className="w-7 h-7" />
-                  <span className="text-[9px] mt-0.5 font-sans">لوگوی شرکت</span>
-                </div>
-              )}
-              <div className="text-right">
-                <span className="text-xs font-black text-blue-950 block">برکت‌الله غفوری</span>
-                <span className="text-[10px] text-slate-600 font-bold block">شرکت صرافی و خدمات پولی</span>
-                {onOpenLogoModal && (
-                  <button
-                    type="button"
-                    onClick={onOpenLogoModal}
-                    className="text-[10px] text-blue-700 hover:underline font-bold print:hidden cursor-pointer mt-0.5 block"
-                  >
-                    تغییر لوگو
-                  </button>
-                )}
+          {/* Centered Company Logo without side text */}
+          <div className="flex flex-col items-center justify-center mb-3">
+            {customLogo ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={customLogo}
+                alt="لوگوی شرکت"
+                className="w-20 h-20 object-contain border border-slate-200 rounded-2xl p-1 bg-white shadow-xs mx-auto"
+              />
+            ) : (
+              <div className="w-20 h-20 bg-blue-900 text-amber-400 rounded-2xl flex flex-col items-center justify-center font-bold p-1 shadow-xs mx-auto">
+                <Building className="w-9 h-9" />
+                <span className="text-[10px] mt-1 font-sans">لوگوی شرکت</span>
               </div>
-            </div>
-
-            {/* Central Official DAB Emblem */}
-            <div className="flex flex-col items-center justify-center">
-              <div className="w-18 h-18 rounded-full bg-blue-900 text-amber-400 border-4 border-amber-400 flex flex-col items-center justify-center shadow-md relative mx-auto">
-                <Building className="w-8 h-8 text-amber-400 mb-0.5" />
-                <div className="text-[7px] font-black tracking-tighter text-amber-300">د افغانستان بانک</div>
-                <div className="text-[6px] text-white">1939</div>
-              </div>
-            </div>
-
-            {/* Badge / Info */}
-            <div className="hidden sm:flex flex-col items-center justify-center p-2.5 bg-slate-50 border border-slate-300 rounded-2xl text-center w-28">
-              <span className="text-[10px] font-black text-blue-950">جواز نمبر</span>
-              <span className="text-xs font-mono font-bold text-slate-700 mt-0.5">{data.licenseNo}</span>
-            </div>
+            )}
+            {onOpenLogoModal && (
+              <button
+                type="button"
+                onClick={onOpenLogoModal}
+                className="text-[11px] text-blue-700 hover:underline font-bold print:hidden cursor-pointer mt-1"
+              >
+                تغییر لوگو
+              </button>
+            )}
           </div>
 
           <div className="text-center mb-3">
