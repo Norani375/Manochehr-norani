@@ -11,10 +11,15 @@ export interface Guarantor {
   fatherName: string;
   tazkiraNo: string;
   phoneNo: string;
+  email: string;
   province: string;
   district: string;
   nahia: string;
   village: string;
+  currentProvince: string;
+  currentDistrict: string;
+  currentNahia: string;
+  currentVillage: string;
   businessNameLocation: string;
 }
 
@@ -55,10 +60,15 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
       fatherName: 'دوست محمد',
       tazkiraNo: '45188',
       phoneNo: '0799681111',
+      email: 'bismillah@exchange.af',
       province: 'کندز',
       district: 'مرکز',
-      nahia: 'مرکز کندز',
-      village: 'مرکز',
+      nahia: 'ناحیه اول',
+      village: 'مرکز شهر',
+      currentProvince: 'کندز',
+      currentDistrict: 'مرکز',
+      currentNahia: 'ناحیه اول',
+      currentVillage: 'مرکز شهر',
       businessNameLocation: 'صرافی برکت‌الله غفوری - کندز',
     },
     {
@@ -67,10 +77,15 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
       fatherName: 'محمد آجان',
       tazkiraNo: '35806',
       phoneNo: '0749340000',
+      email: 'azim@exchange.af',
       province: 'کندز',
       district: 'مرکز',
-      nahia: 'مرکز کندز',
+      nahia: 'ناحیه دوم',
       village: 'مرکز',
+      currentProvince: 'کندز',
+      currentDistrict: 'مرکز',
+      currentNahia: 'ناحیه دوم',
+      currentVillage: 'مرکز',
       businessNameLocation: 'صرافی برکت‌الله غفوری - کندز',
     },
     {
@@ -79,10 +94,15 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
       fatherName: 'عبدالرحیم',
       tazkiraNo: '48424',
       phoneNo: '0799681111',
+      email: 'saleh@exchange.af',
       province: 'کندز',
       district: 'مرکز',
-      nahia: 'مرکز کندز',
+      nahia: 'ناحیه سوم',
       village: 'مرکز',
+      currentProvince: 'کندز',
+      currentDistrict: 'مرکز',
+      currentNahia: 'ناحیه سوم',
+      currentVillage: 'مرکز',
       businessNameLocation: 'صرافی برکت‌الله غفوری - کندز',
     },
   ],
@@ -385,7 +405,7 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
                         <td className="border border-slate-900 p-1.5 align-middle">
                           <div className="flex items-center gap-2">
                             <span className="font-bold w-14 text-slate-700">ولایت:</span>
-                            <EditableField isEditMode={isEditMode} value={guarantor.province} onChange={(val) => updateGuarantor(idx, 'province', val)} />
+                            <EditableField isEditMode={isEditMode} value={guarantor.currentProvince} onChange={(val) => updateGuarantor(idx, 'currentProvince', val)} />
                           </div>
                         </td>
                       </tr>
@@ -405,7 +425,7 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
                         <td className="border border-slate-900 p-1.5 align-middle">
                           <div className="flex items-center gap-2">
                             <span className="font-bold w-14 text-slate-700">ولسوالی:</span>
-                            <EditableField isEditMode={isEditMode} value={guarantor.district} onChange={(val) => updateGuarantor(idx, 'district', val)} />
+                            <EditableField isEditMode={isEditMode} value={guarantor.currentDistrict} onChange={(val) => updateGuarantor(idx, 'currentDistrict', val)} />
                           </div>
                         </td>
                       </tr>
@@ -425,7 +445,7 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
                         <td className="border border-slate-900 p-1.5 align-middle">
                           <div className="flex items-center gap-2">
                             <span className="font-bold w-14 text-slate-700">ناحیه:</span>
-                            <EditableField isEditMode={isEditMode} value={guarantor.nahia} onChange={(val) => updateGuarantor(idx, 'nahia', val)} />
+                            <EditableField isEditMode={isEditMode} value={guarantor.currentNahia} onChange={(val) => updateGuarantor(idx, 'currentNahia', val)} />
                           </div>
                         </td>
                       </tr>
@@ -445,7 +465,7 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
                         <td className="border border-slate-900 p-1.5 align-middle">
                           <div className="flex items-center gap-2">
                             <span className="font-bold w-14 text-slate-700">قریه:</span>
-                            <EditableField isEditMode={isEditMode} value={guarantor.village} onChange={(val) => updateGuarantor(idx, 'village', val)} />
+                            <EditableField isEditMode={isEditMode} value={guarantor.currentVillage} onChange={(val) => updateGuarantor(idx, 'currentVillage', val)} />
                           </div>
                         </td>
                       </tr>
@@ -461,7 +481,7 @@ export default function DabGuaranteeForm({ isEditMode: initialEditMode = true, c
                         <td className="border border-slate-900 p-1.5 align-middle" colSpan={3}>
                           <div className="flex items-center gap-2">
                             <span className="font-bold w-24 text-slate-700">ایمیل آدرس:</span>
-                            <EditableField isEditMode={isEditMode} value={guarantor.businessNameLocation} onChange={(val) => updateGuarantor(idx, 'businessNameLocation', val)} placeholder="email@example.com" className="font-mono" />
+                            <EditableField isEditMode={isEditMode} value={guarantor.email} onChange={(val) => updateGuarantor(idx, 'email', val)} placeholder="email@example.com" className="font-mono" />
                           </div>
                         </td>
                       </tr>
