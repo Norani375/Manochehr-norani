@@ -379,119 +379,129 @@ export default function DabGuaranteeForm({ isEditMode = true, customLogo: propLo
             * تمامی سهمداران شرکت تضمین کننده نیاز است تا از سهمدار شرکت صرافی و خدمات پولی، تضمین نمایند.
           </p>
 
-          {/* 3 Guarantors Grid */}
-          <div className="space-y-6">
+          {/* 3 Guarantors Tables matching PDF exactly */}
+          <div className="space-y-8">
             {formData.guarantors.map((guarantor, idx) => (
-              <div key={guarantor.id} className="border border-slate-300 rounded-xl p-4 bg-slate-50/50 print:bg-white print:p-2">
-                <div className="flex flex-col md:flex-row gap-4 items-start">
-                  
-                  {/* Photo & Stamp box */}
-                  <div className="w-32 h-40 border-2 border-dashed border-slate-400 bg-white rounded-lg flex flex-col items-center justify-center text-center p-2 text-slate-400 shrink-0 print:w-28 print:h-36">
-                    <ImageIcon className="w-6 h-6 mb-1 text-slate-300" />
-                    <span className="text-[10px] leading-snug">
-                      عکس تضمین کننده در اینجا نصب و با مهر تضمین کننده تاپه گردد.
-                    </span>
-                  </div>
-
-                  {/* Form fields */}
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 w-full text-xs">
-                    <div className="col-span-full grid grid-cols-2 gap-4 border-b border-slate-300 pb-2 mb-1">
-                      <div className="font-black text-blue-900 text-sm">
-                        اسم و محل فعالیت تشبث تضمین کننده {idx === 0 ? 'اول' : idx === 1 ? 'دوم' : 'سوم'}
-                      </div>
-                      <div className="font-black text-blue-900 text-sm">
-                        سکونت فعلی
-                      </div>
-                    </div>
-
-                    <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-                      <div>
-                        <label className="block text-[11px] font-bold text-slate-700 mb-1 italic">تشبث و محل فعالیت:</label>
-                        <EditableField isEditMode={isEditMode}
-                          value={guarantor.businessNameLocation}
-                          onChange={(val) => updateGuarantor(idx, 'businessNameLocation', val)}
-                          placeholder="نام و محل کسب ضامن..."
-                          className="font-bold"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-slate-700 mb-1 italic">توضیحات سکونت:</label>
-                        <EditableField isEditMode={isEditMode}
-                          value={guarantor.province}
-                          onChange={(val) => updateGuarantor(idx, 'province', val)}
-                          placeholder="ولایت / ولسوالی سکونت..."
-                          className="font-bold"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">اسم:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.name}
-                        onChange={(val) => updateGuarantor(idx, 'name', val)}
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">ولایت:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.province}
-                        onChange={(val) => updateGuarantor(idx, 'province', val)}
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">ولد:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.fatherName}
-                        onChange={(val) => updateGuarantor(idx, 'fatherName', val)}
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">ولسوالی:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.district}
-                        onChange={(val) => updateGuarantor(idx, 'district', val)}
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">نمبر تذکره:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.tazkiraNo}
-                        onChange={(val) => updateGuarantor(idx, 'tazkiraNo', val)}
-                        className="font-mono"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">ناحیه:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.nahia}
-                        onChange={(val) => updateGuarantor(idx, 'nahia', val)}
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">شماره تماس:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.phoneNo}
-                        onChange={(val) => updateGuarantor(idx, 'phoneNo', val)}
-                        className="font-mono"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label className="w-20 font-bold text-slate-700">قریه:</label>
-                      <EditableField isEditMode={isEditMode}
-                        value={guarantor.village}
-                        onChange={(val) => updateGuarantor(idx, 'village', val)}
-                      />
-                    </div>
-
-                  </div>
+              <div key={guarantor.id} className="border border-slate-900 rounded-lg overflow-hidden bg-white text-xs">
+                <div className="bg-slate-900 text-white font-bold px-3 py-1.5 text-xs">
+                  {idx === 0 ? '۱. شهرت سهامدار اول شرکت تضمین‌کننده:' : idx === 1 ? '۲. شهرت سهامدار دوم شرکت تضمین‌کننده:' : '۳. شهرت سهامدار سوم شرکت تضمین‌کننده:'}
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-slate-900 text-xs">
+                    <thead>
+                      <tr className="bg-slate-200 text-slate-900 font-bold text-center">
+                        <th className="border border-slate-900 p-2 w-[35%]">اسم و محل فعالیت تشبث</th>
+                        <th className="border border-slate-900 p-2 w-[22%]">سکونت اصلی</th>
+                        <th className="border border-slate-900 p-2 w-[22%]">سکونت فعلی</th>
+                        <th className="border border-slate-900 p-2 w-[21%] bg-slate-50" rowSpan={7}>
+                          <div className="h-full min-h-[160px] border-2 border-dashed border-slate-400 bg-white rounded flex flex-col items-center justify-center text-center p-2 text-slate-500">
+                            <ImageIcon className="w-6 h-6 mb-1 text-slate-300" />
+                            <span className="text-[10px] leading-tight font-bold">
+                              عکس تضمین‌کننده در اینجا نصب و با مهر تضمین‌کننده تاپه گردد.
+                            </span>
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-16 text-slate-700">اسم:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.name} onChange={(val) => updateGuarantor(idx, 'name', val)} className="font-bold" />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">ولایت:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.province} onChange={(val) => updateGuarantor(idx, 'province', val)} />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">ولایت:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.province} onChange={(val) => updateGuarantor(idx, 'province', val)} />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-16 text-slate-700">ولد:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.fatherName} onChange={(val) => updateGuarantor(idx, 'fatherName', val)} />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">ولسوالی:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.district} onChange={(val) => updateGuarantor(idx, 'district', val)} />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">ولسوالی:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.district} onChange={(val) => updateGuarantor(idx, 'district', val)} />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-16 text-slate-700">ولدیت:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.businessNameLocation} onChange={(val) => updateGuarantor(idx, 'businessNameLocation', val)} placeholder="نام و محل کسب..." />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">ناحیه:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.nahia} onChange={(val) => updateGuarantor(idx, 'nahia', val)} />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">ناحیه:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.nahia} onChange={(val) => updateGuarantor(idx, 'nahia', val)} />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-16 text-slate-700">نمبر تذکره:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.tazkiraNo} onChange={(val) => updateGuarantor(idx, 'tazkiraNo', val)} className="font-mono" />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">قریه:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.village} onChange={(val) => updateGuarantor(idx, 'village', val)} />
+                          </div>
+                        </td>
+                        <td className="border border-slate-900 p-1.5 align-middle">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-14 text-slate-700">قریه:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.village} onChange={(val) => updateGuarantor(idx, 'village', val)} />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-slate-900 p-1.5 align-middle" colSpan={3}>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-24 text-slate-700">شماره تماس:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.phoneNo} onChange={(val) => updateGuarantor(idx, 'phoneNo', val)} className="font-mono" />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-slate-900 p-1.5 align-middle" colSpan={3}>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold w-24 text-slate-700">ایمیل آدرس:</span>
+                            <EditableField isEditMode={isEditMode} value={guarantor.businessNameLocation} onChange={(val) => updateGuarantor(idx, 'businessNameLocation', val)} placeholder="email@example.com" className="font-mono" />
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             ))}
