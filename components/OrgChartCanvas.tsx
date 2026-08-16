@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Building2, Edit3, Save, RotateCcw, Download, Printer, ShieldCheck, Briefcase, 
-  Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2, Search, FileCode, Loader2
+  Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2, 
+  Search, FileCode, Loader2, Phone, Mail, Calendar, GraduationCap, IdCard, MapPin, 
+  ChevronDown, ChevronUp, Maximize2, Minimize2, Database, Sparkles, Copy, ExternalLink
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
 import { exportElementToWord } from '@/lib/wordExport';
-import { db } from '@/lib/firebase';
+import { db, EmployeeRecord, subscribeEmployees } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
 export interface OrgChartNode {
@@ -17,6 +19,15 @@ export interface OrgChartNode {
   subtitle?: string;
   bgType?: 'dark' | 'light';
   staff?: string[];
+  phone?: string;
+  email?: string;
+  joinDate?: string;
+  education?: string;
+  experience?: string;
+  tazkiraNo?: string;
+  location?: string;
+  responsibilities?: string;
+  tin?: string;
 }
 
 export interface OrgChartData {
@@ -39,8 +50,16 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
   president: {
     id: 'pres-1',
     name: 'برکت‌الله',
-    title: 'رئیس (۱۰۰٪ سرمایه)',
-    bgType: 'dark'
+    title: 'رئیس و سهمدار اصلی (۱۰۰٪ سرمایه)',
+    bgType: 'dark',
+    phone: '۰۷۹۹۱۱۲۰۳۰',
+    email: 'b.ghafouri@exchange.af',
+    joinDate: '۱۴۰۰/۰۵/۱۰',
+    education: 'لیسانس کامپیوتر ساینس و مدیریت مالی',
+    experience: 'بیش از ۱۰ سال مدیریت ارشد صرافی، بانکداری و خدمات پولی',
+    tazkiraNo: '۵۵۵۲۲-۱۱۰۴-۱۰۰۱۳۹۹',
+    location: 'دفتر مرکزی - سرای شهزاده، کابل',
+    responsibilities: 'تصمیم‌گیری‌های کلان استراتژیک، تأمین سرمایه و رهبری عالیه شرکت'
   },
 
   boardMembers: [
@@ -48,19 +67,43 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
       id: 'bm-1',
       name: 'عظیم‌الله رحمانی',
       title: 'عضو هیئت نظار',
-      bgType: 'light'
+      bgType: 'light',
+      phone: '۰۷۷۷۳۳۴۰۵۰',
+      email: 'azim.rahmani@exchange.af',
+      joinDate: '۱۴۰۱/۰۳/۰۱',
+      education: 'لیسانس حقوق و علوم سیاسی',
+      experience: '۶ سال سابقه امور حقوقی و نظارت شرکتی',
+      tazkiraNo: '۱۲۹۸۰-۱۵۰۴-۰۰۵۴۳۲۱',
+      location: 'دفتر مرکزی - کابل',
+      responsibilities: 'بررسی اسناد حقوقی و نظارت بر رعایت چارچوب‌های مقرراتی'
     },
     {
       id: 'bm-2',
       name: 'بسم‌الله شیرزی',
       title: 'رئیس هیئت نظار',
-      bgType: 'dark'
+      bgType: 'dark',
+      phone: '۰۷۸۸۲۲۳۰۴۰',
+      email: 'bismillah.shirzai@exchange.af',
+      joinDate: '۱۴۰۱/۰۲/۱۵',
+      education: 'لیسانس اقتصاد و بانکداری',
+      experience: '۷ سال تجربه نظارت مالی و بانکی',
+      tazkiraNo: '۳۴۲۱۰-۰۲۰۱-۰۰۸۷۶۵۴',
+      location: 'دفتر مرکزی - هیئت نظار',
+      responsibilities: 'نظارت عالیه بر تطبیق قوانین DAB، بررسی گزارش‌های مالی و انطباق'
     },
     {
       id: 'bm-3',
       name: 'برکت‌الله',
       title: 'عضو هیئت نظار',
-      bgType: 'light'
+      bgType: 'light',
+      phone: '۰۷۹۹۱۱۲۰۳۰',
+      email: 'b.ghafouri@exchange.af',
+      joinDate: '۱۴۰۰/۰۵/۱۰',
+      education: 'لیسانس مدیریت مالی',
+      experience: 'عضویت در هیئت نظار و نمایندگی سهمداران',
+      tazkiraNo: '۵۵۵۲۲-۱۱۰۴-۱۰۰۱۳۹۹',
+      location: 'دفتر مرکزی - کابل',
+      responsibilities: 'هماهنگی امور نظارتی و نظارت مستقیم بر فعالیت‌های اجرایی'
     }
   ],
 
@@ -68,14 +111,30 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
     {
       id: 'exec-1',
       name: 'محمد فهیم',
-      title: 'مسئول پیروی از قوانین',
-      bgType: 'dark'
+      title: 'مسئول پیروی از قوانین (Compliance Officer)',
+      bgType: 'dark',
+      phone: '۰۷۸۵۴۴۵۰۶۰',
+      email: 'compliance@exchange.af',
+      joinDate: '۱۴۰۱/۰۶/۲۰',
+      education: 'لیسانس اقتصاد با تصدیق‌نامه AML/CFT',
+      experience: '۵ سال مسئولیت انطباق با مقررات مبارزه با پولشویی و تأمین مالی تروریسم',
+      tazkiraNo: '۸۷۶۵۴-۰۱۰۲-۰۰۳۲۱۹۸',
+      location: 'دفتر مرکزی - واحد انطباق (AML/CFT)',
+      responsibilities: 'پایش معاملات مشکوک (STR/LCTR)، احراز هویت مشتریان (KYC) و گزارش‌دهی به د افغانستان بانک'
     },
     {
       id: 'exec-2',
       name: 'صالح‌محمد',
-      title: 'مسئول عملیاتی',
-      bgType: 'dark'
+      title: 'مسئول عملیاتی (Operations Manager)',
+      bgType: 'dark',
+      phone: '۰۷۹۰۵۵۶۰۷۰',
+      email: 'operations@exchange.af',
+      joinDate: '۱۴۰۱/۰۴/۱۰',
+      education: 'لیسانس اداره و تجارت (BBA)',
+      experience: '۶ سال مدیریت عملیات صرافی و حواله‌جات پولی',
+      tazkiraNo: '۶۵۴۳۲-۱۲۰۳-۰۰۹۸۷۱۲',
+      location: 'دفتر مرکزی - مدیریت عملیات',
+      responsibilities: 'نظارت بر کلیه نمایندگی‌های ولایتی، کنترل نقدینگی و تسویه‌حساب‌های روزانه'
     }
   ],
 
@@ -84,29 +143,57 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
       id: 'br-1',
       name: 'نمایندگی کابل',
       title: 'اجمل احمدی',
-      staff: ['ریحان داخلی · صدیق‌الله'],
-      bgType: 'light'
+      staff: ['ریحان داخلی (خزانه‌دار)', 'صدیق‌الله (مسئول حواله‌جات)'],
+      bgType: 'light',
+      phone: '۰۷۰۰۱۲۳۴۵۶',
+      email: 'kabul.branch@exchange.af',
+      joinDate: '۱۴۰۱/۰۸/۰۱',
+      education: 'بکلوریا / دوره عالی حسابداری',
+      tazkiraNo: '۴۳۲۱۰-۱۱۰۱-۰۰۶۵۴۳۲',
+      location: 'کابل، سرای شهزاده، طبقه دوم',
+      responsibilities: 'مدیریت امور صرافی و حواله‌های پایتخت و کنترل گاوصندوق'
     },
     {
       id: 'br-2',
       name: 'نمایندگی تخار',
       title: 'رحمت‌الله',
-      staff: ['عبیدالله'],
-      bgType: 'light'
+      staff: ['عبیدالله (متصدی خدمات)'],
+      bgType: 'light',
+      phone: '۰۷۰۱۶۵۴۳۲۱',
+      email: 'takhar.branch@exchange.af',
+      joinDate: '۱۴۰۱/۰۹/۱۵',
+      education: 'فوق دیپلم اقتصاد',
+      tazkiraNo: '۸۷۲۱۱-۱۴۰۲-۰۰۴۱۵۲۶',
+      location: 'تالقان، چوک مرکزی، مارکیت صرافان',
+      responsibilities: 'ارائه خدمات پولی، تبادله اسعار و حواله‌جات ولایت تخار'
     },
     {
       id: 'br-3',
       name: 'نمایندگی کشم',
       title: 'عتیق‌الله',
-      staff: ['—'],
-      bgType: 'light'
+      staff: ['نورمحمد (همکار اداری)'],
+      bgType: 'light',
+      phone: '۰۷۰۲۹۸۷۶۵۴',
+      email: 'keshem.branch@exchange.af',
+      joinDate: '۱۴۰۲/۰۲/۰۱',
+      education: 'بکلوریا',
+      tazkiraNo: '۲۳۱۴۵-۱۵۰۱-۰۰۳۲۹۱۸',
+      location: 'بدخشان، ولسوالی کشم، بازار مرکزی',
+      responsibilities: 'ارائه خدمات انتقال و دریافت حواله مشتریان محلی'
     },
     {
       id: 'br-4',
       name: 'نمایندگی امام صاحب',
       title: 'محمد یوسف حیدری',
-      staff: ['عبدالمجید'],
-      bgType: 'light'
+      staff: ['عبدالمجید (خزانه‌دار)'],
+      bgType: 'light',
+      phone: '۰۷۰۳۴۵۶۷۸۹',
+      email: 'imamsaheb.branch@exchange.af',
+      joinDate: '۱۴۰۲/۰۴/۱۰',
+      education: 'لیسانس اقتصاد',
+      tazkiraNo: '۹۹۸۱۲-۱۳۰۳-۰۰۷۶۵۴۳',
+      location: 'کندز، ولسوالی امام صاحب، مارکیت تجارتی',
+      responsibilities: 'مدیریت حواله‌جات مرزی و تسویه روزانه با مرکز'
     }
   ],
 
@@ -119,7 +206,7 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
     { unit: 'کارکنان و پرسنل نمایندگی‌ها', reportsTo: 'مسئول نماینده مربوطه (زیر نظر مدیر عملیاتی)' }
   ],
 
-  footerNote: '▸ هیئت نظار: نظارت بر عملکرد شرکت.'
+  footerNote: '▸ هیئت نظار: نظارت بر عملکرد شرکت و تطبیق مقررات د افغانستان بانک (DAB).'
 };
 
 interface OrgChartCanvasProps {
@@ -127,7 +214,7 @@ interface OrgChartCanvasProps {
   customLogo?: string | null;
 }
 
-export default function OrgChartCanvas({ customLogo , companyId = "default" }: OrgChartCanvasProps) {
+export default function OrgChartCanvas({ customLogo, companyId = "default" }: OrgChartCanvasProps) {
   const [data, setData] = useState<OrgChartData>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -140,40 +227,15 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
     return DEFAULT_ORG_CHART_DATA;
   });
 
+  const [dbEmployees, setDbEmployees] = useState<EmployeeRecord[]>([]);
+  const [expandedNodeIds, setExpandedNodeIds] = useState<Record<string, boolean>>({});
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const isNodeMatch = (name: string, title: string, id: string) => {
-    if (!searchTerm.trim()) return false;
-    const term = searchTerm.toLowerCase().trim();
-    return (
-      name.toLowerCase().includes(term) ||
-      title.toLowerCase().includes(term) ||
-      id.toLowerCase().includes(term)
-    );
-  };
-
-  const getNodeHighlightClass = (name: string, title: string, id: string) => {
-    if (!searchTerm.trim()) return '';
-    const match = isNodeMatch(name, title, id);
-    return match
-      ? 'ring-4 ring-amber-400 ring-offset-2 scale-105 transition-all duration-300 bg-amber-50 dark:bg-amber-950/60 border-amber-500 shadow-2xl z-10'
-      : 'opacity-30 transition-all duration-300';
-  };
-
-  const getNodeCardAnimationClass = (isDarkBg: boolean = false) => {
-    return `transition-all duration-300 ease-out hover:scale-[1.04] sm:hover:scale-[1.05] hover:shadow-2xl hover:z-20 cursor-pointer ${
-      isEditMode 
-        ? 'hover:ring-2 hover:ring-emerald-400 hover:border-emerald-500' 
-        : isDarkBg 
-          ? 'hover:ring-2 hover:ring-blue-300 hover:brightness-105' 
-          : 'hover:ring-2 hover:ring-blue-400 hover:border-blue-600'
-    }`;
-  };
-
-  // Sync with Firestore
+  // Sync with Firestore Org Chart Data
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -203,6 +265,109 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
     }
   }, [companyId]);
 
+  // Subscribe to Employees from Firestore to enrich nodes live
+  useEffect(() => {
+    try {
+      const unsubscribe = subscribeEmployees((empList) => {
+        setDbEmployees(empList || []);
+      }, companyId);
+      return () => unsubscribe();
+    } catch (e) {
+      console.warn('Employees sync fallback', e);
+    }
+  }, [companyId]);
+
+  // Helper to find matched employee record from database
+  const getMatchedEmployee = (node: OrgChartNode): EmployeeRecord | null => {
+    if (!dbEmployees.length) return null;
+    const normalizedNodeName = node.name.trim().toLowerCase();
+    const normalizedNodeTitle = node.title.trim().toLowerCase();
+
+    return dbEmployees.find(emp => {
+      const empName = emp.fullName.trim().toLowerCase();
+      const empPos = emp.position.trim().toLowerCase();
+      return (
+        empName.includes(normalizedNodeName) ||
+        normalizedNodeName.includes(empName) ||
+        (empPos && normalizedNodeTitle.includes(empPos)) ||
+        emp.id === node.id
+      );
+    }) || null;
+  };
+
+  // Merge node fields with Firestore employee database if available
+  const getEnrichedNode = (node: OrgChartNode): OrgChartNode & { hasDbMatch: boolean } => {
+    const match = getMatchedEmployee(node);
+    if (!match) return { ...node, hasDbMatch: false };
+
+    return {
+      ...node,
+      phone: node.phone || match.phone || undefined,
+      email: node.email || match.email || undefined,
+      joinDate: node.joinDate || match.formDate || undefined,
+      education: node.education || match.education || undefined,
+      experience: node.experience || match.experience || undefined,
+      tazkiraNo: node.tazkiraNo || match.tazkiraNo || undefined,
+      tin: node.tin || match.tin || undefined,
+      hasDbMatch: true
+    };
+  };
+
+  const isNodeMatch = (name: string, title: string, id: string) => {
+    if (!searchTerm.trim()) return false;
+    const term = searchTerm.toLowerCase().trim();
+    return (
+      name.toLowerCase().includes(term) ||
+      title.toLowerCase().includes(term) ||
+      id.toLowerCase().includes(term)
+    );
+  };
+
+  const getNodeHighlightClass = (name: string, title: string, id: string) => {
+    if (!searchTerm.trim()) return '';
+    const match = isNodeMatch(name, title, id);
+    return match
+      ? 'ring-4 ring-amber-400 ring-offset-2 scale-[1.02] transition-all duration-300 bg-amber-50 dark:bg-amber-950/60 border-amber-500 shadow-2xl z-10'
+      : 'opacity-30 transition-all duration-300';
+  };
+
+  const toggleNodeExpand = (nodeId: string) => {
+    setExpandedNodeIds(prev => ({
+      ...prev,
+      [nodeId]: !prev[nodeId]
+    }));
+  };
+
+  const getAllNodeIds = (): string[] => {
+    const ids: string[] = [data.president.id];
+    data.boardMembers.forEach(bm => ids.push(bm.id));
+    data.executives.forEach(ex => ids.push(ex.id));
+    data.branches.forEach(br => ids.push(br.id));
+    return ids;
+  };
+
+  const expandAllNodes = () => {
+    const all = getAllNodeIds();
+    const nextState: Record<string, boolean> = {};
+    all.forEach(id => { nextState[id] = true; });
+    setExpandedNodeIds(nextState);
+  };
+
+  const collapseAllNodes = () => {
+    setExpandedNodeIds({});
+  };
+
+  const expandedCount = Object.values(expandedNodeIds).filter(Boolean).length;
+  const totalNodesCount = getAllNodeIds().length;
+
+  const handleCopyText = (text: string, label: string) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(label);
+      setTimeout(() => setCopiedField(null), 2000);
+    }
+  };
+
   const handleSave = async () => {
     try {
       localStorage.setItem(`bg_org_chart_v2_${companyId}`, JSON.stringify(data));
@@ -225,6 +390,7 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
   const handleReset = () => {
     if (window.confirm('آیا از بازنشانی چارت تشکیلاتی به حالت مطابق سند رسمی اطمینان دارید؟')) {
       setData(DEFAULT_ORG_CHART_DATA);
+      setExpandedNodeIds({});
       localStorage.removeItem(`bg_org_chart_v2_${companyId}`);
     }
   };
@@ -262,6 +428,322 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
     }
   };
 
+  // Reusable Interactive Node Card Component with Click-to-Expand
+  const renderInteractiveNodeCard = ({
+    node,
+    variant = 'standard',
+    isDark = false,
+    badgeText,
+    subtitleOverride,
+    customClass = ''
+  }: {
+    node: OrgChartNode;
+    variant?: 'president' | 'board' | 'executive' | 'branch' | 'standard';
+    isDark?: boolean;
+    badgeText?: string;
+    subtitleOverride?: string;
+    customClass?: string;
+  }) => {
+    const isExpanded = !!expandedNodeIds[node.id];
+    const enriched = getEnrichedNode(node);
+    const highlightClass = getNodeHighlightClass(node.name, node.title, node.id);
+
+    const hasExtraDetails = !!(
+      enriched.phone || 
+      enriched.email || 
+      enriched.joinDate || 
+      enriched.education || 
+      enriched.experience || 
+      enriched.tazkiraNo || 
+      enriched.location || 
+      enriched.responsibilities ||
+      (node.staff && node.staff.length > 0)
+    );
+
+    return (
+      <div 
+        id={`org-node-${node.id}`}
+        onClick={() => toggleNodeExpand(node.id)}
+        className={`
+          group relative transition-all duration-300 ease-out cursor-pointer rounded-2xl select-none
+          ${isDark 
+            ? 'bg-[#1e3a8a] text-white border-2 border-blue-900/80 shadow-md hover:shadow-xl hover:border-blue-400' 
+            : 'bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] text-slate-900 dark:text-white shadow-sm hover:shadow-lg hover:border-blue-600'
+          }
+          ${isExpanded 
+            ? 'ring-3 ring-blue-500 shadow-xl z-20 ' + (isDark ? 'bg-[#1a347c]' : 'bg-blue-50/20 dark:bg-slate-850') 
+            : 'hover:scale-[1.02]'
+          }
+          ${highlightClass}
+          ${customClass}
+        `}
+      >
+        {/* Top Floating Badge for Database Sync or Role */}
+        <div className="absolute -top-3 left-4 flex items-center gap-1.5 z-10">
+          {enriched.hasDbMatch && (
+            <span 
+              className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-xs"
+              title="متصل به دیتابیس زنده سوانح پرسنل (Firestore Database)"
+            >
+              <Database className="w-2.5 h-2.5" />
+              <span>دیتابیس</span>
+            </span>
+          )}
+          {badgeText && (
+            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shadow-xs ${
+              isDark 
+                ? 'bg-blue-950/90 text-blue-200 border border-blue-700' 
+                : 'bg-blue-100 dark:bg-blue-950 text-[#1e3a8a] dark:text-blue-300 border border-blue-300 dark:border-blue-800'
+            }`}>
+              {badgeText}
+            </span>
+          )}
+        </div>
+
+        {/* Card Header Content */}
+        <div className="p-4 sm:p-5 text-center">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="w-6" /> {/* spacer */}
+            <div className={`font-black tracking-tight ${variant === 'president' ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'}`}>
+              {node.name}
+            </div>
+            {/* Click-to-Expand Indicator Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleNodeExpand(node.id);
+              }}
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                isDark 
+                  ? 'bg-blue-900/80 hover:bg-blue-800 text-blue-200' 
+                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-950 text-slate-600 dark:text-slate-300'
+              }`}
+              title={isExpanded ? 'بستن مشخصات' : 'کلیک برای مشاهده مشخصات، تماس و تاریخ استخدام'}
+            >
+              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+          </div>
+
+          <div className={`text-xs sm:text-sm font-bold ${isDark ? 'text-blue-100' : 'text-slate-600 dark:text-slate-400'}`}>
+            {subtitleOverride || node.title}
+          </div>
+
+          {/* Quick Collapse/Expand CTA chip */}
+          <div className="mt-2.5 flex items-center justify-center">
+            <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md transition-all ${
+              isExpanded 
+                ? isDark 
+                  ? 'bg-blue-950/80 text-blue-200 border border-blue-700' 
+                  : 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                : isDark 
+                  ? 'text-blue-300/80 group-hover:text-white' 
+                  : 'text-slate-400 group-hover:text-blue-700 dark:group-hover:text-blue-300'
+            }`}>
+              {isExpanded ? (
+                <>
+                  <Minimize2 className="w-3 h-3" />
+                  <span>بستن مشخصات</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="w-3 h-3" />
+                  <span>اطلاعات تماس و سوابق</span>
+                </>
+              )}
+            </span>
+          </div>
+        </div>
+
+        {/* EXPANDED CONTENT TRAY (Unfolds when clicked) */}
+        {isExpanded && (
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className={`border-t px-4 py-4 space-y-3 text-right text-xs rounded-b-2xl animate-in fade-in slide-in-from-top-2 duration-200 ${
+              isDark 
+                ? 'border-blue-800/80 bg-blue-950/70 text-slate-100' 
+                : 'border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-850 text-slate-800 dark:text-slate-200'
+            }`}
+          >
+            {/* Database Connection Notice */}
+            <div className={`p-2 rounded-xl border flex items-center justify-between gap-2 text-[11px] ${
+              enriched.hasDbMatch 
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
+                : 'bg-blue-50/60 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900 text-blue-800 dark:text-blue-300'
+            }`}>
+              <div className="flex items-center gap-1.5 font-bold">
+                <Database className="w-3.5 h-3.5 shrink-0" />
+                <span>{enriched.hasDbMatch ? 'همگام‌سازی شده با سوانح پرسنل دیتابیس' : 'مشخصات تشکیلاتی و انطباق DAB'}</span>
+              </div>
+              <span className="text-[10px] font-mono opacity-80">{node.id}</span>
+            </div>
+
+            {/* Grid of Key Extended Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              
+              {/* Phone Field */}
+              {enriched.phone && (
+                <div className={`p-2 rounded-xl border flex items-center justify-between gap-2 ${
+                  isDark ? 'bg-blue-900/50 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <Phone className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <div className="truncate">
+                      <span className="text-[10px] opacity-70 block font-semibold">شماره تماس:</span>
+                      <a 
+                        href={`tel:${enriched.phone}`} 
+                        className="font-bold font-mono text-xs hover:underline ltr inline-block"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {enriched.phone}
+                      </a>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleCopyText(enriched.phone!, 'phone')}
+                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md text-slate-400 hover:text-slate-700"
+                    title="کپی شماره تماس"
+                  >
+                    {copiedField === 'phone' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                  </button>
+                </div>
+              )}
+
+              {/* Email Field */}
+              {enriched.email && (
+                <div className={`p-2 rounded-xl border flex items-center justify-between gap-2 ${
+                  isDark ? 'bg-blue-900/50 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <Mail className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                    <div className="truncate">
+                      <span className="text-[10px] opacity-70 block font-semibold">ایمیل سازمانی:</span>
+                      <a 
+                        href={`mailto:${enriched.email}`} 
+                        className="font-semibold font-mono text-[11px] hover:underline ltr inline-block truncate max-w-[130px]"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {enriched.email}
+                      </a>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleCopyText(enriched.email!, 'email')}
+                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md text-slate-400 hover:text-slate-700"
+                    title="کپی ایمیل"
+                  >
+                    {copiedField === 'email' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                  </button>
+                </div>
+              )}
+
+              {/* Joining Date Field */}
+              {enriched.joinDate && (
+                <div className={`p-2 rounded-xl border flex items-center gap-2 ${
+                  isDark ? 'bg-blue-900/50 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <Calendar className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <div>
+                    <span className="text-[10px] opacity-70 block font-semibold">تاریخ استخدام / شروع فعالیت:</span>
+                    <span className="font-bold text-xs font-mono">{enriched.joinDate}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Tazkira / ID Number */}
+              {enriched.tazkiraNo && (
+                <div className={`p-2 rounded-xl border flex items-center gap-2 ${
+                  isDark ? 'bg-blue-900/50 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <IdCard className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                  <div>
+                    <span className="text-[10px] opacity-70 block font-semibold">نمبر تذکره / هویت:</span>
+                    <span className="font-semibold text-xs font-mono">{enriched.tazkiraNo}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Education */}
+              {enriched.education && (
+                <div className={`p-2 rounded-xl border flex items-center gap-2 col-span-1 sm:col-span-2 ${
+                  isDark ? 'bg-blue-900/50 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <GraduationCap className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <div>
+                    <span className="text-[10px] opacity-70 block font-semibold">تحصیلات و تخصص:</span>
+                    <span className="font-semibold text-xs">{enriched.education}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Location */}
+              {enriched.location && (
+                <div className={`p-2 rounded-xl border flex items-center gap-2 col-span-1 sm:col-span-2 ${
+                  isDark ? 'bg-blue-900/50 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                  <div>
+                    <span className="text-[10px] opacity-70 block font-semibold">موقعیت و محل خدمت:</span>
+                    <span className="font-semibold text-xs">{enriched.location}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Responsibilities & AML/CFT Compliance Role */}
+              {enriched.responsibilities && (
+                <div className={`p-2.5 rounded-xl border col-span-1 sm:col-span-2 space-y-1 ${
+                  isDark ? 'bg-blue-950 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <div className="flex items-center gap-1.5 font-bold text-[11px] text-blue-600 dark:text-blue-400">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>حیطه اختیارات و مسئولیت‌های سازمانی (DAB):</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed opacity-90">{enriched.responsibilities}</p>
+                </div>
+              )}
+
+              {/* Staff / Personnel under node */}
+              {node.staff && node.staff.length > 0 && (
+                <div className={`p-2.5 rounded-xl border col-span-1 sm:col-span-2 space-y-1 ${
+                  isDark ? 'bg-blue-950 border-blue-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                }`}>
+                  <div className="flex items-center gap-1.5 font-bold text-[11px] text-emerald-600 dark:text-emerald-400">
+                    <Users className="w-3.5 h-3.5" />
+                    <span>کارکنان و کادر اجرایی همکار:</span>
+                  </div>
+                  <div className="text-[11px] font-semibold flex flex-wrap gap-1.5 pt-0.5">
+                    {node.staff.map((s, sIdx) => (
+                      <span key={sIdx} className="bg-slate-200/70 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Bottom Collapse Trigger */}
+            <div className="pt-2 flex justify-center">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleNodeExpand(node.id);
+                }}
+                className="text-[11px] font-bold text-blue-600 dark:text-blue-300 hover:underline flex items-center gap-1"
+              >
+                <ChevronUp className="w-3 h-3" />
+                <span>بستن این بخش</span>
+              </button>
+            </div>
+
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12 dir-rtl">
       {/* Top Controls Bar */}
@@ -271,14 +753,19 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             <Layers className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">چارت تشکیلاتی رسمی و هیئت نظار</h2>
-            <p className="text-xs text-slate-500">طراحی شده دقیقاً مطابق نسخه استاندار د افغانستان بانک (DAB)</p>
+            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <span>چارت تشکیلاتی رسمی و هیئت نظار</span>
+              <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 rounded-full font-normal">
+                قابلیت کلیک برای گسترش جزئیات
+              </span>
+            </h2>
+            <p className="text-xs text-slate-500">برای مشاهده شماره تماس، ایمیل، تاریخ استخدام و سوابق، روی هر کارت کلیک کنید.</p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Dedicated Search Bar */}
-          <div className="relative flex items-center min-w-[200px] sm:min-w-[230px]">
+          <div className="relative flex items-center min-w-[200px] sm:min-w-[220px]">
             <Search className="w-4 h-4 absolute right-3 text-slate-400 pointer-events-none" />
             <input
               type="text"
@@ -297,9 +784,19 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             )}
           </div>
 
+          {/* Expand / Collapse All Toggle */}
+          <button
+            onClick={expandedCount > 0 ? collapseAllNodes : expandAllNodes}
+            className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+            title={expandedCount > 0 ? 'بستن همه کارت‌ها' : 'باز کردن جزئیات تمام کارت‌ها'}
+          >
+            {expandedCount > 0 ? <Minimize2 className="w-4 h-4 text-blue-600" /> : <Maximize2 className="w-4 h-4 text-blue-600" />}
+            <span>{expandedCount > 0 ? `بستن همه (${expandedCount})` : 'نمایش تمام جزئیات'}</span>
+          </button>
+
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border cursor-pointer ${
               isEditMode
                 ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-600/20'
                 : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
@@ -312,10 +809,10 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
           {isEditMode && (
             <button
               onClick={handleSave}
-              className="px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 hover:bg-blue-700 transition-all"
+              className="px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 hover:bg-blue-700 transition-all cursor-pointer shadow-xs"
             >
               <Save className="w-4 h-4" />
-              <span>{isSaved ? 'ذخیره شد' : 'ذخیره'}</span>
+              <span>{isSaved ? 'ذخیره شد' : 'ذخیره در دیتابیس'}</span>
             </button>
           )}
 
@@ -340,7 +837,7 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
 
           <button
             onClick={() => window.print()}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>چاپ</span>
@@ -348,8 +845,8 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
 
           <button
             onClick={handleReset}
-            className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-xl"
-            title="بازنشانی"
+            className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-xl cursor-pointer"
+            title="بازنشانی به حالت پیش‌فرض"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -361,10 +858,10 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
         <div className="bg-blue-50/70 dark:bg-slate-800/80 border border-blue-200 dark:border-slate-700 rounded-2xl p-5 space-y-4 text-xs print:hidden">
           <h3 className="font-bold text-blue-900 dark:text-blue-300 flex items-center gap-2 border-b border-blue-200 pb-2">
             <Edit3 className="w-4 h-4" />
-            <span>ویرایش عنوان‌ها و نام‌های چارت تشکیلاتی</span>
+            <span>ویرایش عنوان‌ها، مشخصات تماس و سوابق چارت تشکیلاتی</span>
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="font-bold block mb-1">نام رئیس شرکت:</label>
               <input
@@ -381,6 +878,16 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
                 value={data.president.title}
                 onChange={(e) => setData({ ...data, president: { ...data.president, title: e.target.value } })}
                 className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="font-bold block mb-1">شماره تماس رئیس:</label>
+              <input
+                type="text"
+                value={data.president.phone || ''}
+                onChange={(e) => setData({ ...data, president: { ...data.president, phone: e.target.value } })}
+                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-mono"
+                placeholder="۰۷۹۹xxxxxx"
               />
             </div>
           </div>
@@ -411,6 +918,17 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
                       setData({ ...data, boardMembers: updated });
                     }}
                     className="w-full p-1 border rounded text-xs text-slate-600"
+                  />
+                  <input
+                    type="text"
+                    value={bm.phone || ''}
+                    placeholder="شماره تماس"
+                    onChange={(e) => {
+                      const updated = [...data.boardMembers];
+                      updated[idx].phone = e.target.value;
+                      setData({ ...data, boardMembers: updated });
+                    }}
+                    className="w-full p-1 border rounded text-xs font-mono text-slate-600"
                   />
                 </div>
               ))}
@@ -444,6 +962,17 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
                     }}
                     className="w-full p-1 border rounded text-xs text-slate-600"
                   />
+                  <input
+                    type="text"
+                    value={exec.phone || ''}
+                    placeholder="شماره تماس"
+                    onChange={(e) => {
+                      const updated = [...data.executives];
+                      updated[idx].phone = e.target.value;
+                      setData({ ...data, executives: updated });
+                    }}
+                    className="w-full p-1 border rounded text-xs font-mono text-slate-600"
+                  />
                 </div>
               ))}
             </div>
@@ -475,6 +1004,17 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
                       setData({ ...data, branches: updated });
                     }}
                     className="w-full p-1 border rounded text-xs"
+                  />
+                  <input
+                    type="text"
+                    value={br.phone || ''}
+                    placeholder="شماره تماس نمایندگی"
+                    onChange={(e) => {
+                      const updated = [...data.branches];
+                      updated[idx].phone = e.target.value;
+                      setData({ ...data, branches: updated });
+                    }}
+                    className="w-full p-1 border rounded text-xs font-mono"
                   />
                   <input
                     type="text"
@@ -519,9 +1059,14 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             
             {/* LEVEL 1: President Box (Centered Dark Blue Box) */}
             <div className="flex flex-col items-center relative">
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl px-8 py-5 text-center shadow-lg border border-blue-900 min-w-[240px] sm:min-w-[280px] ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.president.name, data.president.title, data.president.id)}`}>
-                <div className="text-lg sm:text-xl font-black tracking-tight">{data.president.name}</div>
-                <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.president.title}</div>
+              <div className="w-full max-w-[340px] sm:max-w-[380px]">
+                {renderInteractiveNodeCard({
+                  node: data.president,
+                  variant: 'president',
+                  isDark: true,
+                  badgeText: '۱۰۰٪ سهمدار',
+                  customClass: 'text-center'
+                })}
               </div>
 
               {/* Vertical connector down from President */}
@@ -539,24 +1084,37 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             </div>
 
             {/* LEVEL 2: Board of Supervisors (3 Boxes) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto items-start">
               
-              {/* Right Box (RTL Index 0 in image: برکت‌الله - عضو هیئت نظار) */}
-              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeCardAnimationClass(false)} ${getNodeHighlightClass(data.boardMembers[2]?.name || '', data.boardMembers[2]?.title || '', data.boardMembers[2]?.id || '')}`}>
-                <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{data.boardMembers[2]?.name || 'برکت‌الله'}</div>
-                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1">{data.boardMembers[2]?.title || 'عضو هیئت نظار'}</div>
+              {/* Right Box (RTL Index 0: برکت‌الله - عضو هیئت نظار) */}
+              <div>
+                {renderInteractiveNodeCard({
+                  node: data.boardMembers[2] || { id: 'bm-3', name: 'برکت‌الله', title: 'عضو هیئت نظار' },
+                  variant: 'board',
+                  isDark: false,
+                  badgeText: 'هیئت نظار'
+                })}
               </div>
 
-              {/* Middle Box (RTL Index 1 in image: بسم‌الله شیرزی - رئیس هیئت نظار - FILLED DARK BLUE) */}
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg flex flex-col justify-center min-h-[90px] transform sm:-translate-y-1 ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.boardMembers[1]?.name || '', data.boardMembers[1]?.title || '', data.boardMembers[1]?.id || '')}`}>
-                <div className="text-base sm:text-lg font-black tracking-tight">{data.boardMembers[1]?.name || 'بسم‌الله شیرزی'}</div>
-                <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.boardMembers[1]?.title || 'رئیس هیئت نظار'}</div>
+              {/* Middle Box (RTL Index 1: بسم‌الله شیرزی - رئیس هیئت نظار - FILLED DARK BLUE) */}
+              <div>
+                {renderInteractiveNodeCard({
+                  node: data.boardMembers[1] || { id: 'bm-2', name: 'بسم‌الله شیرزی', title: 'رئیس هیئت نظار' },
+                  variant: 'board',
+                  isDark: true,
+                  badgeText: 'رئیس نظار',
+                  customClass: 'transform sm:-translate-y-1'
+                })}
               </div>
 
-              {/* Left Box (RTL Index 2 in image: عظیم‌الله رحمانی - عضو هیئت نظار) */}
-              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeCardAnimationClass(false)} ${getNodeHighlightClass(data.boardMembers[0]?.name || '', data.boardMembers[0]?.title || '', data.boardMembers[0]?.id || '')}`}>
-                <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{data.boardMembers[0]?.name || 'عظیم‌الله رحمانی'}</div>
-                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1">{data.boardMembers[0]?.title || 'عضو هیئت نظار'}</div>
+              {/* Left Box (RTL Index 2: عظیم‌الله رحمانی - عضو هیئت نظار) */}
+              <div>
+                {renderInteractiveNodeCard({
+                  node: data.boardMembers[0] || { id: 'bm-1', name: 'عظیم‌الله رحمانی', title: 'عضو هیئت نظار' },
+                  variant: 'board',
+                  isDark: false,
+                  badgeText: 'هیئت نظار'
+                })}
               </div>
             </div>
 
@@ -571,18 +1129,26 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             </div>
 
             {/* LEVEL 3: Executive Managers (2 Filled Dark Blue Boxes) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto items-start">
               
               {/* Right Box (RTL: صالح‌محمد - مسئول عملیاتی) */}
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.executives[1]?.name || '', data.executives[1]?.title || '', data.executives[1]?.id || '')}`}>
-                <div className="text-base sm:text-lg font-black tracking-tight">{data.executives[1]?.name || 'صالح‌محمد'}</div>
-                <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.executives[1]?.title || 'مسئول عملیاتی'}</div>
+              <div>
+                {renderInteractiveNodeCard({
+                  node: data.executives[1] || { id: 'exec-2', name: 'صالح‌محمد', title: 'مسئول عملیاتی' },
+                  variant: 'executive',
+                  isDark: true,
+                  badgeText: 'مدیریت شعب و حواله‌ها'
+                })}
               </div>
 
               {/* Left Box (RTL: محمد فهیم - مسئول پیروی از قوانین) */}
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.executives[0]?.name || '', data.executives[0]?.title || '', data.executives[0]?.id || '')}`}>
-                <div className="text-base sm:text-lg font-black tracking-tight">{data.executives[0]?.name || 'محمد فهیم'}</div>
-                <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.executives[0]?.title || 'مسئول پیروی از قوانین'}</div>
+              <div>
+                {renderInteractiveNodeCard({
+                  node: data.executives[0] || { id: 'exec-1', name: 'محمد فهیم', title: 'مسئول پیروی از قوانین' },
+                  variant: 'executive',
+                  isDark: true,
+                  badgeText: 'AML/CFT Compliance'
+                })}
               </div>
             </div>
 
@@ -596,7 +1162,6 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
 
             {/* Clean connector down from Operations Manager to Provincial Branches */}
             <div className="flex flex-col items-center relative mb-2">
-              {/* Line dropping from Operations Manager (RTL right column box) */}
               <div className="w-full max-w-2xl flex justify-end pr-[25%] sm:pr-[25%]">
                 <div className="w-0.5 h-6 bg-[#1e3a8a] dark:bg-blue-400"></div>
               </div>
@@ -611,28 +1176,16 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
               {data.branches.map((br) => (
-                <div 
-                  key={br.id}
-                  className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 text-center shadow-sm flex flex-col justify-between space-y-2 min-h-[120px] ${getNodeCardAnimationClass(false)} ${getNodeHighlightClass(br.name, br.title, br.id)}`}
-                >
-                  <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-1.5 flex flex-col items-center">
-                    <span>{br.name}</span>
-                    <span className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 mt-1">
-                      گزارش‌دهی: مسئول عملیاتی
-                    </span>
-                  </div>
-                  
-                  <div className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                    {br.title}
-                  </div>
-
-                  {br.staff && br.staff.length > 0 && (
-                    <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 pt-1 border-t border-dashed border-slate-200 dark:border-slate-800">
-                      {br.staff.join(' · ')}
-                    </div>
-                  )}
+                <div key={br.id}>
+                  {renderInteractiveNodeCard({
+                    node: br,
+                    variant: 'branch',
+                    isDark: false,
+                    badgeText: 'نمایندگی رسمی',
+                    subtitleOverride: br.title
+                  })}
                 </div>
               ))}
             </div>
@@ -687,3 +1240,4 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
     </div>
   );
 }
+
