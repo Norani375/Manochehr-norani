@@ -162,6 +162,16 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
       : 'opacity-30 transition-all duration-300';
   };
 
+  const getNodeCardAnimationClass = (isDarkBg: boolean = false) => {
+    return `transition-all duration-300 ease-out hover:scale-[1.04] sm:hover:scale-[1.05] hover:shadow-2xl hover:z-20 cursor-pointer ${
+      isEditMode 
+        ? 'hover:ring-2 hover:ring-emerald-400 hover:border-emerald-500' 
+        : isDarkBg 
+          ? 'hover:ring-2 hover:ring-blue-300 hover:brightness-105' 
+          : 'hover:ring-2 hover:ring-blue-400 hover:border-blue-600'
+    }`;
+  };
+
   // Sync with Firestore
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -481,7 +491,7 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             
             {/* LEVEL 1: President Box (Centered Dark Blue Box) */}
             <div className="flex flex-col items-center relative">
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl px-8 py-5 text-center shadow-lg border border-blue-900 min-w-[240px] sm:min-w-[280px] ${getNodeHighlightClass(data.president.name, data.president.title, data.president.id)}`}>
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl px-8 py-5 text-center shadow-lg border border-blue-900 min-w-[240px] sm:min-w-[280px] ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.president.name, data.president.title, data.president.id)}`}>
                 <div className="text-lg sm:text-xl font-black tracking-tight">{data.president.name}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.president.title}</div>
               </div>
@@ -504,19 +514,19 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto items-stretch">
               
               {/* Right Box (RTL Index 0 in image: برکت‌الله - عضو هیئت نظار) */}
-              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeHighlightClass(data.boardMembers[2]?.name || '', data.boardMembers[2]?.title || '', data.boardMembers[2]?.id || '')}`}>
+              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeCardAnimationClass(false)} ${getNodeHighlightClass(data.boardMembers[2]?.name || '', data.boardMembers[2]?.title || '', data.boardMembers[2]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{data.boardMembers[2]?.name || 'برکت‌الله'}</div>
                 <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1">{data.boardMembers[2]?.title || 'عضو هیئت نظار'}</div>
               </div>
 
               {/* Middle Box (RTL Index 1 in image: بسم‌الله شیرزی - رئیس هیئت نظار - FILLED DARK BLUE) */}
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg flex flex-col justify-center min-h-[90px] transform sm:-translate-y-1 ${getNodeHighlightClass(data.boardMembers[1]?.name || '', data.boardMembers[1]?.title || '', data.boardMembers[1]?.id || '')}`}>
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg flex flex-col justify-center min-h-[90px] transform sm:-translate-y-1 ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.boardMembers[1]?.name || '', data.boardMembers[1]?.title || '', data.boardMembers[1]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black tracking-tight">{data.boardMembers[1]?.name || 'بسم‌الله شیرزی'}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.boardMembers[1]?.title || 'رئیس هیئت نظار'}</div>
               </div>
 
               {/* Left Box (RTL Index 2 in image: عظیم‌الله رحمانی - عضو هیئت نظار) */}
-              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeHighlightClass(data.boardMembers[0]?.name || '', data.boardMembers[0]?.title || '', data.boardMembers[0]?.id || '')}`}>
+              <div className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 sm:p-5 text-center shadow-sm flex flex-col justify-center min-h-[90px] ${getNodeCardAnimationClass(false)} ${getNodeHighlightClass(data.boardMembers[0]?.name || '', data.boardMembers[0]?.title || '', data.boardMembers[0]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{data.boardMembers[0]?.name || 'عظیم‌الله رحمانی'}</div>
                 <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 mt-1">{data.boardMembers[0]?.title || 'عضو هیئت نظار'}</div>
               </div>
@@ -536,13 +546,13 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
               
               {/* Right Box (RTL: صالح‌محمد - مسئول عملیاتی) */}
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeHighlightClass(data.executives[1]?.name || '', data.executives[1]?.title || '', data.executives[1]?.id || '')}`}>
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.executives[1]?.name || '', data.executives[1]?.title || '', data.executives[1]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black tracking-tight">{data.executives[1]?.name || 'صالح‌محمد'}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.executives[1]?.title || 'مسئول عملیاتی'}</div>
               </div>
 
               {/* Left Box (RTL: محمد فهیم - مسئول پیروی از قوانین) */}
-              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeHighlightClass(data.executives[0]?.name || '', data.executives[0]?.title || '', data.executives[0]?.id || '')}`}>
+              <div className={`bg-[#1e3a8a] text-white rounded-2xl p-4 sm:p-5 text-center shadow-lg ${getNodeCardAnimationClass(true)} ${getNodeHighlightClass(data.executives[0]?.name || '', data.executives[0]?.title || '', data.executives[0]?.id || '')}`}>
                 <div className="text-base sm:text-lg font-black tracking-tight">{data.executives[0]?.name || 'محمد فهیم'}</div>
                 <div className="text-xs sm:text-sm font-semibold text-blue-100 mt-1">{data.executives[0]?.title || 'مسئول پیروی از قوانین'}</div>
               </div>
@@ -577,7 +587,7 @@ export default function OrgChartCanvas({ customLogo , companyId = "default" }: O
               {data.branches.map((br) => (
                 <div 
                   key={br.id}
-                  className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 text-center shadow-sm flex flex-col justify-between space-y-2 min-h-[120px] ${getNodeHighlightClass(br.name, br.title, br.id)}`}
+                  className={`bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] rounded-2xl p-4 text-center shadow-sm flex flex-col justify-between space-y-2 min-h-[120px] ${getNodeCardAnimationClass(false)} ${getNodeHighlightClass(br.name, br.title, br.id)}`}
                 >
                   <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-1.5 flex flex-col items-center">
                     <span>{br.name}</span>
