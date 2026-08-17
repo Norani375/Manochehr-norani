@@ -1,8 +1,63 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
+
+    // Helper functions for data validation
+    function hasValidTimestamp() {
+      return request.time != null;
+    }
+
+    // Personnel collection rules
+    match /personnel/{personnelKey} {
+      allow read: if true;
+      allow create, update: if request.resource.data.name is string 
+                            && request.resource.data.title is string;
+      allow delete: if true;
+    }
+
+    // Employee records rules
+    match /employees/{employeeId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.fullName is string 
+                            && request.resource.data.position is string;
+      allow delete: if true;
+    }
+
+    // Compliance reports (STR, LCTR, Audit)
+    match /compliance_reports/{reportId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.title is string 
+                            && request.resource.data.type is string
+                            && request.resource.data.reportNumber is string;
+      allow delete: if true;
+    }
+
+    // Regulatory Directives (DAB circulars)
+    match /regulatory_directives/{directiveId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.title is string 
+                            && request.resource.data.directiveNo is string;
+      allow delete: if true;
+    }
+
+    // Authority Submissions (FinTRACA / DAB submissions)
+    match /regulatory_submissions/{submissionId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.submissionCode is string 
+                            && request.resource.data.reportId is string;
+      allow delete: if true;
+    }
+
+    // System and document settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Company-scoped collections if multi-tenant
+    match /companies/{companyId}/{document=**} {
       allow read, write: if true;
     }
   }
 }
+

@@ -21,6 +21,7 @@ import OrgChartCanvas from '@/components/OrgChartCanvas';
 import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
+import ComplianceReporting from '@/components/ComplianceReporting';
 import { useCompany } from '@/lib/companyContext';
 import { useAuth } from '@/lib/AuthContext';
 import { 
@@ -153,7 +154,7 @@ export default function OrgChartPage() {
   const [newPassword, setNewPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<'org-chart' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'license-renewal-checklist' | 'branch-renewal-checklist' | 'employees' | 'company-articles' | 'company-proposal'>('org-chart');
+  const [activeTab, setActiveTab] = useState<'org-chart' | 'compliance-reporting' | 'guarantee-form' | 'branch-renewal' | 'license-renewal' | 'license-renewal-letter' | 'meeting-minutes' | 'license-checklist' | 'license-renewal-checklist' | 'branch-renewal-checklist' | 'employees' | 'company-articles' | 'company-proposal'>('org-chart');
   const [personnel, setPersonnel] = useState<PersonnelNode[]>(DEFAULT_ORG_DATA);
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'contrast'>('light');
@@ -778,6 +779,7 @@ export default function OrgChartPage() {
             </div>
             <nav className="space-y-1">
               {[
+                { id: 'compliance-reporting', icon: ShieldCheck, label: 'سامانه رعایت قوانین و گزارش‌دهی DAB', color: 'text-emerald-500' },
                 { id: 'org-chart', icon: Network, label: 'چارت تشکیلاتی و ساختار سازمانی', color: 'text-blue-500' },
                 { id: 'meeting-minutes', icon: ClipboardList, label: 'صورت‌جلسه مجمع عمومی', color: 'text-orange-500' },
                 { id: 'license-renewal-letter', icon: Stamp, label: 'مکتوب رسمی تمدید جواز (DAB)', color: 'text-indigo-500' },
@@ -919,7 +921,13 @@ export default function OrgChartPage() {
       {/* Main Content View Area */}
       <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-x-auto">
         {/* Conditional Content Rendering */}
-        {activeTab === 'guarantee-form' ? (
+        {activeTab === 'compliance-reporting' ? (
+          <ComplianceReporting 
+            customLogo={customLogo} 
+            companyId={activeCompanyId}
+            isEditMode={isEditMode}
+          />
+        ) : activeTab === 'guarantee-form' ? (
           <DabGuaranteeForm 
             isEditMode={isEditMode} 
             customLogo={customLogo} 

@@ -93,6 +93,56 @@
         "updatedAt": { "type": "string" }
       },
       "required": ["fullName", "position"]
+    },
+    "ComplianceReport": {
+      "title": "Compliance Report",
+      "description": "Regulatory and AML/CFT compliance report for DAB / FinTRACA",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reportNumber": { "type": "string" },
+        "type": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "type": "string" },
+        "severity": { "type": "string" },
+        "complianceOfficer": { "type": "string" },
+        "branchName": { "type": "string" },
+        "narrativeFindings": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "reportNumber", "type", "title"]
+    },
+    "RegulatoryDirective": {
+      "title": "Regulatory Directive",
+      "description": "Da Afghanistan Bank regulatory circular, directive or rule tracking record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "directiveNo": { "type": "string" },
+        "title": { "type": "string" },
+        "issuingAuthority": { "type": "string" },
+        "category": { "type": "string" },
+        "companyComplianceStatus": { "type": "string" },
+        "complianceDeadline": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "directiveNo", "title"]
+    },
+    "AuthoritySubmission": {
+      "title": "Authority Submission",
+      "description": "Log of formal report submissions to Da Afghanistan Bank / FinTRACA",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "submissionCode": { "type": "string" },
+        "reportId": { "type": "string" },
+        "reportTitle": { "type": "string" },
+        "targetAuthority": { "type": "string" },
+        "status": { "type": "string" },
+        "submissionDate": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "submissionCode", "reportId"]
     }
   },
   "firestore": {
@@ -107,6 +157,24 @@
         "$ref": "#/entities/EmployeeRecord"
       },
       "description": "Comprehensive employee records for management and official forms"
+    },
+    "/compliance_reports/{reportId}": {
+      "schema": {
+        "$ref": "#/entities/ComplianceReport"
+      },
+      "description": "AML/CFT Suspicious Transaction and Large Cash Transaction reports"
+    },
+    "/regulatory_directives/{directiveId}": {
+      "schema": {
+        "$ref": "#/entities/RegulatoryDirective"
+      },
+      "description": "Directives, circulars and regulatory updates issued by DAB"
+    },
+    "/regulatory_submissions/{submissionId}": {
+      "schema": {
+        "$ref": "#/entities/AuthoritySubmission"
+      },
+      "description": "Submissions and receipt acknowledgments from DAB and FinTRACA"
     },
     "/settings/company": {
       "schema": {

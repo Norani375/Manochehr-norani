@@ -487,3 +487,214 @@ export async function seedEmployees(employees: EmployeeRecord[], companyId: stri
     console.error('Seeding failed:', error);
   }
 }
+
+// ----------------------------------------------------
+// Compliance & Regulatory Reporting Models and Methods
+// ----------------------------------------------------
+
+export type ComplianceReportType = 'STR' | 'LCTR' | 'AML_PERIODIC' | 'SANCTIONS_AUDIT' | 'KYC_RISK_AUDIT';
+export type ComplianceReportStatus = 'draft' | 'under_review' | 'approved' | 'submitted_to_dab' | 'archived';
+export type ComplianceSeverity = 'normal' | 'medium' | 'high' | 'critical';
+
+export interface SubjectDetails {
+  fullName: string;
+  fatherName?: string;
+  tazkiraOrPassport: string;
+  phone: string;
+  address: string;
+  nationality: string;
+  occupation: string;
+  tinOrBusinessReg?: string;
+  isPEP?: boolean;
+}
+
+export interface TransactionDetails {
+  amount: number;
+  currency: string;
+  amountAfnEquivalent: number;
+  transactionDate: string;
+  transactionType: 'buy_currency' | 'sell_currency' | 'domestic_remittance' | 'international_hawala' | 'cash_deposit';
+  originCity: string;
+  destinationCity: string;
+  receiverName?: string;
+  receiverPhone?: string;
+  sourceOfFunds?: string;
+  purposeOfTransaction?: string;
+}
+
+export interface ComplianceReport {
+  id: string;
+  reportNumber: string;
+  type: ComplianceReportType;
+  title: string;
+  reportingPeriod: string;
+  date: string;
+  status: ComplianceReportStatus;
+  severity: ComplianceSeverity;
+  complianceOfficer: string;
+  branchName: string;
+  subjectDetails: SubjectDetails;
+  transactionDetails: TransactionDetails;
+  indicators: string[];
+  narrativeFindings: string;
+  riskRating: ComplianceSeverity;
+  actionTaken: string;
+  submissionRefNo?: string;
+  submissionDate?: string;
+  authorityTarget: 'DAB_NON_BANK' | 'FinTRACA' | 'GENERAL_SUPERVISION';
+  attachments?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RegulatoryDirective {
+  id: string;
+  directiveNo: string;
+  title: string;
+  issuingAuthority: string;
+  issueDate: string;
+  effectiveDate: string;
+  complianceDeadline: string;
+  category: 'AML_CFT' | 'CAPITAL_REQ' | 'BRANCH_RULES' | 'SANCTIONS' | 'REPORTING_TIMELINE' | 'TECH_SYSTEMS';
+  priority: 'urgent' | 'high' | 'medium' | 'normal';
+  summary: string;
+  actionItems: string[];
+  companyComplianceStatus: 'compliant' | 'in_progress' | 'action_required' | 'under_review';
+  assignedOfficer: string;
+  notes: string;
+  updatedAt: string;
+}
+
+export interface AuthoritySubmission {
+  id: string;
+  submissionCode: string;
+  reportId: string;
+  reportTitle: string;
+  reportType: ComplianceReportType;
+  targetAuthority: string;
+  submissionMethod: 'OFFICIAL_LETTER' | 'SECURE_DAB_PORTAL' | 'PHYSICAL_SUBMISSION' | 'EMAIL_ENCRYPTED';
+  submissionDate: string;
+  officialDispatchNo: string;
+  incomingDabRefNo?: string;
+  status: 'submitted' | 'received_by_dab' | 'clarification_requested' | 'accepted' | 'closed';
+  receiptNotes?: string;
+  submittedBy: string;
+  updatedAt: string;
+}
+
+// Compliance Reports CRUD
+export async function saveComplianceReport(report: ComplianceReport, companyId: string = 'default') {
+  const path = `companies/${companyId}/compliance_reports/${report.id}`;
+  try {
+    await setDoc(doc(db, `companies/${companyId}/compliance_reports`, report.id), {
+      ...report,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+export async function deleteComplianceReport(id: string, companyId: string = 'default') {
+  const path = `companies/${companyId}/compliance_reports/${id}`;
+  try {
+    await deleteDoc(doc(db, `companies/${companyId}/compliance_reports`, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+export function subscribeComplianceReports(callback: (reports: ComplianceReport[]) => void, companyId: string = 'default') {
+  const path = `companies/${companyId}/compliance_reports`;
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const list: ComplianceReport[] = [];
+      snapshot.forEach((docSnap) => {
+        list.push(docSnap.data() as ComplianceReport);
+      });
+      callback(list);
+    },
+    (error) => {
+      handleFirestoreError(error, OperationType.GET, path);
+    }
+  );
+}
+
+// Regulatory Directives CRUD
+export async function saveRegulatoryDirective(directive: RegulatoryDirective, companyId: string = 'default') {
+  const path = `companies/${companyId}/regulatory_directives/${directive.id}`;
+  try {
+    await setDoc(doc(db, `companies/${companyId}/regulatory_directives`, directive.id), {
+      ...directive,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+export async function deleteRegulatoryDirective(id: string, companyId: string = 'default') {
+  const path = `companies/${companyId}/regulatory_directives/${id}`;
+  try {
+    await deleteDoc(doc(db, `companies/${companyId}/regulatory_directives`, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+export function subscribeRegulatoryDirectives(callback: (directives: RegulatoryDirective[]) => void, companyId: string = 'default') {
+  const path = `companies/${companyId}/regulatory_directives`;
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const list: RegulatoryDirective[] = [];
+      snapshot.forEach((docSnap) => {
+        list.push(docSnap.data() as RegulatoryDirective);
+      });
+      callback(list);
+    },
+    (error) => {
+      handleFirestoreError(error, OperationType.GET, path);
+    }
+  );
+}
+
+// Authority Submissions CRUD
+export async function saveAuthoritySubmission(submission: AuthoritySubmission, companyId: string = 'default') {
+  const path = `companies/${companyId}/regulatory_submissions/${submission.id}`;
+  try {
+    await setDoc(doc(db, `companies/${companyId}/regulatory_submissions`, submission.id), {
+      ...submission,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+export async function deleteAuthoritySubmission(id: string, companyId: string = 'default') {
+  const path = `companies/${companyId}/regulatory_submissions/${id}`;
+  try {
+    await deleteDoc(doc(db, `companies/${companyId}/regulatory_submissions`, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+export function subscribeAuthoritySubmissions(callback: (submissions: AuthoritySubmission[]) => void, companyId: string = 'default') {
+  const path = `companies/${companyId}/regulatory_submissions`;
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const list: AuthoritySubmission[] = [];
+      snapshot.forEach((docSnap) => {
+        list.push(docSnap.data() as AuthoritySubmission);
+      });
+      callback(list);
+    },
+    (error) => {
+      handleFirestoreError(error, OperationType.GET, path);
+    }
+  );
+}
