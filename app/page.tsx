@@ -22,6 +22,9 @@ import CompanyLogoModal from '@/components/CompanyLogoModal';
 import ExportPdfModal from '@/components/ExportPdfModal';
 import PrintPreviewModal from '@/components/PrintPreviewModal';
 import ComplianceReporting from '@/components/ComplianceReporting';
+import BatchExportModal, { ALL_BATCH_DOCUMENTS } from '@/components/BatchExportModal';
+import BatchExportStaging from '@/components/BatchExportStaging';
+import { PackageCheck, FileStack } from 'lucide-react';
 import { useCompany } from '@/lib/companyContext';
 import { useAuth } from '@/lib/AuthContext';
 import { 
@@ -312,6 +315,17 @@ export default function OrgChartPage() {
   const [exportInitialFormat, setExportInitialFormat] = useState<'pdf' | 'word'>('pdf');
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isBatchExportModalOpen, setIsBatchExportModalOpen] = useState(false);
+  const [batchSelectedIds, setBatchSelectedIds] = useState<string[]>([
+    'license-renewal-letter',
+    'meeting-minutes',
+    'org-chart',
+    'license-renewal',
+    'branch-renewal',
+    'guarantee-form',
+    'license-renewal-checklist',
+  ]);
+  const [batchDocsMeta, setBatchDocsMeta] = useState<{ id: string; title: string; category: string }[]>([]);
 
   const handleOpenExport = (format: 'pdf' | 'word' = 'pdf') => {
     setExportInitialFormat(format);
@@ -829,6 +843,28 @@ export default function OrgChartPage() {
         </div>
 
         <div className="p-6 pt-0 space-y-4">
+          {/* Featured Batch Export Button */}
+          <button
+            onClick={() => {
+              setIsBatchExportModalOpen(true);
+              setIsMobileSidebarOpen(false);
+            }}
+            className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-blue-950 via-blue-900 to-indigo-950 hover:from-blue-900 hover:to-indigo-900 text-white rounded-2xl border border-blue-700/60 shadow-lg shadow-blue-950/20 transition-all group cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-blue-800 text-amber-400 rounded-xl group-hover:scale-105 transition-transform shadow-xs">
+                <PackageCheck className="w-4 h-4" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-black">خروجی دسته‌جمعی (Batch PDF)</div>
+                <div className="text-[10px] text-blue-200/80">ادغام اسناد در یک فایل یکپارچه</div>
+              </div>
+            </div>
+            <span className="text-[10px] font-black bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full shadow-xs">
+              پکیج DAB
+            </span>
+          </button>
+
           {/* Quick Actions */}
           <div className="grid grid-cols-3 gap-1.5">
             <button
@@ -1748,6 +1784,31 @@ export default function OrgChartPage() {
         onOpenPdfExport={() => {
           setIsPrintPreviewOpen(false);
           setIsPdfModalOpen(true);
+        }}
+      />
+
+      {/* Off-screen Document Staging for Batch PDF Compilation */}
+      <BatchExportStaging
+        selectedDocIds={batchSelectedIds}
+        customLogo={customLogo}
+        companyId={activeCompanyId}
+        includeCoverPage={true}
+        companyName={companies.find((c) => c.id === activeCompanyId)?.name || 'شرکت صرافی و خدمات پولی برکت‌الله غفوری'}
+        licenseNumber="DAB/7-0965"
+        issueDate={issueDate}
+        selectedDocsMeta={batchDocsMeta}
+      />
+
+      {/* Batch Export PDF Modal */}
+      <BatchExportModal
+        isOpen={isBatchExportModalOpen}
+        onClose={() => setIsBatchExportModalOpen(false)}
+        companyName={companies.find((c) => c.id === activeCompanyId)?.name || 'شرکت صرافی و خدمات پولی برکت‌الله غفوری'}
+        licenseNumber="DAB/7-0965"
+        issueDate={issueDate}
+        onSelectedDocsChange={(selectedIds, meta) => {
+          setBatchSelectedIds(selectedIds);
+          setBatchDocsMeta(meta);
         }}
       />
     </div>
