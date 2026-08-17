@@ -43,13 +43,13 @@ export interface OrgChartData {
 }
 
 const DEFAULT_ORG_CHART_DATA: OrgChartData = {
-  headerTitle: 'چارت تشکیلاتی',
-  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری',
-  companySubEng: 'Barakatullah Ghafouri Money Exchange & MSP Services Co. — DAB Official Standard',
+  headerTitle: 'چارت تشکیلاتی و ساختار سازمانی مصوب',
+  companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)',
+  companySubEng: 'Barakatullah Ghafouri Money Exchange & MSP Services Co. — Approved Organizational Structure (DAB)',
   
   president: {
     id: 'pres-1',
-    name: 'برکت‌الله',
+    name: 'برکت‌الله غفوری',
     title: 'رئیس و سهمدار اصلی (100٪ سرمایه)',
     bgType: 'dark',
     phone: '0799112030',

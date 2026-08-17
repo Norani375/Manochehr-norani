@@ -614,9 +614,9 @@ export default function DabBranchRenewalChecklist({
           <div className="flex flex-col items-center text-center border-b-2 border-slate-900 pb-6 space-y-3 relative">
             <div className="flex items-center justify-between w-full">
               <div className="text-right text-[11px] font-bold space-y-1">
-                <p>د افغانستان بانک</p>
-                <p>آمریت عمومی نظارت بر موسسات مالی غیر بانکی</p>
-                <p>مدیریت جوازدهی صرافی ها و خدمات پولی</p>
+                <p className="text-xs font-black text-blue-900">د افغانستان بانک — Da Afghanistan Bank</p>
+                <p>آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی</p>
+                <p className="text-slate-600">مدیریت جوازدهی نمایندگی‌ها</p>
               </div>
 
               <div className="flex flex-col items-center">
@@ -635,14 +635,13 @@ export default function DabBranchRenewalChecklist({
               </div>
 
               <div className="text-left text-[11px] font-mono font-bold space-y-1 dir-ltr">
-                <p>Branch Renewal Checklist</p>
+                <p className="text-teal-900">Branch Renewal Checklist</p>
                 <p>License: {branchData.licenseNo}</p>
               </div>
             </div>
 
-            <h1 className="text-xl font-black text-slate-900 mt-2 leading-relaxed">
-              چک لست جمع آوری اسناد جواز تمدید نمایندگی شرکت صرافی و خدمات پولی{" "}
-              {branchData.companyName}
+            <h1 className="text-xl sm:text-2xl font-black text-slate-950 mt-2 leading-relaxed">
+              چک‌لیست معیاری اسناد و شرایط تمدید جواز فعالیت نمایندگی‌های ولایتی
             </h1>
 
             <div className="inline-block bg-teal-50 border border-teal-300 px-6 py-2 rounded-2xl text-xs font-black text-teal-950 shadow-xs">

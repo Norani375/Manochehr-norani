@@ -77,14 +77,34 @@
     }
 
     /* Prevent breaking inside signature boxes, cards, and data tables */
-    table, tr, td, th,
+    table, tr, td, th, tbody, thead,
     .dab-signature-box,
     .dab-section-card,
     #dab-official-form,
     #dab-branch-renewal-form,
-    #dab-license-renewal-form {
+    #dab-license-renewal-form,
+    #meeting-minutes-canvas,
+    #company-articles-canvas,
+    #company-proposal-canvas,
+    #license-checklist-canvas,
+    #dab-license-renewal-checklist-canvas,
+    #dab-branch-renewal-checklist-canvas,
+    #dab-license-renewal-letter-canvas,
+    #org-chart-exact-canvas,
+    #employee-management-cv-canvas {
       page-break-inside: avoid !important;
       break-inside: avoid !important;
+    }
+
+    /* Keep table rows and headers intact without breaking across pages */
+    tr, th, td {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    h1, h2, h3, h4 {
+      page-break-after: avoid !important;
+      break-after: avoid !important;
     }
 
     /* Crisp black borders for official tables */
@@ -93,7 +113,8 @@
     }
 
     /* Specific print layout for org chart canvas */
-    #org-chart-export-canvas {
+    #org-chart-export-canvas,
+    #org-chart-exact-canvas {
       width: 100% !important;
       max-width: 100% !important;
       padding: 2px !important;

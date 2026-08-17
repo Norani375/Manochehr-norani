@@ -363,17 +363,18 @@ export default function MeetingMinutes({
             )}
           </div>
 
-          <div className="text-center space-y-2">
-            <h1 className="text-xl font-black text-slate-900">صورتجلسه مجمع عمومی فوق‌العاده و عادی سالانه</h1>
-            <div className="text-xs font-bold text-slate-700">{data.companyName} (جواز: <span className="font-mono ltr inline-block">{data.licenseNo}</span>)</div>
-            {data.previousCompanyName && (
-              <div className="text-[11px] font-semibold text-slate-500">
-                (سابق: {data.previousCompanyName})
-              </div>
-            )}
-            <p className="text-[11px] font-bold text-slate-600">{data.companyAddress}</p>
-            <div className="inline-block bg-slate-100 border border-slate-300 text-slate-900 px-6 py-1 rounded-full text-xs font-black mt-1">
-              سند رسمی و مصوبه لازم‌الاجرای مجمع عمومی
+          <div className="text-center space-y-1.5">
+            <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
+              د افغانستان بانک — Da Afghanistan Bank (DAB)
+            </div>
+            <div className="text-[11px] font-bold text-slate-600">
+              آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-950 pt-1">
+              صورت‌جلسه مجمع عمومی فوق‌العاده و عادی سالانه
+            </h1>
+            <div className="text-sm font-bold text-slate-800">
+              {data.companyName} (جواز صرافی: <span className="font-mono ltr inline-block font-bold">{data.licenseNo}</span>)
             </div>
           </div>
         </div>

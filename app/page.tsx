@@ -778,18 +778,18 @@ export default function OrgChartPage() {
             </div>
             <nav className="space-y-1">
               {[
-                { id: 'org-chart', icon: Network, label: 'چارت تشکیلاتی', color: 'text-blue-500' },
-                { id: 'guarantee-form', icon: FileText, label: 'تعهدنامه سهمدار', color: 'text-amber-500' },
-                { id: 'branch-renewal', icon: Building2, label: 'تمدید نمایندگی', color: 'text-emerald-500' },
-                { id: 'license-renewal', icon: ShieldCheck, label: 'تمدید جواز شرکت', color: 'text-purple-500' },
-                { id: 'license-renewal-letter', icon: Stamp, label: 'مکتوب رسمی', color: 'text-indigo-500' },
-                { id: 'company-proposal', icon: FileText, label: 'پیشنهاد به هیئت نظار', color: 'text-rose-500' },
-                { id: 'meeting-minutes', icon: ClipboardList, label: 'صورتجلسات', color: 'text-orange-500' },
-                { id: 'license-checklist', icon: ClipboardCheck, label: 'چک‌لست صدور جواز', color: 'text-pink-500' },
-                { id: 'license-renewal-checklist', icon: RefreshCw, label: 'چک‌لست تمدید جواز', color: 'text-emerald-600' },
-                { id: 'branch-renewal-checklist', icon: GitBranch, label: 'چک‌لست تمدید نمایندگی', color: 'text-teal-600' },
-                { id: 'employees', icon: Users, label: 'مدیریت کارمندان', color: 'text-teal-500' },
-                { id: 'company-articles', icon: BookOpen, label: 'اساسنامه شرکت', color: 'text-amber-600' },
+                { id: 'org-chart', icon: Network, label: 'چارت تشکیلاتی و ساختار سازمانی', color: 'text-blue-500' },
+                { id: 'meeting-minutes', icon: ClipboardList, label: 'صورت‌جلسه مجمع عمومی', color: 'text-orange-500' },
+                { id: 'license-renewal-letter', icon: Stamp, label: 'مکتوب رسمی تمدید جواز (DAB)', color: 'text-indigo-500' },
+                { id: 'license-renewal', icon: ShieldCheck, label: 'فورم تمدید جواز مرکز (فورم ۱)', color: 'text-purple-500' },
+                { id: 'branch-renewal', icon: Building2, label: 'فورم تمدید نمایندگی‌ها (فورم ۲)', color: 'text-emerald-500' },
+                { id: 'company-proposal', icon: FileText, label: 'پیشنهاد معرفی هیئت نظار', color: 'text-rose-500' },
+                { id: 'company-articles', icon: BookOpen, label: 'اساسنامه معیاری شرکت', color: 'text-amber-600' },
+                { id: 'license-renewal-checklist', icon: RefreshCw, label: 'چک‌لیست تمدید جواز مرکز', color: 'text-emerald-600' },
+                { id: 'branch-renewal-checklist', icon: GitBranch, label: 'چک‌لیست تمدید نمایندگی‌ها', color: 'text-teal-600' },
+                { id: 'license-checklist', icon: ClipboardCheck, label: 'چک‌لیست صدور جواز اولیه', color: 'text-pink-500' },
+                { id: 'guarantee-form', icon: FileText, label: 'تعهدنامه و تضمین‌خط سهمدار', color: 'text-amber-500' },
+                { id: 'employees', icon: Users, label: 'خلص سوانح و مدیریت کارمندان', color: 'text-teal-500' },
               ].map((item) => (
                 <button
                   key={item.id}

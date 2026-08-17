@@ -227,12 +227,14 @@ function sanitizeDocumentColors(doc: Document) {
 
 /**
  * High quality client-side PDF export with standard margins compliant for DAB
+ * Features intelligent multi-page slicing so tall documents (Meeting Minutes, Articles, Forms)
+ * never break or get clipped/distorted across pages.
  */
 export async function exportElementToPdf({
   elementId,
   filename = 'چارت_سازمانی_شرکت_برکت_الله_غفوری_د_افغانستان_بانک.pdf',
   paperSize = 'a4',
-  orientation = 'landscape',
+  orientation = 'portrait',
   marginMm = 10,
   qualityScale = 2.5,
 }: PdfExportOptions): Promise<boolean> {
@@ -258,14 +260,14 @@ export async function exportElementToPdf({
         sanitizeDocumentColors(clonedDoc);
         const clonedElement = clonedDoc.getElementById(elementId);
         if (clonedElement) {
-          clonedElement.style.padding = '20px';
+          clonedElement.style.padding = '24px';
           clonedElement.style.backgroundColor = '#ffffff';
           clonedElement.style.color = '#0f172a';
+          clonedElement.style.boxShadow = 'none';
+          clonedElement.style.borderRadius = '0px';
         }
       },
     });
-
-    const imgData = canvas.toDataURL('image/png', 1.0);
 
     const pdf = new jsPDF({
       orientation: orientation,
@@ -285,19 +287,71 @@ export async function exportElementToPdf({
     const imgWidthMm = (canvas.width * 0.264583) / qualityScale;
     const imgHeightMm = (canvas.height * 0.264583) / qualityScale;
 
-    // Calculate scaling factor to fit within printable area
+    // Scale to fit page width
     const widthScale = printableWidth / imgWidthMm;
-    const heightScale = printableHeight / imgHeightMm;
-    const scaleFactor = Math.min(widthScale, heightScale, 1.0); // Don't enlarge beyond 100%
+    const scaledCanvasHeightMm = imgHeightMm * widthScale;
+    const scaledCanvasWidthMm = printableWidth;
 
-    const finalWidthMm = imgWidthMm * scaleFactor;
-    const finalHeightMm = imgHeightMm * scaleFactor;
+    // If height fits on a single page or slightly over (with 10% tolerance), fit to 1 page
+    if (scaledCanvasHeightMm <= printableHeight * 1.12) {
+      const heightScale = printableHeight / imgHeightMm;
+      const singlePageScale = Math.min(widthScale, heightScale, 1.0);
+      const finalWidthMm = imgWidthMm * singlePageScale;
+      const finalHeightMm = imgHeightMm * singlePageScale;
 
-    // Center horizontally and top/center vertically with standard margin offset
-    const xPos = marginMm + (printableWidth - finalWidthMm) / 2;
-    const yPos = marginMm + (printableHeight - finalHeightMm) / 2;
+      const xPos = marginMm + (printableWidth - finalWidthMm) / 2;
+      const yPos = marginMm + (printableHeight - finalHeightMm) / 2;
 
-    pdf.addImage(imgData, 'PNG', xPos, yPos, finalWidthMm, finalHeightMm, undefined, 'FAST');
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      pdf.addImage(imgData, 'PNG', xPos, yPos, finalWidthMm, finalHeightMm, undefined, 'FAST');
+    } else {
+      // Multi-page document export (e.g. detailed minutes, articles, multi-section forms)
+      // Slice canvas vertically page by page without distortion or text overlaps
+      const pageHeightPx = Math.floor((printableHeight / (0.264583 * widthScale)) * qualityScale);
+      let renderedHeightPx = 0;
+      let pageIndex = 0;
+
+      while (renderedHeightPx < canvas.height) {
+        const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedHeightPx);
+        
+        // Create an offscreen canvas for each clean page slice
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeightPx;
+        const ctx = pageCanvas.getContext('2d');
+
+        if (ctx) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+          ctx.drawImage(
+            canvas,
+            0,
+            renderedHeightPx,
+            canvas.width,
+            sliceHeightPx,
+            0,
+            0,
+            canvas.width,
+            sliceHeightPx
+          );
+
+          const pageImgData = pageCanvas.toDataURL('image/png', 1.0);
+          const sliceHeightMm = (sliceHeightPx * 0.264583 * widthScale) / qualityScale;
+
+          if (pageIndex > 0) {
+            pdf.addPage(paperSize, orientation);
+          }
+
+          const xPos = marginMm;
+          const yPos = marginMm;
+
+          pdf.addImage(pageImgData, 'PNG', xPos, yPos, scaledCanvasWidthMm, sliceHeightMm, undefined, 'FAST');
+        }
+
+        renderedHeightPx += sliceHeightPx;
+        pageIndex++;
+      }
+    }
 
     pdf.save(filename);
     return true;

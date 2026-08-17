@@ -187,7 +187,13 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
             )}
           </div>
 
-          <div>
+          <div className="space-y-1.5">
+            <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
+              د افغانستان بانک — Da Afghanistan Bank
+            </div>
+            <div className="text-[11px] font-bold text-slate-500">
+              چارچوب معیاری و اصولنامه تجارت افغانستان
+            </div>
             {isEditing ? (
               <input
                 type="text"
@@ -196,12 +202,20 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
                 className="text-xl sm:text-2xl font-black text-center w-full border-b border-blue-500 bg-blue-50/50 py-1 font-sans"
               />
             ) : (
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{data.companyName}</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight pt-1">{data.companyName}</h1>
             )}
+            <div className="text-[11px] font-mono font-medium text-slate-500 ltr">
+              Barakatullah Ghafouri Money Exchange & MSP Services Co.
+            </div>
           </div>
 
           <div className="pt-2">
-            <h2 className="text-base sm:text-lg font-bold text-slate-700">اساسنامه شرکت صرافی و خدمات پولی</h2>
+            <h2 className="text-base sm:text-lg font-black text-slate-900">
+              اساسنامه معیاری شرکت صرافی و خدمات پولی (سهامی خاص)
+            </h2>
+            <p className="text-[11px] font-bold text-slate-600 mt-0.5">
+              Articles of Association — Money Services Provider & Currency Exchange Co.
+            </p>
           </div>
 
           <div className="text-xs text-slate-600 pt-2 flex flex-wrap items-center justify-center gap-4 font-sans">

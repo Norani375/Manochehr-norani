@@ -515,14 +515,17 @@ export default function DabBranchRenewalForm({
           </div>
 
           <div className="text-center mb-3">
-            <h1 className="text-lg font-black text-slate-900 mb-1">د افغانستان بانک</h1>
+            <h1 className="text-xl font-black text-slate-900 mb-1">د افغانستان بانک — Da Afghanistan Bank</h1>
             <h2 className="text-base font-extrabold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-            <h3 className="text-sm font-bold text-slate-700 mb-1">مدیریت جوازدهی</h3>
-            <p className="text-xs font-bold text-blue-950">شرکت صرافی و خدمات پولی برکت‌الله غفوری</p>
+            <h3 className="text-sm font-bold text-slate-700 mb-1">مدیریت جوازدهی نمایندگی‌ها</h3>
+            <p className="text-xs font-bold text-blue-950 mt-1">شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)</p>
           </div>
 
-          <div className="inline-block bg-slate-100 border border-slate-400 font-extrabold text-slate-900 px-6 py-2 rounded-lg text-base mt-1">
-            فورم تمدید نماینده گی شرکت صرافی و خدمات پولی
+          <div className="inline-block bg-slate-100 border-2 border-slate-700 font-black text-slate-950 px-6 py-2 rounded-xl text-base mt-1 shadow-xs">
+            فورم شماره (۲) — فورم درخواستی تمدید جواز نمایندگی‌های شرکت صرافی و خدمات پولی
+          </div>
+          <div className="text-[11px] font-mono text-slate-500 font-bold mt-1 ltr">
+            Form No. 2: Branch License Renewal Application Form
           </div>
           <p className="text-xs text-slate-600 mt-3 font-semibold bg-amber-50 border border-amber-200 p-2 rounded-lg inline-block text-amber-900">
             رهنمود عمومی: این فورم با امضاء مسئول عملیاتی شرکت صرافی و خدمات پولی به مدیریت جواز دهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی و یا زون مربوطه، ارائه می گردد.

@@ -402,7 +402,7 @@ export default function CompanyProposal({ customLogo, companyId = 'default' }: C
         className="bg-white text-slate-950 p-6 sm:p-12 border border-slate-300 rounded-[2rem] shadow-xl text-xs sm:text-sm print:shadow-none print:border-none print:p-0 print:m-0 font-sans leading-relaxed dir-rtl space-y-8"
       >
         {/* Company Header with Logo */}
-        <div className="text-center space-y-2 border-b border-slate-200 pb-6">
+        <div className="text-center space-y-1.5 border-b border-slate-200 pb-6">
           {customLogo ? (
             <img src={customLogo} alt="Logo" className="w-20 h-20 mx-auto object-contain mb-2" />
           ) : (
@@ -412,11 +412,17 @@ export default function CompanyProposal({ customLogo, companyId = 'default' }: C
             </div>
           )}
           
+          <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
+            د افغانستان بانک — Da Afghanistan Bank
+          </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
             {data.companyName}
           </h1>
+          <div className="text-sm font-extrabold text-slate-800">
+            پیشنهاد رسمی و احکام مجمع عمومی در خصوص تعیین هیئت نظار
+          </div>
           <p className="text-xs font-bold text-slate-600">
-            جواز شماره: <span className="font-mono text-blue-900">{data.licenseNo}</span> | {data.companyAddress}
+            جواز شماره: <span className="font-mono text-blue-900 font-bold">{data.licenseNo}</span> | {data.companyAddress}
           </p>
         </div>
 

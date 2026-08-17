@@ -555,8 +555,11 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
 
           {/* Central Title Badge */}
           <div className="text-center mt-3">
-            <div className="inline-block bg-emerald-50 border-2 border-emerald-700 text-emerald-950 font-black text-sm px-6 py-1.5 rounded-xl">
-              مکتوب تمدید جواز
+            <div className="inline-block bg-emerald-50 border-2 border-emerald-700 text-emerald-950 font-black text-sm px-6 py-1.5 rounded-xl shadow-xs">
+              مکتوب رسمی تقاضای تمدید جواز فعالیت مرکز و نمایندگی‌ها
+            </div>
+            <div className="text-[11px] font-bold text-slate-600 mt-1">
+              (مطابق مقرره و ضوابط نظارتی د افغانستان بانک)
             </div>
           </div>
 

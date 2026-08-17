@@ -547,13 +547,16 @@ export default function DabLicenseRenewalForm({
           </div>
 
           <div className="text-center mb-3">
-            <h1 className="text-lg font-black text-slate-900 mb-1">د افغانستان بانک</h1>
+            <h1 className="text-xl font-black text-slate-900 mb-1">د افغانستان بانک — Da Afghanistan Bank</h1>
             <h2 className="text-base font-extrabold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-            <h3 className="text-sm font-bold text-slate-700 mb-1">مدیریت جوازدهی</h3>
+            <h3 className="text-sm font-bold text-slate-700 mb-1">مدیریت جوازدهی صرافی‌ها و خدمات پولی</h3>
           </div>
 
-          <div className="inline-block bg-slate-100 border border-slate-400 font-extrabold text-slate-900 px-6 py-2 rounded-lg text-base mt-1">
-            فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی
+          <div className="inline-block bg-slate-100 border-2 border-slate-700 font-black text-slate-950 px-6 py-2 rounded-xl text-base mt-1 shadow-xs">
+            فورم شماره (۱) — فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی (دفتر مرکزی)
+          </div>
+          <div className="text-[11px] font-mono text-slate-500 font-bold mt-1 ltr">
+            Form No. 1: Central Office MSP License Renewal Application Form
           </div>
           <p className="text-xs text-slate-600 mt-3 font-semibold bg-amber-50 border border-amber-200 p-2.5 rounded-lg inline-block text-amber-900 leading-relaxed text-right">
             رهنمود عمومی: این فورم باید با حضور سهمدار/سهمداران در مقابل کارمند مسئول در مدیریت جوازدهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی یا در حضور داشت کارمند مسئول در آمریت زون مربوط/مدیریت نمایندگی در ولایات امضاء و شصتگذاری گردد. کارمند مسئول خود را مطمئن سازد که فورم درخواستی حسب اسناد و مدارک مربوط خانهپُری گردیده و توسط شخص خود سهمدار/سهمداران امضاء و شصتگذاری میگردد.

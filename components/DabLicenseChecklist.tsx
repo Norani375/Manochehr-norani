@@ -304,9 +304,17 @@ export default function DabLicenseChecklist({ isEditMode: initialEditMode = true
               )}
             </div>
           </div>
-          <h1 className="text-xl font-black text-slate-900 mt-4">فورم موجودیت اسناد و شرایط برای صدور جواز فعالیت شرکت صرافی و خدمات پولی</h1>
-          <div className="inline-block bg-amber-50 border border-amber-200 px-6 py-1 rounded-full text-xs font-black text-amber-900">
-            چک لست معلومات ( {data.companyName} )
+          <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
+            د افغانستان بانک — Da Afghanistan Bank
+          </div>
+          <div className="text-[11px] font-bold text-slate-600">
+            آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی — مدیریت جوازدهی
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-950 mt-2">
+            چک‌لیست معیاری اسناد و شرایط صدور جواز فعالیت شرکت صرافی و خدمات پولی
+          </h1>
+          <div className="inline-block bg-amber-50 border border-amber-300 px-6 py-1.5 rounded-full text-xs font-black text-amber-950">
+            چک‌لیست اطلاعات شرکت صرافی و خدمات پولی ({data.companyName}) — جواز شماره (<span className="font-mono ltr inline-block">{data.licenseNo}</span>)
           </div>
         </div>
 
