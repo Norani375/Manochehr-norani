@@ -58,6 +58,7 @@ export interface DabRenewalDocumentRecord {
   status: RenewalDocumentStatus;
   fileName?: string;
   storagePath?: string;
+  downloadUrl?: string;
   documentNo?: string;
   issueDate?: string;
   expiryDate?: string;
