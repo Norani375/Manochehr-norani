@@ -131,7 +131,7 @@ export interface DabRenewalDocumentRecord {
  * Conditional requirements are mandatory only when their condition applies.
  */
 export function canSubmitDabRenewal(
-  documents: RenewalDocumentRecord[],
+  documents: DabRenewalDocumentRecord[],
   majorChanges: boolean,
 ): { ok: boolean; missing: string[] } {
   const missing: string[] = [];
