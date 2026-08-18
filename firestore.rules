@@ -1,63 +1,70 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions for data validation
-    function hasValidTimestamp() {
-      return request.time != null;
+    function signedIn() {
+      return request.auth != null;
     }
 
-    // Personnel collection rules
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function sameCompany(companyId) {
+      return signedIn() && request.auth.token.companyId == companyId;
+    }
+
+    function companyAccess(companyId) {
+      return isAdmin() || sameCompany(companyId);
+    }
+
+    function hasString(field) {
+      return field in request.resource.data && request.resource.data[field] is string;
+    }
+
     match /personnel/{personnelKey} {
-      allow read: if true;
-      allow create, update: if request.resource.data.name is string 
-                            && request.resource.data.title is string;
-      allow delete: if true;
+      allow read: if signedIn();
+      allow create, update: if signedIn() && hasString('name') && hasString('title');
+      allow delete: if isAdmin();
     }
 
-    // Employee records rules
     match /employees/{employeeId} {
-      allow read: if true;
-      allow create, update: if request.resource.data.fullName is string 
-                            && request.resource.data.position is string;
-      allow delete: if true;
+      allow read: if signedIn();
+      allow create, update: if signedIn() && hasString('fullName') && hasString('position');
+      allow delete: if isAdmin();
     }
 
-    // Compliance reports (STR, LCTR, Audit)
     match /compliance_reports/{reportId} {
-      allow read: if true;
-      allow create, update: if request.resource.data.title is string 
-                            && request.resource.data.type is string
-                            && request.resource.data.reportNumber is string;
-      allow delete: if true;
+      allow read: if signedIn();
+      allow create, update: if signedIn() && hasString('title') && hasString('type') && hasString('reportNumber');
+      allow delete: if isAdmin();
     }
 
-    // Regulatory Directives (DAB circulars)
     match /regulatory_directives/{directiveId} {
-      allow read: if true;
-      allow create, update: if request.resource.data.title is string 
-                            && request.resource.data.directiveNo is string;
-      allow delete: if true;
+      allow read: if signedIn();
+      allow create, update: if signedIn() && hasString('title') && hasString('directiveNo');
+      allow delete: if isAdmin();
     }
 
-    // Authority Submissions (FinTRACA / DAB submissions)
     match /regulatory_submissions/{submissionId} {
-      allow read: if true;
-      allow create, update: if request.resource.data.submissionCode is string 
-                            && request.resource.data.reportId is string;
-      allow delete: if true;
+      allow read: if signedIn();
+      allow create, update: if signedIn() && hasString('submissionCode') && hasString('reportId');
+      allow delete: if isAdmin();
     }
 
-    // System and document settings
     match /settings/{settingId} {
-      allow read: if true;
-      allow write: if true;
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
-    // Company-scoped collections if multi-tenant
     match /companies/{companyId}/{document=**} {
-      allow read, write: if true;
+      allow read, write: if companyAccess(companyId);
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
-
