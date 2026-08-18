@@ -36,9 +36,7 @@ service cloud.firestore {
 
     match /renewal_audit_logs/{logId} {
       allow read: if isAdmin() || (signedIn() && resource.data.companyId == request.auth.token.companyId);
-      allow create: if isAdmin()
-        && request.resource.data.companyId == request.auth.token.companyId
-        && hasString('applicationId') && hasString('from') && hasString('to') && hasString('by') && hasString('at');
+      allow create: if isAdmin() && hasString('companyId') && hasString('applicationId') && hasString('from') && hasString('to') && hasString('by') && hasString('at');
       allow update, delete: if false;
     }
 
