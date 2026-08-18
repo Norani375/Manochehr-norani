@@ -53,15 +53,30 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Legacy global settings remain admin-only.
-    // DAB renewal settings below are explicitly company-scoped.
+    // Renewal settings are company-scoped.
+    // verifiedKeys is the protected reviewer record. Only an admin can change it.
     match /settings/{settingId} {
       allow read: if isAdmin()
         || (signedIn() && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
         || (signedIn() && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId);
-      allow write: if isAdmin()
-        || (signedIn() && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
-        || (signedIn() && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId);
+
+      allow create: if isAdmin()
+        || (signedIn()
+          && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
+        || (signedIn()
+          && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId
+          && request.resource.data.companyId == request.auth.token.companyId
+          && (!('verifiedKeys' in request.resource.data) || request.resource.data.verifiedKeys.size() == 0));
+
+      allow update: if isAdmin()
+        || (signedIn()
+          && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
+        || (signedIn()
+          && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId
+          && request.resource.data.companyId == request.auth.token.companyId
+          && request.resource.data.verifiedKeys == resource.data.verifiedKeys);
+
+      allow delete: if isAdmin();
     }
 
     match /companies/{companyId}/{document=**} {
