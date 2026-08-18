@@ -2,6 +2,7 @@
 
 import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
 import DabRenewalCompliancePanel from '@/components/DabRenewalCompliancePanel';
+import DabRenewalApplicationWorkflow from '@/components/DabRenewalApplicationWorkflow';
 import { useCompany } from '@/lib/companyContext';
 
 export default function DabRenewalPage() {
@@ -12,6 +13,7 @@ export default function DabRenewalPage() {
       <div className="mx-auto max-w-6xl space-y-6">
         <DabLicenseRenewalForm companyId={activeCompanyId} />
         <DabRenewalCompliancePanel companyId={activeCompanyId} />
+        <DabRenewalApplicationWorkflow companyId={activeCompanyId} />
       </div>
     </main>
   );
