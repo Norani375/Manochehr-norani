@@ -102,11 +102,18 @@ export function getDabOfficialFormPrefill(form: DabOfficialFormDefinition): DabF
       });
       break;
     case 'employee-signature-samples':
-    case 'employee-introduction-letter':
+    case 'employee-introduction-letter': {
+      const staffDetails: string[] = [];
+      profile.branches.forEach((branch) => {
+        branch.staff.forEach((staff) => {
+          staffDetails.push(`${staff.name} ولد ${staff.fatherName} — ${staff.education}`);
+        });
+      });
       Object.assign(values, {
-        details: profile.branches.flatMap((branch) => branch.staff).map((staff) => `${staff.name} ولد ${staff.fatherName} — ${staff.education}`).join('\n'),
+        details: staffDetails.join('\n'),
       });
       break;
+    }
     default:
       break;
   }
