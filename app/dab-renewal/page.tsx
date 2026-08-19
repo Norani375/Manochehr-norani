@@ -1,6 +1,6 @@
 'use client';
 
-import DabLicenseRenewalForm from '@/components/DabLicenseRenewalForm';
+import DabOfficialCompanyRenewalForm from '@/components/DabOfficialCompanyRenewalForm';
 import DabRenewalCompliancePanel from '@/components/DabRenewalCompliancePanel';
 import DabRenewalApplicationWorkflow from '@/components/DabRenewalApplicationWorkflow';
 import DabRenewalCommandCenter from '@/components/DabRenewalCommandCenter';
@@ -13,7 +13,7 @@ export default function DabRenewalPage() {
     <main className="min-h-screen bg-slate-50 p-4 sm:p-6">
       <div className="mx-auto max-w-6xl space-y-6">
         <DabRenewalCommandCenter companyId={activeCompanyId} />
-        <DabLicenseRenewalForm companyId={activeCompanyId} />
+        <DabOfficialCompanyRenewalForm companyId={activeCompanyId} />
         <DabRenewalCompliancePanel companyId={activeCompanyId} />
         <DabRenewalApplicationWorkflow companyId={activeCompanyId} />
       </div>
