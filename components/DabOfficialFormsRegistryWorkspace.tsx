@@ -139,7 +139,7 @@ export default function DabOfficialFormsRegistryWorkspace({ companyId = 'default
               <div className="mb-5 rounded-xl border p-4">
                 <h3 className="mb-3 font-bold">اسناد لازم برای تمدید جواز</h3>
                 <div className="grid gap-2 md:grid-cols-2">
-                  {DAB_RENEWAL_REQUIRED_DOCUMENTS.map((item) => <div key={item.key} className="rounded-lg bg-slate-50 p-3 text-sm"><strong>{item.title}</strong><div className="text-xs text-slate-500">{item.legalBasis}{item.quantity ? ` — ${item.quantity} قطعه` : ''}</div></div>)}
+                  {DAB_RENEWAL_REQUIRED_DOCUMENTS.map((item) => <div key={item.key} className="rounded-lg bg-slate-50 p-3 text-sm"><strong>{item.title}</strong><div className="text-xs text-slate-500">{item.legalBasis}{'quantity' in item && item.quantity ? ` — ${item.quantity} قطعه` : ''}</div></div>)}
                 </div>
               </div>
             )}
