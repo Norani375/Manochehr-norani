@@ -1,9 +1,9 @@
 'use client';
 
-import DabCompleteRenewalWorkspace from '@/components/DabCompleteRenewalWorkspace';
+import DabAllOfficialFormsWorkspace from '@/components/DabAllOfficialFormsWorkspace';
 import { useCompany } from '@/lib/companyContext';
 
 export default function DabRenewalPage() {
   const { activeCompanyId } = useCompany();
-  return <DabCompleteRenewalWorkspace companyId={activeCompanyId} />;
+  return <DabAllOfficialFormsWorkspace companyId={activeCompanyId} />;
 }
