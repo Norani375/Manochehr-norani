@@ -6,6 +6,7 @@ import { collection, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { calculateCaseCompleteness, type DABRenewalCase, type DABParty, type DABDocumentRecord } from '@/lib/dabRenewalDomain';
 import DabRenewalCaseOverview from './DabRenewalCaseOverview';
+import DabRenewalOfficialReport from './DabRenewalOfficialReport';
 
 export default function DabRenewalCommandCenter({ companyId }: { companyId?: string }) {
   const [caseFile, setCaseFile] = useState<DABRenewalCase>({
@@ -47,5 +48,6 @@ export default function DabRenewalCommandCenter({ companyId }: { companyId?: str
       {cards.map(([label, value, Icon]) => <div key={label} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><Icon className="h-5 w-5 text-slate-600" /><p className="mt-2 text-xs font-bold text-slate-500">{label}</p><p className="mt-1 font-black text-slate-900">{value}</p></div>)}
     </div>
     <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm font-bold text-slate-700">آمادگی پرونده: {completeness.completed} از {completeness.total} بخش اصلی تکمیل است.</div>
+    <DabRenewalOfficialReport caseFile={caseFile} />
   </div>;
 }
