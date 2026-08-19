@@ -65,7 +65,7 @@ export const barakatullahGhafouriProfile = {
     { name: 'عظیم‌الله رحمانی', fatherName: 'محمد آجان', role: 'عضو هیئت نظار', identityNo: '1399-1105-35806', education: 'لیسانس' },
     { name: 'صالح‌محمد رحیمی', fatherName: 'عبدالرحیم', role: 'مسئول عملیاتی', identityNo: '1402-0201-48424', education: 'لیسانس', tin: '9020613858' },
   ],
-  complianceOfficer: { name: 'عبدالعزیز محرزاد', fatherName: 'عبدالخلیل', identityNo: '1401-0300-72198', education: 'لیسانس اداره و تجارت' },
+  complianceOfficer: { name: 'عبدالعزیز مهرزاد', fatherName: 'عبدالخلیل', identityNo: '72198-0300-1401', education: 'لیسانس اداره و تجارت' },
   meetingAttendees: [
     { name: 'برکت‌الله ولد عبدالغفور', role: 'سهمدار اصلی، مالک 100٪ سرمایه و رئیس مجمع', identityNo: '55522-1104-1001399' },
     { name: 'بسم‌الله شیرزی', role: 'رئیس جدید هیئت نظار', identityNo: '34210-0201-0087654' },
