@@ -2,90 +2,58 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function isAdmin() {
-      return signedIn() && request.auth.token.admin == true;
-    }
-
-    function sameCompany(companyId) {
-      return signedIn() && request.auth.token.companyId == companyId;
-    }
-
-    function companyAccess(companyId) {
-      return isAdmin() || sameCompany(companyId);
-    }
-
-    function hasString(field) {
-      return field in request.resource.data && request.resource.data[field] is string;
-    }
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
+    function sameCompany(companyId) { return signedIn() && request.auth.token.companyId == companyId; }
+    function companyAccess(companyId) { return isAdmin() || sameCompany(companyId); }
+    function hasString(field) { return field in request.resource.data && request.resource.data[field] is string; }
 
     match /personnel/{personnelKey} {
       allow read: if signedIn();
       allow create, update: if signedIn() && hasString('name') && hasString('title');
       allow delete: if isAdmin();
     }
-
     match /employees/{employeeId} {
       allow read: if signedIn();
       allow create, update: if signedIn() && hasString('fullName') && hasString('position');
       allow delete: if isAdmin();
     }
-
     match /compliance_reports/{reportId} {
       allow read: if signedIn();
       allow create, update: if signedIn() && hasString('title') && hasString('type') && hasString('reportNumber');
       allow delete: if isAdmin();
     }
-
     match /regulatory_directives/{directiveId} {
       allow read: if signedIn();
       allow create, update: if signedIn() && hasString('title') && hasString('directiveNo');
       allow delete: if isAdmin();
     }
-
     match /regulatory_submissions/{submissionId} {
       allow read: if signedIn();
       allow create, update: if signedIn() && hasString('submissionCode') && hasString('reportId');
       allow delete: if isAdmin();
     }
-
-    // Renewal settings are company-scoped.
-    // verifiedKeys is the protected reviewer record. Only an admin can change it.
+    match /renewal_audit_logs/{logId} {
+      allow read: if isAdmin() || (signedIn() && resource.data.companyId == request.auth.token.companyId);
+      allow create: if isAdmin() && hasString('companyId') && hasString('applicationId') && hasString('from') && hasString('to') && hasString('by') && hasString('at');
+      allow update, delete: if false;
+    }
     match /settings/{settingId} {
       allow read: if isAdmin()
         || (signedIn() && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
         || (signedIn() && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId);
-
       allow create: if isAdmin()
-        || (signedIn()
-          && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
-        || (signedIn()
-          && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId
-          && request.resource.data.companyId == request.auth.token.companyId
-          && (!('verifiedKeys' in request.resource.data) || request.resource.data.verifiedKeys.size() == 0));
-
+        || (signedIn() && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
+        || (signedIn() && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId && request.resource.data.companyId == request.auth.token.companyId && (!('verifiedKeys' in request.resource.data) || request.resource.data.verifiedKeys.size() == 0));
       allow update: if isAdmin()
-        || (signedIn()
-          && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
-        || (signedIn()
-          && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId
-          && request.resource.data.companyId == request.auth.token.companyId
-          && request.resource.data.verifiedKeys == resource.data.verifiedKeys);
-
+        || (signedIn() && settingId == 'license_renewal_form_v1_' + request.auth.token.companyId)
+        || (signedIn() && settingId == 'dab_renewal_compliance_v1_' + request.auth.token.companyId && request.resource.data.companyId == request.auth.token.companyId && request.resource.data.verifiedKeys == resource.data.verifiedKeys);
       allow delete: if isAdmin();
     }
-
     match /companies/{companyId}/{document=**} {
       allow read, write: if companyAccess(companyId);
       allow delete: if isAdmin();
     }
-
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    match /{document=**} { allow read, write: if false; }
   }
 }
