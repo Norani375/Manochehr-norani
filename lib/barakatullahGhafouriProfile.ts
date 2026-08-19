@@ -42,6 +42,12 @@ export const barakatullahGhafouriProfile = {
       no: '4', location: 'امام‌صاحب', market: '', shopNo: '', district: '', village: '', representative: 'محمدیوسف', representativeFather: '', identityNo: '', phone: '', education: '', staff: [{ name: 'عبدالمجید', fatherName: '', identityNo: '', education: '', role: 'خزانه‌دار' }],
     },
   ],
+  representatives: [
+    { location: 'کابل', representative: 'اجمل احمدی' },
+    { location: 'تخار', representative: 'رحمت‌الله رحیمی' },
+    { location: 'کشم، بدخشان', representative: 'عتیق‌الله' },
+    { location: 'امام‌صاحب', representative: 'محمدیوسف' },
+  ],
   shareholders: [{ name: 'برکت‌الله غفوری', fatherName: 'عبدالغفور', identityNo: '1399-1104-55522', sharePercent: 100, capital: 30000000, education: 'لیسانس' }],
   formerShareholders: [{ name: 'حبیب‌الرحمن غفوری', identityNo: '98712-1104-0043215', transferredPercent: 100 }],
   board: {
