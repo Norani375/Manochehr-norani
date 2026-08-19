@@ -21,26 +21,14 @@ export const barakatullahGhafouriProfile = {
   letterDate: '1405/02/20',
   articlesDate: 'جوزا 1405',
   branches: [
-    {
-      no: '1', location: 'کابل', market: 'مارکیت سرای شهزاده', shopNo: '188', district: 'ناحیه اول',
-      representative: 'اجمل احمدی', representativeFather: 'نورآغا', identityNo: '1400-107-46338', phone: '', education: 'لیسانس',
-      staff: [
-        { name: 'محمد بشیر', fatherName: 'عبدالکریم', identityNo: '1398-1102-45211', education: '۱۴ پاس', tin: '9012345678' },
-        { name: 'احسان‌الله', fatherName: 'غلام‌حضرت', identityNo: '1401-0901-33214', education: 'لیسانس', tin: '9022341122' },
-        { name: 'نجیب‌الله', fatherName: 'فضل‌احمد', identityNo: '1402-0504-88912', education: 'دوازدهم', tin: '' },
-      ],
-    },
-    {
-      no: '2', location: 'تخار', market: 'صرافی صرافان', shopNo: '12', district: 'تالقان', village: 'مرکز',
-      representative: 'رحمت‌الله رحیمی', representativeFather: 'محمد مراد', identityNo: '1400-1305-16532', phone: '0788165320', education: 'بکلوریا (۱۲ پاس)',
-      staff: [{ name: 'عبیدالله', fatherName: '', identityNo: '', education: '', role: 'خزانه‌دار' }],
-    },
-    {
-      no: '3', location: 'کشم، بدخشان', market: '', shopNo: '', district: '', village: '', representative: 'عتیق‌الله', representativeFather: '', identityNo: '', phone: '', education: '', staff: [],
-    },
-    {
-      no: '4', location: 'امام‌صاحب', market: '', shopNo: '', district: '', village: '', representative: 'محمدیوسف', representativeFather: '', identityNo: '', phone: '', education: '', staff: [{ name: 'عبدالمجید', fatherName: '', identityNo: '', education: '', role: 'خزانه‌دار' }],
-    },
+    { no: '1', location: 'کابل', market: 'مارکیت سرای شهزاده', shopNo: '188', district: 'ناحیه اول', representative: 'اجمل احمدی', representativeFather: 'نورآغا', identityNo: '1400-107-46338', phone: '', education: 'لیسانس', staff: [
+      { name: 'محمد بشیر', fatherName: 'عبدالکریم', identityNo: '1398-1102-45211', education: '۱۴ پاس', tin: '9012345678' },
+      { name: 'احسان‌الله', fatherName: 'غلام‌حضرت', identityNo: '1401-0901-33214', education: 'لیسانس', tin: '9022341122' },
+      { name: 'نجیب‌الله', fatherName: 'فضل‌احمد', identityNo: '1402-0504-88912', education: 'دوازدهم', tin: '' },
+    ] },
+    { no: '2', location: 'تخار', market: 'صرافی صرافان', shopNo: '12', district: 'تالقان', village: 'مرکز', representative: 'رحمت‌الله رحیمی', representativeFather: 'محمد مراد', identityNo: '1400-1305-16532', phone: '0788165320', education: 'بکلوریا (۱۲ پاس)', staff: [{ name: 'عبیدالله', fatherName: '', identityNo: '', education: '', role: 'خزانه‌دار' }] },
+    { no: '3', location: 'کشم، بدخشان', market: '', shopNo: '', district: '', village: '', representative: 'عتیق‌الله', representativeFather: '', identityNo: '', phone: '', education: '', staff: [] },
+    { no: '4', location: 'امام‌صاحب', market: '', shopNo: '', district: '', village: '', representative: 'محمدیوسف', representativeFather: '', identityNo: '', phone: '', education: '', staff: [{ name: 'عبدالمجید', fatherName: '', identityNo: '', education: '', role: 'خزانه‌دار' }] },
   ],
   representatives: [
     { location: 'کابل', representative: 'اجمل احمدی' },
@@ -80,9 +68,7 @@ export const barakatullahGhafouriProfile = {
     { name: 'عبدالقادر', fatherName: '', identityNo: '', phone: '', province: 'کندز', district: 'مرکز', neighborhood: 'مرکز', village: '', business: 'عبدالقادر' },
     { name: '', fatherName: '', identityNo: '', phone: '', province: '', district: '', neighborhood: '', village: '', business: '' },
   ],
-  guarantorBusiness: {
-    name: 'عبدالقادر', type: 'صرافی و خدمات پولی (MSP)', licenseNo: 'DAB/7-1112', phone: '۰۷۴۴۷۶۱۹۴۳', expiryDate: '24-04-1406', email: '', issuer: 'دافغانستان بانک', address: 'ولایت کندز، مارکیت مهمند، منزل دوم، دکان نمبر ۵۴',
-  },
+  guarantorBusiness: { name: 'عبدالقادر', type: 'صرافی و خدمات پولی (MSP)', licenseNo: 'DAB/7-1112', phone: '۰۷۴۴۷۶۱۹۴۳', expiryDate: '24-04-1406', email: '', issuer: 'دافغانستان بانک', address: 'ولایت کندز، مارکیت مهمند، منزل دوم، دکان نمبر ۵۴' },
   resolutions: [
     'انتقال 100٪ اسهام حبیب‌الرحمن غفوری به برکت‌الله غفوری',
     'تغییر نام شرکت از «ستاره آسیا» به «برکت‌الله غفوری»',
@@ -103,7 +89,7 @@ export const barakatullahGhafouriProfile = {
     ['رئیس هیئت نظار', 'سهمدار / مجمع عمومی'],
     ['عضو هیئت نظار', 'سهمدار / مجمع عمومی'],
     ['مسئول عملیاتی', 'عضو هیئت نظار (برکت‌الله)'],
-    ['مسئول پیروی از قوانین', 'عضو هیئت نظار (برکت‌الله) — با استقلال انطباقی'],
+    ['مسئول پیروی از قوانین', 'عبدالعزیز مهرزاد ولد عبدالخلیل — تذکره 72198-0300-1401 — با استقلال انطباقی'],
     ['نماینده‌ها و نمایندگی‌های ولایتی', 'مسئول عملیاتی (صالح‌محمد رحیمی)'],
     ['کارکنان نمایندگی‌ها', 'نماینده مربوطه، زیر نظر مسئول عملیاتی'],
   ],
