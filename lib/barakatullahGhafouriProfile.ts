@@ -53,7 +53,7 @@ export const barakatullahGhafouriProfile = {
     ],
   },
   management: [
-    { name: 'برکت‌الله غفوری', fatherName: 'عبدالغفور', role: 'رئیس و سهمدار اصلی', identityNo: '1399-1104-55522', education: 'لیسانس' },
+    { name: 'برکت‌الله غفوری', fatherName: 'عبدالغفور', role: 'سهمدار اصلی و عضو هیئت نظار', identityNo: '1399-1104-55522', education: 'لیسانس' },
     { name: 'بسم‌الله شیرزی', fatherName: 'دوستمحمد', role: 'رئیس هیئت نظار', identityNo: '1402-0902-45188', education: 'لیسانس' },
     { name: 'برکت‌الله غفوری', fatherName: 'عبدالغفور', role: 'عضو هیئت نظار', identityNo: '1399-1104-55522', education: 'لیسانس', tin: '9005155800' },
     { name: 'عظیم‌الله رحمانی', fatherName: 'محمد آجان', role: 'عضو هیئت نظار', identityNo: '1399-1105-35806', education: 'لیسانس' },
