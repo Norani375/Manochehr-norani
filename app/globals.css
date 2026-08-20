@@ -10,6 +10,53 @@ main header img[alt="لوگوی شرکت"] {
   object-fit: contain !important;
 }
 
+/* Standard DAB and company form document layout */
+.dab-form-document,
+.dab-official-form,
+.company-form-document,
+.form-document {
+  width: 100%;
+  max-width: 210mm;
+  margin-inline: auto;
+  direction: rtl;
+  text-align: right;
+  background: #fff;
+}
+
+.dab-form-header,
+.form-document-header,
+.company-form-header {
+  width: 100%;
+  text-align: center;
+  direction: rtl;
+}
+
+.dab-form-header img,
+.form-document-header img,
+.company-form-header img {
+  display: block !important;
+  margin-inline: auto !important;
+  object-fit: contain !important;
+}
+
+/* English branding must not appear as a second visual header. */
+.dab-form-header .english-name,
+.dab-form-header .english-title,
+.dab-form-header [data-language="en"],
+.form-document-header .english-name,
+.form-document-header .english-title,
+.form-document-header [data-language="en"] {
+  display: none !important;
+}
+
+/* Company-issued forms do not show DAB department lines. */
+.company-form-header .dab-bank,
+.company-form-header .dab-department,
+.company-form-header .dab-directorate,
+.company-form-header [data-header-type="dab"] {
+  display: none !important;
+}
+
 @layer utilities {
   @media print {
     @page {
@@ -47,7 +94,6 @@ main header img[alt="لوگوی شرکت"] {
       display: none !important;
     }
 
-    /* Batch staging container is only printed if specifically triggered */
     #batch-export-staging-container.hidden {
       display: none !important;
     }
@@ -73,7 +119,6 @@ main header img[alt="لوگوی شرکت"] {
       display: none !important;
     }
 
-    /* Top-level document containers: allow natural pagination across A4 sheets */
     #dab-license-renewal-canvas,
     #dab-branch-renewal-canvas,
     [id^="dab-branch-renewal-canvas-"],
@@ -88,7 +133,11 @@ main header img[alt="لوگوی شرکت"] {
     #compliance-reporting-canvas,
     #employee-management-cv-canvas,
     #org-chart-exact-canvas,
-    #org-chart-export-canvas {
+    #org-chart-export-canvas,
+    .dab-form-document,
+    .dab-official-form,
+    .company-form-document,
+    .form-document {
       width: 100% !important;
       max-width: 100% !important;
       margin: 0 auto !important;
@@ -105,7 +154,30 @@ main header img[alt="لوگوی شرکت"] {
       max-height: none !important;
     }
 
-    /* Prevent awkward fractures/breaks inside sections, cards, rows, signatures, and blocks */
+    .dab-form-header,
+    .form-document-header,
+    .company-form-header {
+      width: 100% !important;
+      text-align: center !important;
+      direction: rtl !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    .dab-form-header img,
+    .form-document-header img,
+    .company-form-header img,
+    img[alt="لوگوی شرکت"],
+    img[alt="Logo"] {
+      display: block !important;
+      margin-inline: auto !important;
+      max-width: 32mm !important;
+      max-height: 32mm !important;
+      object-fit: contain !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
     tr, th, td, tbody,
     .dab-signature-box,
     .dab-section-card,
@@ -127,8 +199,6 @@ main header img[alt="لوگوی شرکت"] {
     .rounded-xl,
     .rounded-2xl,
     .rounded-lg,
-    .p-3, .p-4, .p-5, .p-6, .p-8, .p-10,
-    .mb-6, .mb-8,
     .grid > *,
     .flex-col > *,
     .space-y-3 > *,
@@ -140,28 +210,21 @@ main header img[alt="لوگوی شرکت"] {
       -webkit-column-break-inside: avoid !important;
     }
 
-    /* Section headers & titles must stay attached to following content */
     h1, h2, h3, h4, h5, h6,
     .section-title,
     .card-title,
     thead,
     label,
-    legend,
-    [class*="bg-slate-900"],
-    [class*="bg-blue-900"],
-    [class*="bg-slate-800"] {
+    legend {
       page-break-after: avoid !important;
       break-after: avoid !important;
-      -webkit-column-break-after: avoid !important;
     }
 
-    /* Paragraph & list text orphan/widow protection */
     p, li, blockquote, dt, dd {
       orphans: 3 !important;
       widows: 3 !important;
     }
 
-    /* Force clean page breaks when explicitly requested */
     .break-after-page,
     .page-break,
     .print-page-break,
@@ -176,7 +239,6 @@ main header img[alt="لوگوی شرکت"] {
       break-before: page !important;
     }
 
-    /* Tables in A4 Print */
     table {
       width: 100% !important;
       border-collapse: collapse !important;
@@ -198,7 +260,6 @@ main header img[alt="لوگوی شرکت"] {
       color: #000000 !important;
     }
 
-    /* Clean input rendering on paper */
     input[type="text"],
     input[type="number"],
     select,
@@ -218,16 +279,14 @@ main header img[alt="لوگوی شرکت"] {
     input[type="checkbox"],
     input[type="radio"] {
       border: 1.5px solid #000000 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
     }
 
     select {
       background-image: none !important;
     }
 
-    /* Org Chart exact fit on A4 */
-    #org-chart-exact-canvas {
+    #org-chart-exact-canvas,
+    #org-chart-export-canvas {
       padding: 0 !important;
       margin: 0 auto !important;
     }
@@ -240,27 +299,6 @@ main header img[alt="لوگوی شرکت"] {
 
     #org-chart-exact-canvas button {
       display: none !important;
-    }
-
-    #org-chart-exact-canvas .p-6,
-    #org-chart-exact-canvas .p-10 {
-      padding: 0.6rem !important;
-    }
-
-    #org-chart-exact-canvas .space-y-10 > :not([hidden]) ~ :not([hidden]) {
-      --tw-space-y-reverse: 0;
-      margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse))) !important;
-      margin-bottom: calc(0.75rem * var(--tw-space-y-reverse)) !important;
-    }
-
-    /* Keep form logos properly centered */
-    img[alt="لوگوی شرکت"],
-    img[alt="Logo"] {
-      display: block !important;
-      margin-right: auto !important;
-      margin-left: auto !important;
-      break-inside: avoid !important;
-      page-break-inside: avoid !important;
     }
   }
 }
