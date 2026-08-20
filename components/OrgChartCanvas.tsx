@@ -609,6 +609,19 @@ export default function OrgChartCanvas({
           )}
         </div>
 
+        {/* Top Right Staff Member Badge for Branch Node Capacity Planning */}
+        {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
+          <div className="absolute -top-3 right-4 flex items-center gap-1.5 z-10">
+            <span 
+              className="inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-700 text-white shadow-xs border border-emerald-500"
+              title={`تعداد پرسنل اختصاص‌یافته به این نمایندگی: ${node.staff?.length || 0} نفر`}
+            >
+              <Users className="w-2.5 h-2.5 text-emerald-200" />
+              <span>پرسنل: {node.staff?.length || 0} نفر</span>
+            </span>
+          </div>
+        )}
+
         {/* Card Header Content */}
         <div className="p-4 sm:p-5 text-center">
           <div className="flex items-center justify-between gap-2 mb-1">
@@ -637,6 +650,19 @@ export default function OrgChartCanvas({
           <div className={`text-xs sm:text-sm font-bold ${isDark ? 'text-blue-100' : 'text-slate-600 dark:text-slate-400'}`}>
             {subtitleOverride || node.title}
           </div>
+
+          {/* Branch Staff Capacity Badge */}
+          {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
+            <div className="mt-2 flex justify-center">
+              <span 
+                className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs"
+                title="برنامه‌ریزی ظرفیت نیروی انسانی نمایندگی"
+              >
+                <Users className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                <span>ظرفیت پرسنل: {node.staff?.length || 0} نفر</span>
+              </span>
+            </div>
+          )}
 
           {/* Quick Collapse/Expand CTA chip */}
           <div className="mt-2.5 flex items-center justify-center gap-2">
