@@ -315,6 +315,8 @@ export default function OrgChartCanvas({
     }
   };
 
+  const [pdfQualityScale, setPdfQualityScale] = useState<number>(3.5); // Default high resolution Ultra (DPI ~350)
+  const [paperSizeOption, setPaperSizeOption] = useState<'a4' | 'a3'>('a3'); // Default A3 for wide org charts
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [internalSearchTerm, setInternalSearchTerm] = useState('');
@@ -490,8 +492,10 @@ export default function OrgChartCanvas({
       await new Promise((resolve) => setTimeout(resolve, 80));
       await exportElementToPdf({
         elementId: 'org-chart-exact-canvas',
-        filename: 'چارت_سازمانی_شرکت_صرافی.pdf',
-        orientation: 'portrait'
+        filename: `چارت_سازمانی_شرکت_صرافی_${paperSizeOption.toUpperCase()}_DPI${Math.round(pdfQualityScale * 96)}.pdf`,
+        paperSize: paperSizeOption,
+        orientation: 'landscape',
+        qualityScale: pdfQualityScale
       });
     } catch (error) {
       console.error(error);
@@ -978,13 +982,38 @@ export default function OrgChartCanvas({
             <span>{isExporting ? 'در حال خروجی...' : 'دانلود Word'}</span>
           </button>
 
+          {/* Quality DPI & Paper Size Selector */}
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 pr-1.5 hidden sm:inline">کیفیت:</span>
+            <select
+              value={pdfQualityScale}
+              onChange={(e) => setPdfQualityScale(parseFloat(e.target.value))}
+              className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs font-bold py-1 px-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              title="تنظیم رزولوشن و DPI تصویر چارت در PDF"
+            >
+              <option value={2.0}>استاندارد (DPI 192)</option>
+              <option value={3.5}>عالی - کیفیت چاپ HD (DPI 336)</option>
+              <option value={4.5}>فوق‌العاده - چاپ بزرگ Ultra (DPI 432)</option>
+            </select>
+
+            <select
+              value={paperSizeOption}
+              onChange={(e) => setPaperSizeOption(e.target.value as 'a4' | 'a3')}
+              className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs font-bold py-1 px-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              title="اندازه کاغذ PDF"
+            >
+              <option value="a3">کاغذ A3 افقی (پیشنهادی)</option>
+              <option value="a4">کاغذ A4 افقی</option>
+            </select>
+          </div>
+
           <button
             onClick={handlePdfExport}
             disabled={isExporting}
             className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-60 cursor-pointer"
           >
             <Download className="w-4 h-4" />
-            <span>{isExporting ? 'در حال خروجی...' : 'دانلود PDF'}</span>
+            <span>{isExporting ? 'در حال خروجی کیفیت بالا...' : 'دانلود PDF'}</span>
           </button>
 
           <button
@@ -1400,9 +1429,10 @@ export default function OrgChartCanvas({
                               <TreeConnectors count={data.branches.length} />
 
                               <div 
-                                className="grid gap-4 items-start mx-auto justify-center"
+                                className="grid gap-4 sm:gap-6 items-start mx-auto justify-center"
                                 style={{
-                                  gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`
+                                  gridTemplateColumns: `repeat(${data.branches.length || 1}, minmax(0, 1fr))`,
+                                  maxWidth: `${Math.max(data.branches.length * 280, 280)}px`
                                 }}
                               >
                                 {data.branches.map((br) => {
