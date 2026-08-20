@@ -513,44 +513,24 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
         className="bg-white text-slate-950 p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0 max-w-4xl mx-auto space-y-6 relative font-sans leading-relaxed dir-rtl"
       >
         
-        {/* Letter Official Header Matching Official Document */}
-        <div className="border-b-2 border-slate-900 pb-4">
-          <div className="flex items-center justify-between gap-4">
-            
-            {/* English Header Left */}
-            <div className="text-left text-[11px] font-bold text-slate-800 leading-tight">
-              <div className="font-extrabold text-slate-950 text-xs">Barakatullah Ghafouri</div>
-              <div>Money Exchange & MSP Co.</div>
-            </div>
-
-            {/* Central Official Logo */}
-            <div className="flex flex-col items-center justify-center text-center">
-              {customLogo ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain rounded-full border border-slate-300 bg-white p-0.5" />
-              ) : (
-                <div className="w-14 h-14 bg-blue-950 text-amber-400 rounded-full flex flex-col items-center justify-center border-2 border-amber-400/60 shadow-xs">
-                  <Building2 className="w-7 h-7" />
-                </div>
-              )}
-            </div>
-
-            {/* Dari Header Right */}
-            <div className="text-right text-[11px] font-bold text-slate-800 leading-tight">
-              <div className="font-extrabold text-slate-950 text-xs">{data.companyName}</div>
-              <div className="font-mono text-slate-700">جواز: {data.licenseNo}</div>
-            </div>
-
+        {/* Letter Official Header Matching Official DAB Standard */}
+        <div className="border-b-2 border-slate-900 pb-4 text-center">
+          {/* Central Official Logo */}
+          <div className="flex flex-col items-center justify-center text-center mb-3">
+            {customLogo ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain rounded-2xl border border-slate-300 bg-white p-1 shadow-xs mx-auto" />
+            ) : (
+              <div className="w-14 h-14 bg-blue-950 text-amber-400 rounded-2xl flex flex-col items-center justify-center border-2 border-amber-400/60 shadow-xs mx-auto">
+                <Building2 className="w-7 h-7" />
+              </div>
+            )}
           </div>
 
-          {/* Company Title & Address Subheader */}
-          <div className="text-center mt-3 pt-2 border-t border-slate-200">
-            <h1 className="text-base sm:text-lg font-black text-slate-950">
-              {data.companyName}
-            </h1>
-            <p className="text-xs font-bold text-slate-700 mt-0.5">
-              جواز شماره: <span className="font-mono dir-ltr inline-block">{data.licenseNo}</span> — {data.companyAddressHeader}
-            </p>
+          <div className="text-center space-y-1">
+            <div className="text-xs font-bold text-slate-700">امارت اسلامی افغانستان</div>
+            <h1 className="text-lg font-black text-slate-950">د افغانستان بانک</h1>
+            <h2 className="text-xs font-bold text-slate-800">آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی</h2>
           </div>
 
           {/* Central Title Badge */}
@@ -558,15 +538,12 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
             <div className="inline-block bg-emerald-50 border-2 border-emerald-700 text-emerald-950 font-black text-sm px-6 py-1.5 rounded-xl shadow-xs">
               مکتوب رسمی تقاضای تمدید جواز فعالیت مرکز و نمایندگی‌ها
             </div>
-            <div className="text-[11px] font-bold text-slate-600 mt-1">
-              (مطابق مقرره و ضوابط نظارتی د افغانستان بانک)
-            </div>
           </div>
 
           {/* Letter No & Date Line */}
           <div className="flex items-center justify-between text-xs font-bold text-slate-800 mt-3 pt-2 border-t border-dashed border-slate-300 px-2">
             <div>
-              <span>شماره:</span>
+              <span>شماره صادر / مکتوب:</span>
               <span className="font-black font-mono mr-2 text-blue-900">{data.letterNo}</span>
             </div>
             <div>
@@ -574,7 +551,6 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
               <span className="font-black mr-2">{data.letterDate}</span>
             </div>
           </div>
-
         </div>
 
         {/* Recipient Section */}

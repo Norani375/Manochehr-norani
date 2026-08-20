@@ -34,10 +34,14 @@ export default function BatchExportStaging({
   issueDate,
   selectedDocsMeta = [],
 }: BatchExportStagingProps) {
+  if (!selectedDocIds || selectedDocIds.length === 0) {
+    return null;
+  }
+
   return (
     <div
       id="batch-export-staging-container"
-      className="hidden print:block bg-white text-slate-900"
+      className="hidden print:block bg-white text-slate-900 w-full"
       dir="rtl"
     >
       {/* Cover Page */}

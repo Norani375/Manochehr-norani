@@ -64,20 +64,25 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
 @layer utilities {
   @media print {
     @page {
-      size: A4 auto;
-      margin: 8mm 10mm 10mm 10mm;
+      size: A4 portrait;
+      margin: 10mm 12mm 12mm 12mm;
     }
 
     html, body {
       width: 100% !important;
-      height: 100% !important;
+      min-width: 100% !important;
+      height: auto !important;
+      min-height: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
       background: #ffffff !important;
       color: #000000 !important;
       overflow: visible !important;
-      font-size: 11pt !important;
-      line-height: 1.4 !important;
+      font-size: 10.5pt !important;
+      line-height: 1.45 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
     }
 
     .print-hidden,
@@ -87,7 +92,14 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
     nav,
     [role="dialog"],
     .modal-overlay,
-    .fixed.inset-0 {
+    .fixed.inset-0,
+    .fixed.bottom-6,
+    .fixed.bottom-8 {
+      display: none !important;
+    }
+
+    /* Batch staging container is only printed if specifically triggered */
+    #batch-export-staging-container.hidden {
       display: none !important;
     }
 
@@ -96,6 +108,7 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
       margin: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
+      overflow: visible !important;
     }
 
     * {
@@ -103,8 +116,7 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
       print-color-adjust: exact !important;
       color-adjust: exact !important;
       box-shadow: none !important;
-      overflow: visible !important;
-      max-height: none !important;
+      text-shadow: none !important;
       scrollbar-width: none !important;
     }
 
@@ -112,32 +124,11 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
       display: none !important;
     }
 
-    input[type="text"],
-    input[type="number"],
-    select,
-    textarea {
-      border: none !important;
-      border-bottom: 1px solid #000000 !important;
-      background: transparent !important;
-      color: #000000 !important;
-      padding: 0 4px !important;
-      font-weight: bold !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      appearance: none !important;
-      -webkit-appearance: none !important;
-    }
-
-    select {
-      background-image: none !important;
-    }
-
-    table, tr, td, th, tbody, thead,
-    .dab-signature-box,
-    .dab-section-card,
-    #dab-official-form,
-    #dab-branch-renewal-form,
-    #dab-license-renewal-form,
+    /* Top-level document containers: allow natural pagination across A4 sheets */
+    #dab-license-renewal-canvas,
+    #dab-branch-renewal-canvas,
+    [id^="dab-branch-renewal-canvas-"],
+    #dab-guarantee-canvas,
     #meeting-minutes-canvas,
     #company-articles-canvas,
     #company-proposal-canvas,
@@ -145,81 +136,129 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
     #dab-license-renewal-checklist-canvas,
     #dab-branch-renewal-checklist-canvas,
     #dab-license-renewal-letter-canvas,
+    #compliance-reporting-canvas,
+    #employee-management-cv-canvas,
     #org-chart-exact-canvas,
-    #employee-management-cv-canvas {
+    #org-chart-export-canvas {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      page-break-inside: auto !important;
+      break-inside: auto !important;
+      overflow: visible !important;
+    }
+
+    /* Prevent awkward fracturing inside cards, rows, signatures, and blocks */
+    tr, th, td,
+    .dab-signature-box,
+    .dab-section-card,
+    .dab-section-box,
+    .guarantor-card,
+    .article-block,
+    .checkpoint-item,
+    .reporting-card,
+    .signature-area,
+    .stamp-box,
+    fieldset {
       page-break-inside: avoid !important;
       break-inside: avoid !important;
     }
 
-    tr, th, td {
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
-    }
-
-    h1, h2, h3, h4 {
+    /* Headings stay attached to following content */
+    h1, h2, h3, h4, h5, h6,
+    .section-title,
+    .card-title,
+    thead {
       page-break-after: avoid !important;
       break-after: avoid !important;
     }
 
-    table, th, td {
-      border-color: #000000 !important;
+    /* Force clean page breaks when explicitly requested */
+    .break-after-page,
+    .page-break,
+    .print-page-break {
+      page-break-after: always !important;
+      break-after: page !important;
     }
 
-    #org-chart-export-canvas,
-    #org-chart-exact-canvas {
+    /* Tables in A4 Print */
+    table {
       width: 100% !important;
-      max-width: 100% !important;
-      padding: 2px !important;
-      margin: 0 auto !important;
-      background-color: #ffffff !important;
-      background-image: none !important;
+      border-collapse: collapse !important;
+      page-break-inside: auto !important;
+      break-inside: auto !important;
+    }
+
+    table th, table td {
+      border-color: #334155 !important;
+      padding: 4px 6px !important;
       color: #000000 !important;
+    }
+
+    /* Clean input rendering on paper */
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      border: none !important;
+      border-bottom: 1px solid #64748b !important;
+      background: transparent !important;
+      color: #000000 !important;
+      padding: 0 4px !important;
+      font-weight: 700 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+      border: 1.5px solid #000000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    select {
+      background-image: none !important;
+    }
+
+    /* Org Chart exact fit on A4 */
+    #org-chart-exact-canvas {
+      padding: 0 !important;
+      margin: 0 auto !important;
+    }
+
+    #org-chart-exact-canvas .max-w-4xl {
+      max-width: 100% !important;
       box-shadow: none !important;
       border: none !important;
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
     }
 
-    #org-chart-export-canvas .p-6,
-    #org-chart-export-canvas .p-5 {
-      padding: 0.4rem 0.6rem !important;
-    }
-    #org-chart-export-canvas .p-4 {
-      padding: 0.35rem !important;
-    }
-    #org-chart-export-canvas .p-3 {
-      padding: 0.25rem !important;
-    }
-    #org-chart-export-canvas .mb-6,
-    #org-chart-export-canvas .mb-8 {
-      margin-bottom: 0.35rem !important;
-    }
-    #org-chart-export-canvas .gap-6,
-    #org-chart-export-canvas .gap-8 {
-      gap: 0.35rem !important;
-    }
-
-    #org-chart-export-canvas button,
-    #org-chart-export-canvas .absolute.top-2.right-2,
-    #org-chart-export-canvas .absolute.top-1\\.5.right-1\\.5 {
+    #org-chart-exact-canvas button {
       display: none !important;
     }
 
-    #org-chart-export-canvas [class*="rounded-"] {
-      border-width: 1.5px !important;
-      border-style: solid !important;
-      border-color: #000000 !important;
-      box-shadow: none !important;
+    #org-chart-exact-canvas .p-6,
+    #org-chart-exact-canvas .p-10 {
+      padding: 0.6rem !important;
     }
 
-    #org-chart-export-canvas .bg-gradient-to-br {
-      background: #000000 !important;
-      color: #ffffff !important;
-      border-color: #000000 !important;
+    #org-chart-exact-canvas .space-y-10 > :not([hidden]) ~ :not([hidden]) {
+      --tw-space-y-reverse: 0;
+      margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse))) !important;
+      margin-bottom: calc(0.75rem * var(--tw-space-y-reverse)) !important;
     }
 
-    /* Keep form logos centered in printed output. */
-    main header img[alt="لوگوی شرکت"] {
+    /* Keep form logos properly centered */
+    img[alt="لوگوی شرکت"],
+    img[alt="Logo"] {
       display: block !important;
       margin-right: auto !important;
       margin-left: auto !important;

@@ -1597,10 +1597,10 @@ export default function ComplianceReporting({
               </div>
             </div>
 
-            {/* Bottom Barcode and DAB Compliance Mark */}
-            <div className="mt-8 pt-4 border-t border-slate-200 text-center text-[10px] text-slate-500 font-mono flex items-center justify-between">
-              <span>DAB AML/CFT COMPLIANCE FORM — CONFIDENTIAL</span>
-              <span>Barakatullah Ghafouri Money Exchange & MSP Co. (DAB/7-0965)</span>
+            {/* Bottom Official DAB Compliance Mark */}
+            <div className="mt-8 pt-4 border-t border-slate-200 text-center text-[10px] text-slate-500 font-bold flex items-center justify-between">
+              <span>فورم رعایت مقررات مبارزه با پولشویی و تامین مالی تروریزم — د افغانستان بانک</span>
+              <span>مدیریت نظارت و تحلیل معاملات مالی</span>
             </div>
 
           </div>
