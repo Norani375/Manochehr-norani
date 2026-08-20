@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 export interface CompanyInfo {
   id: string;
@@ -23,33 +23,55 @@ const DEFAULT_COMPANIES: CompanyInfo[] = [
   { id: 'default', name: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری', licenseNo: '7-0965' }
 ];
 
-export function CompanyProvider({ children }: { children: React.ReactNode }) {
-  const [companies, setCompanies] = useState<CompanyInfo[]>(DEFAULT_COMPANIES);
-  const [activeCompanyId, setActiveCompanyId] = useState<string>('default');
+function getInitialCompanies(): CompanyInfo[] {
+  if (typeof window === 'undefined') {
+    return DEFAULT_COMPANIES;
+  }
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('bg_companies_list');
-      if (saved) {
-        setCompanies(JSON.parse(saved));
+  try {
+    const saved = localStorage.getItem('bg_companies_list');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed as CompanyInfo[];
       }
-      const savedActive = localStorage.getItem('bg_active_company_id');
-      if (savedActive) {
-        setActiveCompanyId(savedActive);
-      }
-    } catch (e) {
-      console.error(e);
     }
-  }, []);
+  } catch (e) {
+    console.error(e);
+  }
+
+  return DEFAULT_COMPANIES;
+}
+
+function getInitialActiveCompanyId(): string {
+  if (typeof window === 'undefined') {
+    return 'default';
+  }
+
+  try {
+    return localStorage.getItem('bg_active_company_id') || 'default';
+  } catch (e) {
+    console.error(e);
+    return 'default';
+  }
+}
+
+export function CompanyProvider({ children }: { children: React.ReactNode }) {
+  const [companies, setCompanies] = useState<CompanyInfo[]>(getInitialCompanies);
+  const [activeCompanyId, setActiveCompanyId] = useState<string>(getInitialActiveCompanyId);
 
   const saveAndSetCompanies = (newCompanies: CompanyInfo[]) => {
     setCompanies(newCompanies);
-    localStorage.setItem('bg_companies_list', JSON.stringify(newCompanies));
+    try {
+      localStorage.setItem('bg_companies_list', JSON.stringify(newCompanies));
+    } catch (_) {}
   };
 
   const handleSetActiveCompanyId = (id: string) => {
     setActiveCompanyId(id);
-    localStorage.setItem('bg_active_company_id', id);
+    try {
+      localStorage.setItem('bg_active_company_id', id);
+    } catch (_) {}
   };
 
   const addCompany = (company: CompanyInfo) => {
