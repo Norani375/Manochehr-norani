@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { doc, setDoc } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { barakatullahGhafouriProfile as profile } from '@/lib/barakatullahGhafouriProfile';
 import { DAB_OFFICIAL_FORMS, type DabOfficialFormDefinition } from '@/lib/dabOfficialFormRegistry';
@@ -10,7 +10,22 @@ import { getDabOfficialFormPrefill } from '@/lib/dabOfficialFormPrefill';
 type FieldType = 'text' | 'date' | 'number' | 'textarea';
 type Field = { key: string; label: string; type?: FieldType; required?: boolean };
 type Values = Record<string, string>;
-type HeaderValues = { bank: string; department: string; directorate: string; companyName: string; licenseNo: string; province: string; address: string; logoUrl: string };
+type HeaderValues = {
+  bank: string;
+  department: string;
+  directorate: string;
+  companyName: string;
+  licenseNo: string;
+  province: string;
+  address: string;
+  logoUrl: string;
+};
+
+type SavedForm = {
+  values?: Values;
+  header?: Partial<HeaderValues>;
+  status?: string;
+};
 
 const defaultHeader: HeaderValues = {
   bank: 'د افغانستان بانک',
@@ -30,7 +45,7 @@ const companyFields: Field[] = [
   { key: 'district', label: 'ولسوالی / ناحیه' },
   { key: 'address', label: 'آدرس مکمل', type: 'textarea' },
   { key: 'phone', label: 'شماره تماس' },
-  { key: 'email', label: 'ایمیل' },
+  { key: 'email', label: 'آدرس برقی' },
 ];
 
 const personFields: Field[] = [
@@ -58,7 +73,7 @@ const agencyFields: Field[] = [
 const fieldsByForm: Record<string, Field[]> = {
   'license-application': [...companyFields, { key: 'capital', label: 'سرمایه' }, { key: 'shareholders', label: 'مشخصات سهمداران', type: 'textarea' }, { key: 'businessScope', label: 'نوع و ساحه فعالیت', type: 'textarea' }, { key: 'representative', label: 'نماینده باصلاحیت' }],
   'license-renewal': [...companyFields, { key: 'expiryDate', label: 'تاریخ ختم جواز', type: 'date' }, { key: 'renewalDate', label: 'تاریخ درخواست تمدید', type: 'date' }, { key: 'authorizedName', label: 'شخص مجاز' }, { key: 'shareholders', label: 'مشخصات سهمدار / سهمداران', type: 'textarea' }, { key: 'branches', label: 'تمام نمایندگی‌ها', type: 'textarea' }, { key: 'bankAccounts', label: 'حسابات بانکی', type: 'textarea' }, { key: 'requestedChanges', label: 'تغییرات مطالبه‌شده', type: 'textarea' }, { key: 'activityLastYear', label: 'فعالیت از سال گذشته تا اکنون', type: 'textarea' }, { key: 'legalClaims', label: 'دعوی حقوقی / قضایی', type: 'textarea' }],
-  'shareholder-employee-profile': personFields.concat([{ key: 'position', label: 'موقف در شرکت', required: true }, { key: 'sharePercent', label: 'فیصدی سهم', type: 'number' }, { key: 'tin', label: 'شماره تشخیصیه مالیاتی' }, { key: 'criminalInquiry', label: 'استعلام جنایت' }, { key: 'sanctionsCheck', label: 'تطبیق تعزیرات' }]),
+  'shareholder-employee-profile': [...personFields, { key: 'position', label: 'موقف در شرکت', required: true }, { key: 'sharePercent', label: 'فیصدی سهم', type: 'number' }, { key: 'tin', label: 'شماره تشخیصیه مالیاتی' }, { key: 'criminalInquiry', label: 'استعلام جنایت' }, { key: 'sanctionsCheck', label: 'تطبیق تعزیرات' }],
   articles: [...companyFields, { key: 'articlesDate', label: 'تاریخ اساسنامه', type: 'date' }, { key: 'legalBasis', label: 'مبنی و شخصیت حقوقی', type: 'textarea' }, { key: 'companyPurpose', label: 'هدف و ساحه فعالیت', type: 'textarea' }, { key: 'shareStructure', label: 'ساختار سهام و سرمایه', type: 'textarea' }, { key: 'management', label: 'تشکیلات و مدیریت', type: 'textarea' }, { key: 'financialRules', label: 'احکام مالی و حسابداری', type: 'textarea' }],
   'agency-establishment': [...companyFields, ...agencyFields],
   'agency-renewal': [...companyFields, ...agencyFields, { key: 'boardCertification', label: 'تصدیق هیئت نظار', type: 'textarea' }, { key: 'employeeList', label: 'لیست کارمندان نمایندگی', type: 'textarea' }],
@@ -66,7 +81,7 @@ const fieldsByForm: Record<string, Field[]> = {
   'agency-suspension': [...companyFields, ...agencyFields, { key: 'suspensionDate', label: 'تاریخ تعلیق', type: 'date' }, { key: 'reason', label: 'دلیل تعلیق', type: 'textarea' }],
   'agency-closure': [...companyFields, ...agencyFields, { key: 'closureDate', label: 'تاریخ ترک پیشه', type: 'date' }, { key: 'reason', label: 'دلیل ترک پیشه', type: 'textarea' }],
   'agency-closure-permit': [...companyFields, ...agencyFields, { key: 'permitNo', label: 'شماره اجازه‌نامه' }, { key: 'closureDate', label: 'تاریخ ترک پیشه', type: 'date' }, { key: 'statement', label: 'تعهد و توضیحات', type: 'textarea' }],
-  'shareholder-guarantee': [...companyFields, { key: 'shareholderFullName', label: 'نام سهمدار', required: true }, { key: 'shareholderFatherName', label: 'نام پدر سهمدار' }, { key: 'shareholderIdentityNo', label: 'شماره تذکره سهمدار' }, { key: 'shareholderEducation', label: 'سویه تحصیلی سهمدار' }, { key: 'guarantorFullName', label: 'نام تضمین‌کننده' }, { key: 'guarantorFatherName', label: 'نام پدر تضمین‌کننده' }, { key: 'guarantorIdentityNo', label: 'شماره تذکره تضمین‌کننده' }, { key: 'guarantorPhone', label: 'شماره تماس تضمین‌کننده' }, { key: 'guaranteeUndertakings', label: 'تعهدات تضمین‌کننده', type: 'textarea' }],
+  'shareholder-guarantee': [...companyFields, { key: 'shareholderFullName', label: 'نام سهمدار', required: true }, { key: 'shareholderFatherName', label: 'نام پدر سهمدار' }, { key: 'shareholderIdentityNo', label: 'شماره تذکره سهمدار' }, { key: 'guarantorFullName', label: 'نام تضمین‌کننده' }, { key: 'guarantorFatherName', label: 'نام پدر تضمین‌کننده' }, { key: 'guarantorIdentityNo', label: 'شماره تذکره تضمین‌کننده' }, { key: 'guaranteeAmount', label: 'مبلغ ضمانت', type: 'number' }, { key: 'guaranteeUndertakings', label: 'تعهدات تضمین‌کننده', type: 'textarea' }],
   'aml-cft-policy': [...companyFields, { key: 'complianceOfficer', label: 'مسئول پیروی از قوانین و مقررات', required: true }, { key: 'officerFatherName', label: 'نام پدر مسئول' }, { key: 'officerIdentityNo', label: 'شماره تذکره مسئول' }, { key: 'officerEducation', label: 'سویه تحصیلی مسئول' }, { key: 'policyStatement', label: 'متن پالیسی', type: 'textarea' }, { key: 'riskAssessment', label: 'ارزیابی خطر', type: 'textarea' }, { key: 'monitoring', label: 'نظارت و راپوردهی', type: 'textarea' }],
   'ownership-transfer': [...companyFields, { key: 'transferor', label: 'سهمدار انتقال‌دهنده', required: true }, { key: 'transferee', label: 'سهمدار انتقال‌گیرنده', required: true }, { key: 'sharePercent', label: 'فیصدی انتقال', type: 'number' }, { key: 'transferDate', label: 'تاریخ انتقال', type: 'date' }, { key: 'approvalReference', label: 'شماره صورت‌جلسه / مرجع' }],
   'name-change': [...companyFields, { key: 'oldName', label: 'نام قبلی', required: true }, { key: 'newName', label: 'نام جدید', required: true }, { key: 'changeDate', label: 'تاریخ تغییر', type: 'date' }, { key: 'approvalReference', label: 'مرجع / شماره تأیید' }, { key: 'reason', label: 'دلیل تغییر', type: 'textarea' }],
@@ -97,7 +112,7 @@ function Header({ form, header, editing, onEdit, onChange }: { form: DabOfficial
     <header className="border-2 border-slate-800 bg-white px-6 py-5 text-center print:border-x-0 print:border-t-0">
       {header.logoUrl ? <img src={header.logoUrl} alt="لوگوی شرکت" className="mx-auto mb-3 h-16 w-16 object-contain" /> : null}
       {editing ? (
-        <div className="mx-auto mb-4 grid max-w-5xl gap-2 text-right print:hidden md:grid-cols-2">
+        <div className="mx-auto mb-4 grid max-w-5xl gap-3 text-right print:hidden md:grid-cols-2">
           <label className="text-sm">نام نهاد صادرکننده<input value={header.bank} onChange={e => onChange('bank', e.target.value)} className="mt-1 w-full border p-2" /></label>
           <label className="text-sm">آمریت<input value={header.department} onChange={e => onChange('department', e.target.value)} className="mt-1 w-full border p-2" /></label>
           <label className="text-sm">مدیریت<input value={header.directorate} onChange={e => onChange('directorate', e.target.value)} className="mt-1 w-full border p-2" /></label>
@@ -105,7 +120,7 @@ function Header({ form, header, editing, onEdit, onChange }: { form: DabOfficial
           <label className="text-sm">شماره جواز<input value={header.licenseNo} onChange={e => onChange('licenseNo', e.target.value)} className="mt-1 w-full border p-2" /></label>
           <label className="text-sm">ولایت<input value={header.province} onChange={e => onChange('province', e.target.value)} className="mt-1 w-full border p-2" /></label>
           <label className="text-sm md:col-span-2">آدرس<input value={header.address} onChange={e => onChange('address', e.target.value)} className="mt-1 w-full border p-2" /></label>
-          <label className="text-sm md:col-span-2">نشانی لوگو<input value={header.logoUrl} onChange={e => onChange('logoUrl', e.target.value)} placeholder="اختیاری" className="mt-1 w-full border p-2" dir="ltr" /></label>
+          <label className="text-sm md:col-span-2">نشانی لوگو<input value={header.logoUrl} onChange={e => onChange('logoUrl', e.target.value)} className="mt-1 w-full border p-2" dir="ltr" /></label>
         </div>
       ) : null}
       <p className="text-base font-bold">{header.bank}</p>
@@ -122,7 +137,7 @@ function Header({ form, header, editing, onEdit, onChange }: { form: DabOfficial
         <div>آدرس: <strong>{header.address}</strong></div>
       </div>
       <div className="mt-4 flex justify-center print:hidden">
-        <button type="button" onClick={onEdit} className="border bg-white px-4 py-2 text-sm font-semibold">{editing ? 'پایان ویرایش سربرگ' : 'ویرایش سربرگ'}</button>
+        <button type="button" onClick={onEdit} className="border px-4 py-2 text-sm font-semibold">{editing ? 'پایان ویرایش سربرگ' : 'ویرایش سربرگ'}</button>
       </div>
     </header>
   );
@@ -135,15 +150,44 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
   const [query, setQuery] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editingHeader, setEditingHeader] = useState(false);
 
   const form = DAB_OFFICIAL_FORMS.find(item => item.id === active) ?? DAB_OFFICIAL_FORMS[0];
   const values = form ? valuesByForm[form.id] ?? initialValues(form) : {};
   const header = form ? headersByForm[form.id] ?? defaultHeader : defaultHeader;
+  const fields = form ? getFields(form) : [];
   const filteredForms = useMemo(() => {
     const term = query.trim().toLocaleLowerCase();
     return term ? DAB_OFFICIAL_FORMS.filter(item => `${item.title} ${categoryNames[item.category] ?? ''}`.toLocaleLowerCase().includes(term)) : DAB_OFFICIAL_FORMS;
   }, [query]);
+
+  useEffect(() => {
+    if (!form) return;
+    let cancelled = false;
+    setLoading(true);
+    const load = async () => {
+      try {
+        const snapshot = await getDoc(doc(db, `companies/${companyId}/dabOfficialForms/${form.id}`));
+        if (cancelled) return;
+        const saved = snapshot.exists() ? (snapshot.data() as SavedForm) : {};
+        const loadedValues = { ...initialValues(form), ...(saved.values ?? {}) };
+        if (form.id === 'aml-cft-policy' && !loadedValues.complianceOfficer) {
+          loadedValues.complianceOfficer = 'عبدالعزیز مهرزاد';
+          loadedValues.officerFatherName = 'عبدالخلیل';
+          loadedValues.officerIdentityNo = '72198-0300-1401';
+        }
+        setValuesByForm(current => ({ ...current, [form.id]: loadedValues }));
+        setHeadersByForm(current => ({ ...current, [form.id]: { ...defaultHeader, ...(saved.header ?? {}) } }));
+      } catch (error) {
+        if (!cancelled) setMessage(error instanceof Error ? `خواندن معلومات موفق نشد: ${error.message}` : 'خواندن معلومات موفق نشد.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    void load();
+    return () => { cancelled = true; };
+  }, [companyId, form]);
 
   if (!form) return null;
 
@@ -155,29 +199,47 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
     setHeadersByForm(current => ({ ...current, [form.id]: { ...(current[form.id] ?? defaultHeader), [key]: value } }));
   };
 
+  const selectForm = (id: string) => {
+    setActive(id);
+    setEditingHeader(false);
+    setMessage('');
+  };
+
   const save = async () => {
+    const missing = fields.filter(field => field.required && !values[field.key]?.trim()).map(field => field.label);
+    if (missing.length) {
+      setMessage(`فیلدهای ضروری تکمیل نشده است: ${missing.slice(0, 5).join('، ')}${missing.length > 5 ? ' و موارد دیگر.' : '.'}`);
+      return;
+    }
     setBusy(true);
     try {
-      await setDoc(doc(db, `companies/${companyId}/dabOfficialForms/${form.id}`), { formId: form.id, title: form.title, category: form.category, values, header, status: 'draft', updatedAt: new Date().toISOString() }, { merge: true });
+      await setDoc(doc(db, `companies/${companyId}/dabOfficialForms/${form.id}`), {
+        formId: form.id,
+        title: form.title,
+        category: form.category,
+        values,
+        header,
+        status: 'draft',
+        updatedAt: new Date().toISOString(),
+      }, { merge: true });
       setMessage('فورم و سربرگ با موفقیت ذخیره شد.');
     } catch (error) {
       setMessage(error instanceof Error ? `ذخیره ناموفق بود: ${error.message}` : 'ذخیره ناموفق بود.');
     } finally {
       setBusy(false);
-      window.setTimeout(() => setMessage(''), 3000);
     }
   };
 
   return (
     <main dir="rtl" className="min-h-screen bg-slate-100 p-4 md:p-8 print:bg-white print:p-0">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-5 grid gap-4 md:grid-cols-[300px_1fr] print:block">
+        <div className="grid gap-4 lg:grid-cols-[300px_1fr] print:block">
           <aside className="border-2 border-slate-700 bg-white p-4 print:hidden">
-            <h2 className="mb-3 font-bold">فورم‌های رسمی</h2>
+            <h2 className="mb-3 text-lg font-bold">فورم‌های رسمی</h2>
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="جستجوی فورم" className="mb-3 w-full border p-2 text-right" />
-            <div className="max-h-[70vh] space-y-1 overflow-auto">
+            <div className="max-h-[72vh] space-y-1 overflow-auto">
               {filteredForms.map(item => (
-                <button key={item.id} type="button" onClick={() => { setActive(item.id); setEditingHeader(false); }} className={`w-full border px-3 py-2 text-right text-sm ${item.id === form.id ? 'border-slate-900 bg-slate-100 font-bold' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
+                <button key={item.id} type="button" onClick={() => selectForm(item.id)} className={`w-full border px-3 py-2 text-right text-sm ${item.id === form.id ? 'border-slate-900 bg-slate-100 font-bold' : 'border-slate-200 hover:bg-slate-50'}`}>
                   <span className="block">{item.title}</span>
                   <span className="mt-1 block text-xs text-slate-500">{categoryNames[item.category] ?? 'اسناد رسمی'}</span>
                 </button>
@@ -185,18 +247,15 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
             </div>
           </aside>
 
-          <section id="dab-official-form" className="overflow-hidden bg-white shadow-sm print:shadow-none">
-            <Header form={form} header={header} editing={editingHeader} onEdit={() => setEditingHeader(current => !current)} onChange={updateHeader} />
+          <section className="overflow-hidden bg-white shadow-sm print:shadow-none">
+            <Header form={form} header={header} editing={editingHeader} onEdit={() => setEditingHeader(value => !value)} onChange={updateHeader} />
             <div className="border-x-2 border-b-2 border-slate-800 p-5 print:p-8">
+              {loading ? <div className="mb-4 border bg-slate-50 p-3 text-sm">در حال خواندن معلومات ثبت‌شده...</div> : null}
               <div className="mb-5 grid gap-4 md:grid-cols-2">
-                {getFields(form).map(field => (
+                {fields.map(field => (
                   <label key={field.key} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
                     <span className="mb-1 block text-sm font-semibold">{field.label}{field.required ? ' *' : ''}</span>
-                    {field.type === 'textarea' ? (
-                      <textarea value={values[field.key] ?? ''} onChange={e => update(field.key, e.target.value)} rows={5} className="w-full border border-slate-400 p-2" />
-                    ) : (
-                      <input type={field.type ?? 'text'} value={values[field.key] ?? ''} onChange={e => update(field.key, e.target.value)} className="w-full border border-slate-400 p-2" />
-                    )}
+                    {field.type === 'textarea' ? <textarea value={values[field.key] ?? ''} onChange={e => update(field.key, e.target.value)} rows={5} className="w-full border border-slate-400 p-2" /> : <input type={field.type ?? 'text'} value={values[field.key] ?? ''} onChange={e => update(field.key, e.target.value)} className="w-full border border-slate-400 p-2" />}
                   </label>
                 ))}
               </div>
@@ -213,7 +272,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
               <div className="mt-5 border-t pt-4 text-xs leading-6 text-slate-600">{form.printNotice}</div>
 
               <div className="mt-5 flex flex-wrap gap-2 print:hidden">
-                <button type="button" disabled={busy} onClick={save} className="border bg-slate-900 px-5 py-2 text-white disabled:opacity-50">{busy ? 'در حال ذخیره...' : 'ذخیره فورم و سربرگ'}</button>
+                <button type="button" disabled={busy || loading} onClick={save} className="border bg-slate-900 px-5 py-2 text-white disabled:opacity-50">{busy ? 'در حال ذخیره...' : 'ذخیره فورم و سربرگ'}</button>
                 <button type="button" onClick={() => window.print()} className="border px-5 py-2">چاپ فورم</button>
               </div>
               {message ? <p className="mt-3 border p-2 text-sm">{message}</p> : null}
