@@ -34,8 +34,8 @@ function NodeCard({ node, onEdit }: { node: OrgNode; onEdit: (node: OrgNode) => 
 
 export default function DabOrganizationChart() {
   const [selected, setSelected] = useState<OrgNode | null>(null);
-  const [companyName, setCompanyName] = useState(barakatullahGhafouriProfile.legalName);
-  const [effectiveDate, setEffectiveDate] = useState('');
+  const [companyName, setCompanyName] = useState<string>(barakatullahGhafouriProfile.legalName);
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
 
   return <main dir="rtl" className="min-h-screen bg-slate-100 p-4 md:p-8 print:bg-white print:p-0">
     <div className="mx-auto max-w-7xl">
