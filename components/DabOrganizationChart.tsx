@@ -1,14 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import { barakatullahGhafouriProfile } from '@/lib/barakatullahGhafouriProfile';
 
 type OrgNode = { id: string; title: string; subtitle: string; children?: OrgNode[] };
+
+const complianceOfficer = barakatullahGhafouriProfile.complianceOfficer;
+const complianceOfficerName = `${complianceOfficer.name} ولد ${complianceOfficer.fatherName}`;
+const complianceOfficerDetails = `تذکره ${complianceOfficer.identityNo} — ${complianceOfficer.education}`;
 
 const initialChart: OrgNode = {
   id: 'shareholders', title: 'مجمع عمومی سهمداران', subtitle: 'مالکیت و تصمیم‌های اساسی', children: [
     { id: 'board', title: 'هیئت نظارتی', subtitle: 'نظارت و کنترول', children: [
       { id: 'manager', title: 'مدیر عمومی / مسئول اجرائیه', subtitle: 'رهبری و مدیریت عملیات', children: [
-        { id: 'compliance', title: 'مسئول رعایت قوانین و مقررات', subtitle: 'Compliance و AML/CFT' },
+        { id: 'compliance', title: 'مسئول پیروی از قوانین و مقررات', subtitle: 'Compliance و AML/CFT' },
         { id: 'finance', title: 'مدیریت مالی و حسابداری', subtitle: 'حسابدار و امور مالی' },
         { id: 'operations', title: 'مدیریت عملیات و معاملات', subtitle: 'معاملات و خدمات مشتریان' },
         { id: 'admin', title: 'اداری و منابع بشری', subtitle: 'کارکنان، اسناد و امور اداری' },
@@ -29,8 +34,8 @@ function NodeCard({ node, onEdit }: { node: OrgNode; onEdit: (node: OrgNode) => 
 
 export default function DabOrganizationChart() {
   const [selected, setSelected] = useState<OrgNode | null>(null);
-  const [companyName, setCompanyName] = useState('نام شرکت صرافی و خدمات پولی');
-  const [effectiveDate, setEffectiveDate] = useState('');
+  const [companyName, setCompanyName] = useState<string>(String(barakatullahGhafouriProfile.legalName));
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
 
   return <main dir="rtl" className="min-h-screen bg-slate-100 p-4 md:p-8 print:bg-white print:p-0">
     <div className="mx-auto max-w-7xl">
@@ -47,6 +52,15 @@ export default function DabOrganizationChart() {
         <div className="flex items-end"><button type="button" onClick={() => window.print()} className="border bg-slate-900 px-5 py-2 text-white">چاپ چارت</button></div>
       </div>
 
+      <section className="mb-5 border-2 border-slate-700 bg-white p-5 print:break-inside-avoid">
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-semibold text-slate-500">مسئول پیروی از قوانین و مقررات</span>
+          <strong className="text-lg">{complianceOfficerName}</strong>
+          <span className="text-sm text-slate-600">{complianceOfficerDetails}</span>
+          <span className="text-sm text-slate-600">مسئول مستقل پیروی از قوانین و مقررات و AML/CFT</span>
+        </div>
+      </section>
+
       <section className="overflow-x-auto border-2 border-slate-700 bg-white p-8 print:border-0">
         <ul className="min-w-max text-center"><NodeCard node={initialChart} onEdit={setSelected} /></ul>
       </section>
@@ -57,7 +71,7 @@ export default function DabOrganizationChart() {
         <p className="mt-3 text-xs">تاریخ نافذ شدن: {effectiveDate || '__________________'}</p>
       </section>
 
-      {selected ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 print:hidden"><div className="w-full max-w-md bg-white p-5"><h2 className="font-bold">{selected.title}</h2><p className="mt-2 text-sm text-slate-600">{selected.subtitle}</p><p className="mt-4 text-sm">در نسخه بعدی این بخش به معلومات کارمندان، مسئول باصلاحیت و نمایندگی‌های ثبت‌شده وصل می‌شود.</p><button type="button" onClick={() => setSelected(null)} className="mt-5 border px-4 py-2">بستن</button></div></div> : null}
+      {selected ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 print:hidden"><div className="w-full max-w-md bg-white p-5"><h2 className="font-bold">{selected.title}</h2><p className="mt-2 text-sm text-slate-600">{selected.subtitle}</p>{selected.id === 'compliance' ? <div className="mt-4 border p-3 text-sm"><p className="font-semibold">{complianceOfficerName}</p><p className="mt-1 text-slate-600">{complianceOfficerDetails}</p></div> : <p className="mt-4 text-sm">در نسخه بعدی این بخش به معلومات کارمندان، مسئول باصلاحیت و نمایندگی‌های ثبت‌شده وصل می‌شود.</p>}<button type="button" onClick={() => setSelected(null)} className="mt-5 border px-4 py-2">بستن</button></div></div> : null}
     </div>
   </main>;
 }
