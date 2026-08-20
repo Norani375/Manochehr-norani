@@ -27,30 +27,45 @@ const DEFAULT_SYSTEM_USER = {
   isAnonymous: false,
 } as unknown as User;
 
+function getInitialUser(): User | null {
+  if (typeof window === 'undefined') {
+    return DEFAULT_SYSTEM_USER;
+  }
+
+  try {
+    if (localStorage.getItem('bg_user_logged_out') === 'true') {
+      return null;
+    }
+
+    const savedGuest = localStorage.getItem('bg_guest_session');
+    if (savedGuest) {
+      return JSON.parse(savedGuest) as User;
+    }
+  } catch (_) {
+    // Use the default system user when local storage is unavailable or invalid.
+  }
+
+  return DEFAULT_SYSTEM_USER;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(DEFAULT_SYSTEM_USER);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(getInitialUser);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    try {
-      const isLoggedOut = localStorage.getItem('bg_user_logged_out');
-      if (isLoggedOut === 'true') {
-        setUser(null);
-      } else {
-        const savedGuest = localStorage.getItem('bg_guest_session');
-        if (savedGuest) {
-          setUser(JSON.parse(savedGuest));
-        } else {
-          setUser(DEFAULT_SYSTEM_USER);
-        }
-      }
-    } catch (_) {}
-
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
-        if (currentUser) {
-          setUser(currentUser);
+        try {
+          if (localStorage.getItem('bg_user_logged_out') === 'true') {
+            setUser(null);
+          } else if (currentUser) {
+            setUser(currentUser);
+          }
+        } catch (_) {
+          if (currentUser) {
+            setUser(currentUser);
+          }
         }
         setLoading(false);
       },
@@ -60,9 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, []);
 
   const loginAsGuest = () => {
