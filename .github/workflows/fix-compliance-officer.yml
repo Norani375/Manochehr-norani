@@ -58,3 +58,5 @@ jobs:
           git add components/OrgChartCanvas.tsx app/page.tsx
           git commit -m "fix(dab): replace legacy compliance officer everywhere"
           git push
+
+      # This workflow is temporary. Remove it after the synchronization commit.
