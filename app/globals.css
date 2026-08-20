@@ -1,5 +1,49 @@
 @import "tailwindcss";
 
+/* Shared form-header rules */
+main header img[alt="لوگوی شرکت"] {
+  display: block !important;
+  width: 4rem !important;
+  height: 4rem !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  object-fit: contain !important;
+}
+
+/* DAB headers: show only the approved Dari header text.
+   This also prevents old saved English header values from appearing. */
+main header:has(> p:nth-of-type(3)) {
+  direction: rtl;
+  text-align: center;
+}
+
+main header:has(> p:nth-of-type(3)) > p:nth-of-type(1),
+main header:has(> p:nth-of-type(3)) > p:nth-of-type(2),
+main header:has(> p:nth-of-type(3)) > p:nth-of-type(3) {
+  font-size: 0 !important;
+  line-height: 1.5 !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+main header:has(> p:nth-of-type(3)) > p:nth-of-type(1)::after {
+  content: "د افغانستان بانک";
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+main header:has(> p:nth-of-type(3)) > p:nth-of-type(2)::after {
+  content: "آمریت عمومی نظارت از مؤسسات مالی غیر بانکی";
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+main header:has(> p:nth-of-type(3)) > p:nth-of-type(3)::after {
+  content: "مدیریت جوازدهی";
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
 @layer utilities {
   @media print {
     @page {
@@ -7,7 +51,6 @@
       margin: 8mm 10mm 10mm 10mm;
     }
 
-    /* Force standard clean white background and solid text for print */
     html, body {
       width: 100% !important;
       height: 100% !important;
@@ -20,8 +63,7 @@
       line-height: 1.4 !important;
     }
 
-    /* Hide non-printable navigation bars, sidebars, buttons, modals, and edit controls */
-    .print\:hidden,
+    .print\\:hidden,
     button,
     aside,
     nav,
@@ -31,7 +73,6 @@
       display: none !important;
     }
 
-    /* Full width layout for printed content container */
     main {
       padding: 0 !important;
       margin: 0 !important;
@@ -39,7 +80,6 @@
       max-width: 100% !important;
     }
 
-    /* Ensure colors, vector seals, backgrounds, and borders render accurately */
     * {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
@@ -49,12 +89,11 @@
       max-height: none !important;
       scrollbar-width: none !important;
     }
-    
+
     *::-webkit-scrollbar {
       display: none !important;
     }
 
-    /* Convert input fields and selectors to clean printed text lines */
     input[type="text"],
     input[type="number"],
     select,
@@ -71,12 +110,10 @@
       -webkit-appearance: none !important;
     }
 
-    /* Remove arrow icon on select dropdowns during print */
     select {
       background-image: none !important;
     }
 
-    /* Prevent breaking inside signature boxes, cards, and data tables */
     table, tr, td, th, tbody, thead,
     .dab-signature-box,
     .dab-section-card,
@@ -96,7 +133,6 @@
       break-inside: avoid !important;
     }
 
-    /* Keep table rows and headers intact without breaking across pages */
     tr, th, td {
       page-break-inside: avoid !important;
       break-inside: avoid !important;
@@ -107,12 +143,10 @@
       break-after: avoid !important;
     }
 
-    /* Crisp black borders for official tables */
     table, th, td {
       border-color: #000000 !important;
     }
 
-    /* Specific print layout for org chart canvas */
     #org-chart-export-canvas,
     #org-chart-exact-canvas {
       width: 100% !important;
@@ -128,7 +162,6 @@
       break-inside: avoid !important;
     }
 
-    /* Compact padding during print to fit on 1 standard page */
     #org-chart-export-canvas .p-6,
     #org-chart-export-canvas .p-5 {
       padding: 0.4rem 0.6rem !important;
@@ -148,14 +181,12 @@
       gap: 0.35rem !important;
     }
 
-    /* Hide edit mode buttons and controls inside printable canvas */
     #org-chart-export-canvas button,
     #org-chart-export-canvas .absolute.top-2.right-2,
-    #org-chart-export-canvas .absolute.top-1\.5.right-1\.5 {
+    #org-chart-export-canvas .absolute.top-1\\.5.right-1\\.5 {
       display: none !important;
     }
 
-    /* High contrast node cards during print */
     #org-chart-export-canvas [class*="rounded-"] {
       border-width: 1.5px !important;
       border-style: solid !important;
@@ -167,6 +198,15 @@
       background: #000000 !important;
       color: #ffffff !important;
       border-color: #000000 !important;
+    }
+
+    /* Keep form logos centered in printed output. */
+    main header img[alt="لوگوی شرکت"] {
+      display: block !important;
+      margin-right: auto !important;
+      margin-left: auto !important;
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
     }
   }
 }
