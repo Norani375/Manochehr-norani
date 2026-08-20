@@ -1,8 +1,10 @@
+import { DAB_OFFICIAL_FORM_BY_ID } from '@/lib/dabOfficialFormRegistry';
+
 /**
  * Central registry for the DAB licensing and renewal workflow.
  *
- * Keep regulatory labels and workflow rules in one place. UI components must
- * consume this registry instead of duplicating business rules.
+ * Regulatory form titles are owned by dabOfficialFormRegistry.ts.
+ * Workflow rules stay here. UI components must consume these registries.
  */
 
 export const DAB_FORM_CODES = {
@@ -174,23 +176,35 @@ export const DAB_REQUIRED_CASE_SECTIONS = [
 
 export type DabCaseSection = (typeof DAB_REQUIRED_CASE_SECTIONS)[number];
 
+/**
+ * The workflow catalog points to the canonical DAB registry.
+ * Do not copy official form titles into this file.
+ */
+const CATALOG_SOURCE = [
+  { code: DAB_FORM_CODES.renewal, id: 'license-renewal', purpose: 'ثبت و پیگیری پرونده تمدید جواز.' },
+  { code: DAB_FORM_CODES.shareholder, id: 'shareholder-employee-profile', purpose: 'ثبت معلومات سهمدار و مالکیت.' },
+  { code: DAB_FORM_CODES.employee, id: 'shareholder-employee-profile', purpose: 'ثبت معلومات کارمندان مشمول بررسی.' },
+  { code: DAB_FORM_CODES.branch, id: 'agency-establishment', purpose: 'ثبت و مدیریت شعب و نمایندگی‌ها.' },
+  { code: DAB_FORM_CODES.representative, id: 'agency-establishment', purpose: 'ثبت نماینده باصلاحیت.' },
+  { code: DAB_FORM_CODES.guarantee, id: 'shareholder-guarantee', purpose: 'ثبت معلومات تضمین و اسناد آن.' },
+  { code: DAB_FORM_CODES.ownershipChange, id: 'ownership-transfer', purpose: 'ثبت تغییرات مالکیت و اسناد مربوط.' },
+  { code: DAB_FORM_CODES.nameChange, id: 'name-change', purpose: 'ثبت تغییر نام و اسناد مربوط.' },
+  { code: DAB_FORM_CODES.locationChange, id: 'location-change', purpose: 'ثبت تغییر موقعیت و آدرس.' },
+  { code: DAB_FORM_CODES.suspension, id: 'license-suspension', purpose: 'ثبت درخواست و تصمیم تعلیق.' },
+  { code: DAB_FORM_CODES.closure, id: 'license-closure', purpose: 'ثبت ختم فعالیت و پرونده نهایی.' },
+] as const;
+
 export const DAB_FORM_CATALOG: ReadonlyArray<{
   code: DabFormCode;
   title: string;
   purpose: string;
-}> = [
-  { code: DAB_FORM_CODES.renewal, title: 'تمدید جواز', purpose: 'ثبت و پیگیری پرونده تمدید جواز.' },
-  { code: DAB_FORM_CODES.shareholder, title: 'شهرت سهمدار', purpose: 'ثبت معلومات سهمدار و مالکیت.' },
-  { code: DAB_FORM_CODES.employee, title: 'شهرت کارمند', purpose: 'ثبت معلومات کارمندان مشمول بررسی.' },
-  { code: DAB_FORM_CODES.branch, title: 'معلومات شعبه', purpose: 'ثبت و مدیریت شعب و نمایندگی‌ها.' },
-  { code: DAB_FORM_CODES.representative, title: 'معلومات نماینده', purpose: 'ثبت نماینده باصلاحیت.' },
-  { code: DAB_FORM_CODES.guarantee, title: 'تضمین سهمدار', purpose: 'ثبت معلومات تضمین و اسناد آن.' },
-  { code: DAB_FORM_CODES.ownershipChange, title: 'تغییر مالکیت', purpose: 'ثبت تغییرات مالکیت و اسناد مربوط.' },
-  { code: DAB_FORM_CODES.nameChange, title: 'تغییر نام', purpose: 'ثبت تغییر نام و اسناد مربوط.' },
-  { code: DAB_FORM_CODES.locationChange, title: 'تغییر موقعیت', purpose: 'ثبت تغییر موقعیت و آدرس.' },
-  { code: DAB_FORM_CODES.suspension, title: 'تعلیق فعالیت', purpose: 'ثبت درخواست و تصمیم تعلیق.' },
-  { code: DAB_FORM_CODES.closure, title: 'ترک پیشه', purpose: 'ثبت ختم فعالیت و پرونده نهایی.' },
-];
+  officialFormId: string;
+}> = CATALOG_SOURCE.map(({ code, id, purpose }) => ({
+  code,
+  title: DAB_OFFICIAL_FORM_BY_ID[id].title,
+  purpose,
+  officialFormId: id,
+}));
 
 export const DAB_WORKFLOW_TRANSITIONS: ReadonlyArray<{
   from: DabCaseStatus;
