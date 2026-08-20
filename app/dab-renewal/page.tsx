@@ -7,5 +7,11 @@ import { useCompany } from '@/lib/companyContext';
 
 export default function DabRenewalPage() {
   const { activeCompanyId } = useCompany();
-  return <main className="space-y-6"><DabStandardFormsWorkspace companyId={activeCompanyId} /><DabRenewalApplicationWorkflow companyId={activeCompanyId} /><DabRenewalFinalReport companyId={activeCompanyId} /></main>;
+  return (
+    <main className="space-y-6">
+      <DabStandardFormsWorkspace />
+      <DabRenewalApplicationWorkflow companyId={activeCompanyId} />
+      <DabRenewalFinalReport companyId={activeCompanyId} />
+    </main>
+  );
 }
