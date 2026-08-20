@@ -6,6 +6,7 @@ import {
   Check, Download, Building2, Stamp, Calendar, Hash, Paperclip, ShieldCheck, UserCheck
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
+import DabOfficialHeader from './DabOfficialHeader';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -514,44 +515,20 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
       >
         
         {/* Letter Official Header Matching Official DAB Standard */}
-        <div className="border-b-2 border-slate-900 pb-4 text-center">
-          {/* Central Official Logo */}
-          <div className="flex flex-col items-center justify-center text-center mb-3">
-            {customLogo ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain rounded-2xl border border-slate-300 bg-white p-1 shadow-xs mx-auto" />
-            ) : (
-              <div className="w-14 h-14 bg-blue-950 text-amber-400 rounded-2xl flex flex-col items-center justify-center border-2 border-amber-400/60 shadow-xs mx-auto">
-                <Building2 className="w-7 h-7" />
-              </div>
-            )}
-          </div>
-
-          <div className="text-center space-y-1">
-            <div className="text-xs font-bold text-slate-700">امارت اسلامی افغانستان</div>
-            <h1 className="text-lg font-black text-slate-950">د افغانستان بانک</h1>
-            <h2 className="text-xs font-bold text-slate-800">آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی</h2>
-          </div>
-
-          {/* Central Title Badge */}
-          <div className="text-center mt-3">
-            <div className="inline-block bg-emerald-50 border-2 border-emerald-700 text-emerald-950 font-black text-sm px-6 py-1.5 rounded-xl shadow-xs">
-              مکتوب رسمی تقاضای تمدید جواز فعالیت مرکز و نمایندگی‌ها
-            </div>
-          </div>
-
-          {/* Letter No & Date Line */}
-          <div className="flex items-center justify-between text-xs font-bold text-slate-800 mt-3 pt-2 border-t border-dashed border-slate-300 px-2">
-            <div>
-              <span>شماره صادر / مکتوب:</span>
-              <span className="font-black font-mono mr-2 text-blue-900">{data.letterNo}</span>
-            </div>
-            <div>
-              <span>تاریخ:</span>
-              <span className="font-black mr-2">{data.letterDate}</span>
-            </div>
-          </div>
-        </div>
+        <DabOfficialHeader
+          storageKey={`dab_letter_${companyId}`}
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی"
+          directorate="مدیریت عمومی نظارت و بررسی صرافی‌ها"
+          formTitle="مکتوب رسمی تقاضای تمدید جواز فعالیت مرکز و نمایندگی‌ها"
+          serialNo={data.letterNo}
+          letterDate={data.letterDate}
+          attachments="اسناد و ضمایم مندرجه"
+          logoUrl={customLogo}
+          onOpenLogoModal={onOpenLogoModal}
+          isEditable={true}
+        />
 
         {/* Recipient Section */}
         <div className="space-y-1.5 text-xs sm:text-sm font-extrabold text-slate-900">

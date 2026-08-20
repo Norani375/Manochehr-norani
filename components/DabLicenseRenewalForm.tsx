@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { Building, FileText, Printer, RotateCcw, Save, Plus, Trash2, Image as ImageIcon, Download, FileCode } from 'lucide-react';
 import { exportElementToWord } from '@/lib/wordExport';
+import DabOfficialHeader from './DabOfficialHeader';
 
 export interface LicenseRenewalShareholder {
   id: number;
@@ -518,47 +519,20 @@ export default function DabLicenseRenewalForm({
         className={`bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0 ${!isEditMode ? 'static-view-mode' : ''}`}
       >
         
-        {/* Header */}
-        <div className="relative text-center mb-6 pb-4 border-b-2 border-slate-900">
-          {/* Centered Company Logo without side text */}
-          <div className="flex flex-col items-center justify-center mb-3">
-            {customLogo ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={customLogo}
-                alt="لوگوی شرکت"
-                className="w-20 h-20 object-contain border border-slate-200 rounded-2xl p-1 bg-white shadow-xs mx-auto"
-              />
-            ) : (
-              <div className="w-20 h-20 bg-blue-900 text-amber-400 rounded-2xl flex flex-col items-center justify-center font-bold p-1 shadow-xs mx-auto">
-                <Building className="w-9 h-9" />
-                <span className="text-[10px] mt-1 font-sans">لوگوی شرکت</span>
-              </div>
-            )}
-            {onOpenLogoModal && (
-              <button
-                type="button"
-                onClick={onOpenLogoModal}
-                className="text-[11px] text-blue-700 hover:underline font-bold print:hidden cursor-pointer mt-1"
-              >
-                تغییر لوگو
-              </button>
-            )}
-          </div>
-
-          <div className="text-center mb-3">
-            <h1 className="text-xl font-black text-slate-900 mb-1">د افغانستان بانک</h1>
-            <h2 className="text-base font-extrabold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-            <h3 className="text-sm font-bold text-slate-700 mb-1">مدیریت جوازدهی صرافی‌ها و خدمات پولی</h3>
-          </div>
-
-          <div className="inline-block bg-slate-100 border-2 border-slate-700 font-black text-slate-950 px-6 py-2 rounded-xl text-base mt-1 shadow-xs">
-            فورم شماره (۱) — فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی (دفتر مرکزی)
-          </div>
-          <p className="text-xs text-slate-600 mt-3 font-semibold bg-amber-50 border border-amber-200 p-2.5 rounded-lg inline-block text-amber-900 leading-relaxed text-right">
-            رهنمود عمومی: این فورم باید با حضور سهمدار/سهمداران در مقابل کارمند مسئول در مدیریت جوازدهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی یا در حضور داشت کارمند مسئول در آمریت زون مربوط/مدیریت نمایندگی در ولایات امضاء و شصتگذاری گردد. کارمند مسئول خود را مطمئن سازد که فورم درخواستی حسب اسناد و مدارک مربوط خانهپُری گردیده و توسط شخص خود سهمدار/سهمداران امضاء و شصتگذاری میگردد.
-          </p>
-        </div>
+        {/* Official Header */}
+        <DabOfficialHeader
+          storageKey={`license_renewal_form1_${companyId}`}
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
+          directorate="مدیریت جوازدهی صرافی‌ها و خدمات پولی"
+          formNumber="فورم شماره (۱)"
+          formTitle="فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی (دفتر مرکزی)"
+          guidelineText="رهنمود عمومی: این فورم باید با حضور سهمدار/سهمداران در مقابل کارمند مسئول در مدیریت جوازدهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی یا در حضور داشت کارمند مسئول در آمریت زون مربوط/مدیریت نمایندگی در ولایات امضاء و شصتگذاری گردد. کارمند مسئول خود را مطمئن سازد که فورم درخواستی حسب اسناد و مدارک مربوط خانهپُری گردیده و توسط شخص خود سهمدار/سهمداران امضاء و شصتگذاری میگردد."
+          logoUrl={customLogo}
+          onOpenLogoModal={onOpenLogoModal}
+          isEditable={true}
+        />
 
         {/* Section 1: Shareholders Specs */}
         <div className="mb-8">

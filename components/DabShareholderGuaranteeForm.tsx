@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import DabOfficialHeader from './DabOfficialHeader';
 
 type Guarantor = {
   name: string;
@@ -83,12 +84,16 @@ export default function DabShareholderGuaranteeForm() {
   const setGuarantor = (i: number, data: Guarantor) => setGuarantors((current) => current.map((item, index) => index === i ? data : item));
 
   return <main dir="rtl" className="mx-auto max-w-6xl bg-white px-5 py-8 text-slate-950 print:max-w-none print:px-8">
-    <div className="mb-6 border-b-2 border-slate-900 pb-5 text-center">
-      <div className="text-xl font-black">د افغانستان بانک</div>
-      <div className="mt-1 text-base font-bold">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</div>
-      <div className="text-base font-bold">مدیریت جوازدهی</div>
-      <h1 className="mt-5 text-xl font-black">فورم تضمین سر سهمدار / سهمداران شرکت صرافی و خدمات پولی</h1>
-    </div>
+    <DabOfficialHeader
+      storageKey="dab_shareholder_guarantee_header"
+      governmentTitle="امارت اسلامی افغانستان"
+      bankName="د افغانستان بانک"
+      department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
+      directorate="مدیریت جوازدهی"
+      formNumber=""
+      formTitle="فورم تضمین سر سهمدار / سهمداران شرکت صرافی و خدمات پولی"
+      isEditable={true}
+    />
 
     <div className="mb-6 flex justify-end gap-2 print:hidden"><button onClick={saveDraft} className="rounded bg-slate-900 px-4 py-2 text-sm font-bold text-white">{saved ? 'ذخیره شد' : 'ذخیره پیش‌نویس'}</button><button onClick={print} className="rounded border border-slate-900 px-4 py-2 text-sm font-bold">چاپ A4</button></div>
 

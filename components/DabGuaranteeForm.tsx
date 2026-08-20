@@ -5,11 +5,13 @@ import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { UserCheck, Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, Image as ImageIcon, Download, FileCode } from 'lucide-react';
 import { exportElementToWord } from '@/lib/wordExport';
+import DabOfficialHeader from './DabOfficialHeader';
 
 export interface Guarantor {
   id: number;
   name: string;
   fatherName: string;
+  grandfatherName?: string;
   tazkiraNo: string;
   phoneNo: string;
   email: string;
@@ -59,6 +61,7 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
       id: 1,
       name: 'بسم‌الله شیرزی',
       fatherName: 'دوست محمد',
+      grandfatherName: 'محمد غوث',
       tazkiraNo: '45188',
       phoneNo: '0799681111',
       email: 'bismillah@exchange.af',
@@ -76,6 +79,7 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
       id: 2,
       name: 'عظیم‌الله رحمانی',
       fatherName: 'محمد آجان',
+      grandfatherName: 'رحمان‌قل',
       tazkiraNo: '35806',
       phoneNo: '0749340000',
       email: 'azim@exchange.af',
@@ -93,6 +97,7 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
       id: 3,
       name: 'صالح محمد',
       fatherName: 'عبدالرحیم',
+      grandfatherName: 'غلام نبی',
       tazkiraNo: '48424',
       phoneNo: '0799681111',
       email: 'saleh@exchange.af',
@@ -371,90 +376,69 @@ export default function DabGuaranteeForm({
       {/* Official Form Printable Canvas */}
       <div id="dab-official-form" className="bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0">
         
-        {/* Header Section */}
-        <div className="relative text-center mb-6 pb-4 border-b-2 border-slate-900">
-          {/* Centered Company Logo without side text */}
-          <div className="flex flex-col items-center justify-center mb-3">
-            {customLogo ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={customLogo}
-                alt="لوگوی شرکت"
-                className="w-20 h-20 object-contain border border-slate-200 rounded-2xl p-1 bg-white shadow-xs mx-auto"
-              />
-            ) : (
-              <div className="w-20 h-20 bg-blue-900 text-amber-400 rounded-2xl flex flex-col items-center justify-center font-bold p-1 shadow-xs mx-auto">
-                <Building className="w-9 h-9" />
-                <span className="text-[10px] mt-1 font-sans">لوگوی شرکت</span>
-              </div>
-            )}
-            {onOpenLogoModal && (
-              <button
-                type="button"
-                onClick={onOpenLogoModal}
-                className="text-[11px] text-blue-700 hover:underline font-bold print:hidden cursor-pointer mt-1"
-              >
-                تغییر لوگو
-              </button>
-            )}
-          </div>
-
-          <div className="text-center mb-3">
-            <h1 className="text-xl font-black text-slate-900 mb-1">د افغانستان بانک</h1>
-            <h2 className="text-base font-extrabold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-            <h3 className="text-sm font-bold text-slate-700 mb-2">مدیریت جوازدهی صرافی‌ها و خدمات پولی</h3>
-          </div>
-
-          <div className="inline-block bg-slate-100 border-2 border-slate-700 font-black text-slate-950 px-6 py-2 rounded-xl text-base shadow-xs">
-            تعهدنامه و تضمین‌خط بانکی و سهمداران شرکت صرافی و خدمات پولی
-          </div>
-        </div>
+        {/* Official Header */}
+        <DabOfficialHeader
+          storageKey={`guarantee_form_${companyId}`}
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
+          directorate="مدیریت جوازدهی"
+          formNumber=""
+          formTitle="فورم تضمین سر سهمدار / سهمداران شرکت صرافی و خدمات پولی"
+          guidelineText="تمامی سهمداران شرکت تضمین کننده نیاز است تا از سهمدار شرکت صرافی و خدمات پولی، تضمین نمایند."
+          logoUrl={customLogo}
+          onOpenLogoModal={onOpenLogoModal}
+          isEditable={true}
+        />
 
         {/* Section 1: Guarantors Details */}
         <div className="mb-8">
-          <div className="bg-slate-900 text-white font-bold px-4 py-1.5 rounded-t-lg text-sm mb-4">
+          <div className="bg-slate-900 text-white font-black px-4 py-2 rounded-t-lg text-sm mb-3">
             بخش اول: شهرت تضمین کنندگان
           </div>
-          <p className="text-xs text-slate-600 mb-4 font-semibold">
-            * تمامی سهمداران شرکت تضمین کننده نیاز است تا از سهمدار شرکت صرافی و خدمات پولی، تضمین نمایند.
+          <p className="text-xs text-slate-700 mb-4 font-bold bg-amber-50/70 border border-amber-200 p-2.5 rounded-lg">
+            تمامی سهمداران شرکت تضمین کننده نیاز است تا از سهمدار شرکت صرافی و خدمات پولی، تضمین نمایند.
           </p>
 
-          {/* 3 Guarantors Tables matching PDF exactly */}
+          {/* 3 Guarantors Tables matching official DAB standard exactly */}
           <div className="space-y-8">
             {formData.guarantors.map((guarantor, idx) => (
-              <div key={guarantor.id} className="border border-slate-900 rounded-lg overflow-hidden bg-white text-xs">
-                <div className="bg-slate-900 text-white font-bold px-3 py-1.5 text-xs">
-                  {idx === 0 ? '۱. شهرت سهامدار اول شرکت تضمین‌کننده:' : idx === 1 ? '۲. شهرت سهامدار دوم شرکت تضمین‌کننده:' : '۳. شهرت سهامدار سوم شرکت تضمین‌کننده:'}
+              <div key={guarantor.id} className="border-2 border-slate-900 rounded-xl overflow-hidden bg-white text-xs shadow-xs">
+                <div className="bg-slate-900 text-white font-black px-3.5 py-2 text-xs flex items-center justify-between">
+                  <span>
+                    {idx === 0 ? '1. شهرت سهم دار اول شرکت تضمین کننده:' : idx === 1 ? '2. شهرت سهم دار دوم شرکت تضمین کننده:' : '3. شهرت سهم دار سوم شرکت تضمین کننده:'}
+                  </span>
+                  <span className="text-[11px] font-normal text-slate-300">سهم‌دار ضامن #{idx + 1}</span>
                 </div>
-                <div className="p-2">
-                  <div className="flex flex-col md:flex-row gap-3 items-stretch">
+                <div className="p-3">
+                  <div className="flex flex-col lg:flex-row gap-3 items-stretch">
                     {/* 3-Column Information Table */}
                     <div className="flex-1 overflow-x-auto">
-                      <table className="w-full border-collapse border border-slate-900 text-xs">
+                      <table className="w-full border-collapse border-2 border-slate-900 text-xs">
                         <thead>
-                          <tr className="bg-slate-200 text-slate-900 font-bold text-center text-xs">
-                            <th className="border border-slate-900 py-1.5 px-2 w-[40%]">اسم و محل فعالیت تشبث</th>
-                            <th className="border border-slate-900 py-1.5 px-2 w-[30%]">سکونت اصلی</th>
-                            <th className="border border-slate-900 py-1.5 px-2 w-[30%]">سکونت فعلی</th>
+                          <tr className="bg-slate-100 text-slate-950 font-black text-center text-xs">
+                            <th className="border border-slate-900 py-2 px-2.5 w-[42%] text-right font-black">اسم و محل فعالیت تشبث</th>
+                            <th className="border border-slate-900 py-2 px-2.5 w-[29%] text-right font-black">سکونت اصلی</th>
+                            <th className="border border-slate-900 py-2 px-2.5 w-[29%] text-right font-black">سکونت فعلی</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-16 text-slate-700">اسم:</span>
-                                <EditableField isEditMode={isEditMode} value={guarantor.name} onChange={(val) => updateGuarantor(idx, 'name', val)} className="font-bold" />
+                                <span className="font-black w-16 text-slate-900 shrink-0">اسم:</span>
+                                <EditableField isEditMode={isEditMode} value={guarantor.name} onChange={(val) => updateGuarantor(idx, 'name', val)} className="font-black text-slate-950" />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">ولایت:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">ولایت:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.province} onChange={(val) => updateGuarantor(idx, 'province', val)} />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">ولایت:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">ولایت:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.currentProvince} onChange={(val) => updateGuarantor(idx, 'currentProvince', val)} />
                               </div>
                             </td>
@@ -462,19 +446,19 @@ export default function DabGuaranteeForm({
                           <tr>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-16 text-slate-700">ولد:</span>
+                                <span className="font-bold w-16 text-slate-800 shrink-0">ولد:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.fatherName} onChange={(val) => updateGuarantor(idx, 'fatherName', val)} />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">ولسوالی:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">ولسوالی:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.district} onChange={(val) => updateGuarantor(idx, 'district', val)} />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">ولسوالی:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">ولسوالی:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.currentDistrict} onChange={(val) => updateGuarantor(idx, 'currentDistrict', val)} />
                               </div>
                             </td>
@@ -482,19 +466,19 @@ export default function DabGuaranteeForm({
                           <tr>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-16 text-slate-700">ولدیت:</span>
-                                <EditableField isEditMode={isEditMode} value={guarantor.businessNameLocation} onChange={(val) => updateGuarantor(idx, 'businessNameLocation', val)} placeholder="نام و محل کسب..." />
+                                <span className="font-bold w-16 text-slate-800 shrink-0">ولدیت:</span>
+                                <EditableField isEditMode={isEditMode} value={guarantor.grandfatherName || ''} onChange={(val) => updateGuarantor(idx, 'grandfatherName', val)} placeholder="نام پدرکلان..." />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">ناحیه:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">ناحیه:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.nahia} onChange={(val) => updateGuarantor(idx, 'nahia', val)} />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">ناحیه:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">ناحیه:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.currentNahia} onChange={(val) => updateGuarantor(idx, 'currentNahia', val)} />
                               </div>
                             </td>
@@ -502,19 +486,19 @@ export default function DabGuaranteeForm({
                           <tr>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-16 text-slate-700">نمبر تذکره:</span>
+                                <span className="font-bold w-16 text-slate-800 shrink-0">نمبر تذکره:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.tazkiraNo} onChange={(val) => updateGuarantor(idx, 'tazkiraNo', val)} className="font-mono" />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">قریه:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">قریه:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.village} onChange={(val) => updateGuarantor(idx, 'village', val)} />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-14 text-slate-700">قریه:</span>
+                                <span className="font-bold w-14 text-slate-700 shrink-0">قریه:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.currentVillage} onChange={(val) => updateGuarantor(idx, 'currentVillage', val)} />
                               </div>
                             </td>
@@ -522,7 +506,15 @@ export default function DabGuaranteeForm({
                           <tr>
                             <td className="border border-slate-900 p-1.5 align-middle" colSpan={3}>
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-24 text-slate-700">شماره تماس:</span>
+                                <span className="font-bold w-36 text-slate-800 shrink-0">اسم و محل فعالیت تشبث:</span>
+                                <EditableField isEditMode={isEditMode} value={guarantor.businessNameLocation} onChange={(val) => updateGuarantor(idx, 'businessNameLocation', val)} placeholder="نام تشبث و آدرس کامل محل فعالیت ضامن..." className="text-slate-900 font-semibold" />
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="border border-slate-900 p-1.5 align-middle" colSpan={3}>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold w-36 text-slate-800 shrink-0">شماره تماس:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.phoneNo} onChange={(val) => updateGuarantor(idx, 'phoneNo', val)} className="font-mono" />
                               </div>
                             </td>
@@ -530,7 +522,7 @@ export default function DabGuaranteeForm({
                           <tr>
                             <td className="border border-slate-900 p-1.5 align-middle" colSpan={3}>
                               <div className="flex items-center gap-2">
-                                <span className="font-bold w-24 text-slate-700">ایمیل آدرس:</span>
+                                <span className="font-bold w-36 text-slate-800 shrink-0">ایمیل آدرس:</span>
                                 <EditableField isEditMode={isEditMode} value={guarantor.email} onChange={(val) => updateGuarantor(idx, 'email', val)} placeholder="email@example.com" className="font-mono" />
                               </div>
                             </td>
@@ -539,15 +531,15 @@ export default function DabGuaranteeForm({
                       </table>
                     </div>
 
-                    {/* Completely Separate Standalone Photo & Stamp Box */}
-                    <div className="w-full md:w-52 flex flex-col border border-slate-900 rounded-lg overflow-hidden bg-slate-50 shrink-0">
-                      <div className="bg-slate-200 text-slate-900 font-bold p-1.5 text-center text-[10px] leading-tight border-b border-slate-900">
-                        عکس و تاپه تضمین‌کننده
+                    {/* Official Photo & Stamp Box matching DAB official guidelines */}
+                    <div className="w-full lg:w-56 flex flex-col border-2 border-slate-900 rounded-xl overflow-hidden bg-slate-50 shrink-0">
+                      <div className="bg-slate-200 text-slate-950 font-black p-2 text-center text-xs border-b border-slate-900">
+                        محل نصب عکس و تاپه
                       </div>
-                      <div className="flex-1 min-h-[160px] p-2.5 flex flex-col items-center justify-center text-center bg-white m-1.5 border border-dashed border-slate-400 rounded-md">
-                        <ImageIcon className="w-6 h-6 mb-1.5 text-slate-400" />
-                        <span className="text-[10px] leading-relaxed font-bold text-slate-700">
-                          عکس تضمین‌کننده در اینجا نصب و با مهر تضمین‌کننده تاپه گردد.
+                      <div className="flex-1 min-h-[190px] p-3 flex flex-col items-center justify-center text-center bg-white m-2 border-2 border-dashed border-slate-400 rounded-lg">
+                        <ImageIcon className="w-8 h-8 mb-2 text-slate-400" />
+                        <span className="text-xs leading-relaxed font-bold text-slate-800">
+                          عکس تضمين کننده در اينجا نصب و با مهر تضمين کننده تاپه گردد
                         </span>
                       </div>
                     </div>

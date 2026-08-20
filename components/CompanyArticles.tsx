@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Printer, Download, BookOpen, Edit2, Check, ShieldCheck, Plus, Trash2, Save, RotateCcw } from 'lucide-react';
+import DabOfficialHeader from './DabOfficialHeader';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -176,73 +177,19 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
       >
         
         {/* Header / Emblem */}
-        <div className="text-center space-y-3 pb-8 border-b-2 border-slate-900">
-          <div className="flex items-center justify-center gap-4">
-            {customLogo ? (
-              <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain rounded-xl shadow-md border" />
-            ) : (
-              <div className="w-16 h-16 rounded-2xl bg-blue-900 text-white flex items-center justify-center font-bold text-xl shadow-md">
-                ب.غ
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="text-xs font-black text-blue-900 tracking-wider">
-              د افغانستان بانک
-            </div>
-            <div className="text-[11px] font-bold text-slate-500">
-              چارچوب معیاری و اصولنامه تجارت افغانستان
-            </div>
-            {isEditing ? (
-              <input
-                type="text"
-                value={data.companyName}
-                onChange={(e) => setData({ ...data, companyName: e.target.value })}
-                className="text-xl sm:text-2xl font-black text-center w-full border-b border-blue-500 bg-blue-50/50 py-1 font-sans"
-              />
-            ) : (
-              <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight pt-1">{data.companyName}</h1>
-            )}
-          </div>
-
-          <div className="pt-2">
-            <h2 className="text-base sm:text-lg font-black text-slate-900">
-              اساسنامه معیاری شرکت صرافی و خدمات پولی (سهامی خاص)
-            </h2>
-            <p className="text-[11px] font-bold text-slate-600 mt-0.5">
-              Articles of Association — Money Services Provider & Currency Exchange Co.
-            </p>
-          </div>
-
-          <div className="text-xs text-slate-600 pt-2 flex flex-wrap items-center justify-center gap-4 font-sans">
-            {isEditing ? (
-              <div className="flex items-center gap-2 w-full max-w-xl">
-                <span className="font-bold">آدرس:</span>
-                <input
-                  type="text"
-                  value={data.address}
-                  onChange={(e) => setData({ ...data, address: e.target.value })}
-                  className="flex-1 border-b border-slate-400 bg-slate-50 px-2 py-0.5 text-xs font-sans"
-                />
-              </div>
-            ) : (
-              <span>آدرس دفتر مرکزی: {data.address}</span>
-            )}
-            {isEditing ? (
-              <input
-                type="text"
-                value={data.dateStr}
-                onChange={(e) => setData({ ...data, dateStr: e.target.value })}
-                className="font-semibold text-blue-900 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 text-xs font-sans text-center w-28"
-              />
-            ) : (
-              <span className="font-semibold text-blue-900 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
-                {data.dateStr}
-              </span>
-            )}
-          </div>
-        </div>
+        <DabOfficialHeader
+          storageKey={`company_articles_${companyId}`}
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="چارچوب معیاری و اصولنامه تجارت افغانستان"
+          directorate="آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی"
+          formNumber=""
+          formTitle="اساسنامه معیاری شرکت صرافی و خدمات پولی (سهامی خاص)"
+          companyName={data.companyName}
+          guidelineText={`آدرس دفتر مرکزی: ${data.address} — تاریخ تصویب: ${data.dateStr}`}
+          logoUrl={customLogo}
+          isEditable={true}
+        />
 
         {/* Document Body */}
         <div className="space-y-6 pt-6 text-justify">

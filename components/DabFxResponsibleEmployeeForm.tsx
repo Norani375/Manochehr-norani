@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import DabOfficialHeader from './DabOfficialHeader';
 
 const fields = [
   ['companyName', 'نام صرافی', true],
@@ -33,12 +34,16 @@ export default function DabFxResponsibleEmployeeForm() {
   return (
     <main dir="rtl" className="min-h-screen bg-slate-100 p-4 md:p-8 print:bg-white print:p-0">
       <article className="mx-auto max-w-5xl bg-white p-6 shadow-sm print:max-w-none print:p-0 print:shadow-none">
-        <header className="border-2 border-slate-800 p-5 text-center">
-          <div className="font-bold">د افغانستان بانک</div>
-          <div className="text-sm font-semibold">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</div>
-          <div className="text-sm">مدیریت جوازدهی</div>
-          <h1 className="mt-4 border-t pt-4 text-xl font-bold">فورم معرفی کارمند مسئول (منشی) صرافی</h1>
-        </header>
+        <DabOfficialHeader
+          storageKey="dab_fx_responsible_employee_header"
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
+          directorate="مدیریت جوازدهی"
+          formNumber=""
+          formTitle="فورم معرفی کارمند مسئول (منشی) صرافی"
+          isEditable={true}
+        />
 
         <section className="mt-5 border-2 border-slate-800 p-5">
           <div className="grid gap-4 md:grid-cols-[1fr_150px]">

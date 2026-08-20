@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import DabOfficialHeader from './DabOfficialHeader';
 
 const sourceUrl = 'https://dab.gov.af/sites/default/files/2019-03/%D9%81%D9%88%D8%B1%D9%85%D8%B6%D9%85%D8%A7%D9%86%D8%AA%D8%B5%D8%B1%D8%A7%D9%81%DB%8C3.pdf';
 
@@ -87,13 +88,17 @@ export default function DabFxGuaranteeForm() {
   return (
     <main dir="rtl" className="min-h-screen bg-slate-100 p-4 md:p-8 print:bg-white print:p-0">
       <div className="mx-auto max-w-6xl bg-white print:max-w-none">
-        <header className="border-2 border-slate-800 p-5 text-center">
-          <div className="text-base font-bold">د افغانستان بانک</div>
-          <div className="mt-1 text-sm font-semibold">آمریت عمومی نظارت امور مالی غیر بانکی</div>
-          <div className="text-sm">مدیریت جوازدهی</div>
-          <h1 className="mt-4 border-t pt-4 text-xl font-bold">فورم ضمانت خط صرافی</h1>
-          <p className="mt-2 text-xs text-slate-600">فورم شماره ۱ — مطابق فایل رسمی منتشرشده د افغانستان بانک</p>
-        </header>
+        <DabOfficialHeader
+          storageKey="dab_fx_guarantee_header"
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت امور مالی غیر بانکی"
+          directorate="مدیریت جوازدهی"
+          formNumber="فورم شماره ۱"
+          formTitle="فورم ضمانت خط صرافی"
+          guidelineText="مطابق فایل رسمی منتشرشده د افغانستان بانک"
+          isEditable={true}
+        />
 
         <section className="border-x-2 border-b-2 border-slate-800 p-5 md:p-8">
           <h2 className="mb-4 border-b pb-2 text-lg font-bold">بخش اول: شهرت مکمل تضمین کننده</h2>

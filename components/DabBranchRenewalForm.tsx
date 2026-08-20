@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { Building, FileText, CheckCircle2, Printer, RotateCcw, Save, ShieldAlert, CheckSquare, Square, Image as ImageIcon, Download, FileCode } from 'lucide-react';
 import { exportElementToWord } from '@/lib/wordExport';
+import DabOfficialHeader from './DabOfficialHeader';
 
 export interface BranchRenewalData {
   // Section 1: Company details
@@ -486,48 +487,21 @@ export default function DabBranchRenewalForm({
       {(renderAll ? REAL_BRANCHES_PRESETS.map(p => ({...data, ...p})) : [data]).map((branchData, index) => (
       <div key={index} id={renderAll ? `dab-branch-renewal-canvas-${index}` : "dab-branch-renewal-canvas"} className={`bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0 ${renderAll ? 'break-after-page mb-8 print:mb-0' : ''}`}>
         
-        {/* Header */}
-        <div className="relative text-center mb-6 pb-4 border-b-2 border-slate-900">
-          {/* Centered Company Logo without side text */}
-          <div className="flex flex-col items-center justify-center mb-3">
-            {customLogo ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={customLogo}
-                alt="لوگوی شرکت"
-                className="w-20 h-20 object-contain border border-slate-200 rounded-2xl p-1 bg-white shadow-xs mx-auto"
-              />
-            ) : (
-              <div className="w-20 h-20 bg-blue-900 text-amber-400 rounded-2xl flex flex-col items-center justify-center font-bold p-1 shadow-xs mx-auto">
-                <Building className="w-9 h-9" />
-                <span className="text-[10px] mt-1 font-sans">لوگوی شرکت</span>
-              </div>
-            )}
-            {onOpenLogoModal && (
-              <button
-                type="button"
-                onClick={onOpenLogoModal}
-                className="text-[11px] text-blue-700 hover:underline font-bold print:hidden cursor-pointer mt-1"
-              >
-                تغییر لوگو
-              </button>
-            )}
-          </div>
-
-          <div className="text-center mb-3">
-            <h1 className="text-xl font-black text-slate-900 mb-1">د افغانستان بانک</h1>
-            <h2 className="text-base font-extrabold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
-            <h3 className="text-sm font-bold text-slate-700 mb-1">مدیریت جوازدهی نمایندگی‌ها</h3>
-            <p className="text-xs font-bold text-blue-950 mt-1">{branchData.companyName || 'شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)'}</p>
-          </div>
-
-          <div className="inline-block bg-slate-100 border-2 border-slate-700 font-black text-slate-950 px-6 py-2 rounded-xl text-base mt-1 shadow-xs">
-            فورم شماره (۲) — فورم درخواستی تمدید جواز نمایندگی‌های شرکت صرافی و خدمات پولی
-          </div>
-          <p className="text-xs text-slate-600 mt-3 font-semibold bg-amber-50 border border-amber-200 p-2 rounded-lg inline-block text-amber-900">
-            رهنمود عمومی: این فورم با امضاء مسئول عملیاتی شرکت صرافی و خدمات پولی به مدیریت جواز دهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی و یا زون مربوطه، ارائه می گردد.
-          </p>
-        </div>
+        {/* Official Header */}
+        <DabOfficialHeader
+          storageKey={`branch_renewal_form2_${companyId}`}
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
+          directorate="مدیریت جوازدهی نمایندگی‌ها"
+          formNumber="فورم شماره (۲)"
+          formTitle="فورم درخواستی تمدید جواز نمایندگی‌های شرکت صرافی و خدمات پولی"
+          guidelineText="رهنمود عمومی: این فورم با امضاء مسئول عملیاتی شرکت صرافی و خدمات پولی به مدیریت جواز دهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی و یا زون مربوطه، ارائه می گردد."
+          companyName={branchData.companyName || 'شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)'}
+          logoUrl={customLogo}
+          onOpenLogoModal={onOpenLogoModal}
+          isEditable={true}
+        />
 
         {/* Section 1: Company & Branch Details */}
         <div className="mb-8">

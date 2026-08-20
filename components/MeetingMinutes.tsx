@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
 import { exportElementToWord } from '@/lib/wordExport';
+import DabOfficialHeader from './DabOfficialHeader';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -350,34 +351,22 @@ export default function MeetingMinutes({
         className="bg-white text-slate-950 p-8 sm:p-12 border border-slate-200 rounded-2xl shadow-lg max-w-4xl mx-auto space-y-8 print:border-none print:shadow-none print:p-0 font-sans leading-relaxed"
       >
         {/* Official Header */}
-        <div className="border-b-2 border-slate-900 pb-6 text-center">
-          {/* Centered Logo */}
-          <div className="flex flex-col items-center justify-center mb-3">
-            {customLogo ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={customLogo} alt="Logo" className="w-20 h-20 object-contain rounded-2xl border-2 border-slate-300 p-1 shadow-md bg-white" />
-            ) : (
-              <div className="w-16 h-16 bg-blue-950 text-amber-400 rounded-2xl flex items-center justify-center border-2 border-amber-400/60 shadow-md">
-                <Building2 className="w-8 h-8" />
-              </div>
-            )}
-          </div>
-
-          <div className="text-center space-y-1.5">
-            <div className="text-xs font-black text-blue-900 tracking-wider">
-              د افغانستان بانک
-            </div>
-            <div className="text-[11px] font-bold text-slate-600">
-              آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی
-            </div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-950 pt-1">
-              صورت‌جلسه مجمع عمومی فوق‌العاده و عادی سالانه
-            </h1>
-            <div className="text-sm font-bold text-slate-800">
-              {data.companyName} (جواز صرافی: <span className="font-mono ltr inline-block font-bold">{data.licenseNo}</span>)
-            </div>
-          </div>
-        </div>
+        <DabOfficialHeader
+          storageKey={`meeting_minutes_${companyId}`}
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی"
+          directorate="مدیریت عمومی نظارت و امور حقوقی صرافی‌ها"
+          formNumber=""
+          formTitle="صورت‌جلسه مجمع عمومی فوق‌العاده و عادی سالانه"
+          companyName={data.companyName}
+          licenseNo={data.licenseNo}
+          serialNo={data.meetingNo}
+          letterDate={data.meetingDate}
+          logoUrl={customLogo}
+          onOpenLogoModal={onOpenLogoModal}
+          isEditable={true}
+        />
 
         {/* Info Grid */}
         <div className="grid grid-cols-2 gap-x-12 gap-y-3 text-[11px] font-bold border-b border-slate-100 pb-6 px-4">

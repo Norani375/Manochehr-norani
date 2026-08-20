@@ -7,6 +7,7 @@ import {
   ShieldCheck, Activity, Image as ImageIcon, CheckCircle2, Edit3, Plus, Trash2, Check, RefreshCw
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
+import DabOfficialHeader from './DabOfficialHeader';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
@@ -293,38 +294,21 @@ export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode
         className="bg-white text-slate-900 p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-xl space-y-8 font-sans print:shadow-none print:border-none print:p-0"
       >
         {/* Official Header */}
-        <div className="flex flex-col items-center text-center border-b-2 border-slate-900 pb-6 space-y-2 relative">
-          <div className="flex items-center justify-between w-full">
-            <div className="text-right text-[11px] font-bold space-y-1">
-              <p className="text-xs font-black text-blue-900">د افغانستان بانک</p>
-              <p>آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی</p>
-              <p className="text-slate-600">مدیریت جوازدهی صرافی‌ها و خدمات پولی</p>
-            </div>
-
-            <div className="flex flex-col items-center">
-              {customLogo ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain mb-1" />
-              ) : (
-                <div className="w-16 h-16 bg-blue-900 text-white rounded-full flex items-center justify-center font-black text-xs mb-1 shadow-md">
-                  لوگوی شرکت
-                </div>
-              )}
-            </div>
-
-            <div className="text-left text-[11px] font-bold space-y-1">
-              <p className="text-blue-900">چک‌لست تمدید جواز</p>
-              <p className="font-mono">7-0965</p>
-            </div>
-          </div>
-
-          <h1 className="text-xl sm:text-2xl font-black text-slate-950 mt-4 leading-relaxed">
-            چک‌لیست معیاری اسناد و شرایط تمدید جواز فعالیت (دفتر مرکزی)
-          </h1>
-          <div className="inline-block bg-emerald-50 border border-emerald-300 px-6 py-1.5 rounded-full text-xs font-black text-emerald-950 shadow-xs">
-            چک‌لیست بررسی اسناد شرکت صرافی و خدمات پولی ({data.companyName}) — جواز شماره (<span className="font-mono ltr inline-block">{data.licenseNo}</span>) واقع ولایت ({data.province})
-          </div>
-        </div>
+        <DabOfficialHeader
+          storageKey={`license_renewal_checklist_${companyId}`}
+          governmentTitle="امارت اسلامی افغانستان"
+          bankName="د افغانستان بانک"
+          department="آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی"
+          directorate="مدیریت جوازدهی صرافی‌ها و خدمات پولی"
+          formNumber=""
+          formTitle="چک‌لیست معیاری اسناد و شرایط تمدید جواز فعالیت (دفتر مرکزی)"
+          companyName={data.companyName}
+          licenseNo={data.licenseNo}
+          guidelineText={`چک‌لیست بررسی اسناد شرکت صرافی و خدمات پولی (${data.companyName}) — جواز شماره (${data.licenseNo}) واقع ولایت (${data.province})`}
+          logoUrl={customLogo}
+          onOpenLogoModal={onOpenLogoModal}
+          isEditable={true}
+        />
 
         {/* Section 1: Checklist Grid (10 Official Items for Renewal) */}
         <div className="space-y-3">
