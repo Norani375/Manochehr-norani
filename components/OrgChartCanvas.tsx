@@ -491,7 +491,7 @@ export default function OrgChartCanvas({
     try {
       await new Promise((resolve) => setTimeout(resolve, 80));
       await exportElementToPdf({
-        elementId: 'org-chart-exact-canvas',
+        elementId: 'org-chart-export-canvas',
         filename: `چارت_سازمانی_شرکت_صرافی_${paperSizeOption.toUpperCase()}_DPI${Math.round(pdfQualityScale * 96)}.pdf`,
         paperSize: paperSizeOption,
         orientation: 'landscape',
@@ -591,18 +591,18 @@ export default function OrgChartCanvas({
         <div className="absolute -top-3 left-4 flex items-center gap-1.5 z-10">
           {enriched.hasDbMatch && (
             <span 
-              className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-xs print:hidden"
+              className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-700 text-slate-100 shadow-2xs border border-slate-600 print:hidden"
               title="متصل به دیتابیس زنده سوانح پرسنل (Firestore Database)"
             >
-              <Database className="w-2.5 h-2.5" />
+              <Database className="w-2.5 h-2.5 text-slate-300" />
               <span>دیتابیس</span>
             </span>
           )}
           {badgeText && (
-            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shadow-xs ${
+            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shadow-2xs border ${
               isDark 
-                ? 'bg-blue-950/90 text-blue-200 border border-blue-700' 
-                : 'bg-blue-100 dark:bg-blue-950 text-[#1e3a8a] dark:text-blue-300 border border-blue-300 dark:border-blue-800'
+                ? 'bg-blue-900/90 text-blue-100 border-blue-700' 
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
             }`}>
               {badgeText}
             </span>
@@ -613,10 +613,10 @@ export default function OrgChartCanvas({
         {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
           <div className="absolute -top-3 right-4 flex items-center gap-1.5 z-10">
             <span 
-              className="inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-700 text-white shadow-xs border border-emerald-500"
+              className="inline-flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs"
               title={`تعداد پرسنل اختصاص‌یافته به این نمایندگی: ${node.staff?.length || 0} نفر`}
             >
-              <Users className="w-2.5 h-2.5 text-emerald-200" />
+              <Users className="w-2.5 h-2.5 text-blue-200" />
               <span>پرسنل: {node.staff?.length || 0} نفر</span>
             </span>
           </div>
@@ -636,7 +636,7 @@ export default function OrgChartCanvas({
                 e.stopPropagation();
                 toggleNodeExpand(node.id);
               }}
-              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all print:hidden ${
                 isDark 
                   ? 'bg-blue-900/80 hover:bg-blue-800 text-blue-200' 
                   : 'bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-950 text-slate-600 dark:text-slate-300'
@@ -655,17 +655,17 @@ export default function OrgChartCanvas({
           {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
             <div className="mt-2 flex justify-center">
               <span 
-                className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs"
+                className="inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs"
                 title="برنامه‌ریزی ظرفیت نیروی انسانی نمایندگی"
               >
-                <Users className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                <Users className="w-3 h-3 text-blue-200" />
                 <span>ظرفیت پرسنل: {node.staff?.length || 0} نفر</span>
               </span>
             </div>
           )}
 
           {/* Quick Collapse/Expand CTA chip */}
-          <div className="mt-2.5 flex items-center justify-center gap-2">
+          <div className="mt-2.5 flex items-center justify-center gap-2 print:hidden">
             <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md transition-all ${
               isExpanded 
                 ? isDark 
@@ -1273,22 +1273,45 @@ export default function OrgChartCanvas({
 
       {/* Main Org Chart Canvas matching exact uploaded image */}
       <div 
-        id="org-chart-exact-canvas"
+        id="org-chart-export-canvas"
         className="bg-slate-50 dark:bg-slate-950 p-4 sm:p-8 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl print:shadow-none print:border-none print:p-0 print:bg-white text-slate-900 dark:text-slate-100 dir-rtl"
       >
         <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
           
-          {/* Header Banner - Dark Blue exact visual */}
-          <div className="bg-[#1e3a8a] text-white py-8 px-6 text-center space-y-2 relative shadow-md">
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-xs">
+          {/* DAB Standard Form Header Banner - Soft Dignified Navy */}
+          <div className="bg-[#1e3a8a] text-white py-6 px-6 text-center space-y-2 relative shadow-md border-b-4 border-amber-500">
+            <div className="flex items-center justify-between border-b border-blue-800/80 pb-3 mb-2 text-[11px] text-blue-100 font-bold px-2">
+              <span className="flex items-center gap-1">
+                <span>🏛️ د افغانستان بانک</span>
+                <span className="opacity-75">| آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</span>
+              </span>
+              <span className="bg-blue-950/90 text-amber-300 px-2.5 py-0.5 rounded-full border border-blue-700/80 font-mono text-[10px]">
+                کد فورمه: DAB-NBFI-EXC-FORM-04
+              </span>
+            </div>
+
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight drop-shadow-2xs">
               {data.headerTitle}
             </h1>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-slate-100">
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-amber-200">
               {data.companyName}
             </h2>
-            <p className="text-xs sm:text-sm font-medium text-blue-200/90 font-sans tracking-wide">
+            <p className="text-xs font-medium text-blue-200/90 font-sans tracking-wide">
               {data.companySubEng}
             </p>
+
+            {/* Official DAB Form Metadata Row */}
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-[11px] text-blue-100 font-bold border-t border-blue-800/60 mt-3">
+              <span className="bg-blue-900/60 px-3 py-1 rounded-md border border-blue-700/60">
+                شماره جواز: DAB/7-0965
+              </span>
+              <span className="bg-blue-900/60 px-3 py-1 rounded-md border border-blue-700/60">
+                نوعیت فعالیت: صرافی و خدمات پولی
+              </span>
+              <span className="bg-blue-900/60 px-3 py-1 rounded-md border border-blue-700/60">
+                تاریخ تنظیم: سال ۱۴۰۳ - ۱۴۰۴
+              </span>
+            </div>
           </div>
 
           {/* Org Tree Content Container */}
@@ -1532,6 +1555,58 @@ export default function OrgChartCanvas({
               {/* Table Footer Note */}
               <div className="pt-2 text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1">
                 <span>{data.footerNote}</span>
+              </div>
+            </div>
+
+            {/* Official DAB Approval & Seal Section (استندرد فورمه‌های رسمی د افغانستان بانک) */}
+            <div className="pt-8 border-t-2 border-slate-300 dark:border-slate-700 space-y-4">
+              <div className="text-center mb-2">
+                <span className="text-xs font-black text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-4 py-1 rounded-full border border-slate-300 dark:border-slate-700">
+                  تأییدیه و ثبت رسمی شرکت صرافی / خدمات پولی در د افغانستان بانک
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-xs">
+                {/* Column 1: Board / Shareholder Approval */}
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-4 space-y-3">
+                  <div className="font-black text-slate-900 dark:text-slate-100 border-b pb-2 border-slate-200 dark:border-slate-800">
+                    تأیید رئیس هیئت مدیره / سهمدار اصلی
+                  </div>
+                  <div className="text-slate-700 dark:text-slate-300 font-bold space-y-1">
+                    <p>نام و تخلص: {data.president.name}</p>
+                    <p className="text-[11px] text-slate-500">شماره تذکره / کارت: ثبت شده</p>
+                  </div>
+                  <div className="pt-4 border-t border-dashed border-slate-300 dark:border-slate-700 text-slate-400 text-[11px]">
+                    امضاء و اثر انگشت: ______________
+                  </div>
+                </div>
+
+                {/* Column 2: Executive Director Approval */}
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-4 space-y-3">
+                  <div className="font-black text-slate-900 dark:text-slate-100 border-b pb-2 border-slate-200 dark:border-slate-800">
+                    تأیید مدیر اجرائیه / کادر فنی
+                  </div>
+                  <div className="text-slate-700 dark:text-slate-300 font-bold space-y-1">
+                    <p>نام مسئول: {data.executives[0]?.name || 'مدیر اجرائیه'}</p>
+                    <p className="text-[11px] text-slate-500">پست: {data.executives[0]?.title || 'مدیر عملیاتی'}</p>
+                  </div>
+                  <div className="pt-4 border-t border-dashed border-slate-300 dark:border-slate-700 text-slate-400 text-[11px]">
+                    امضاء و اثر انگشت: ______________
+                  </div>
+                </div>
+
+                {/* Column 3: Official Seal & DAB Verification */}
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-4 space-y-3">
+                  <div className="font-black text-slate-900 dark:text-slate-100 border-b pb-2 border-slate-200 dark:border-slate-800">
+                    مهر شرکت و ثبت د افغانستان بانک
+                  </div>
+                  <div className="h-12 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg flex items-center justify-center text-slate-400 text-[11px]">
+                    [ محل مهر رسمی شرکت ]
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-bold pt-1">
+                    تاریخ ثبت: _____ / _____ / ۱۴۰۳
+                  </div>
+                </div>
               </div>
             </div>
 
