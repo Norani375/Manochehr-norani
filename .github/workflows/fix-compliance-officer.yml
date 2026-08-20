@@ -14,49 +14,49 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Replace legacy compliance officer data
+      - name: Synchronize compliance officer and migrate stale saved data
         shell: python
         run: |
           from pathlib import Path
 
-          replacements = {
-              "components/OrgChartCanvas.tsx": [
-                  ("name: 'محمد فهیم'", "name: 'عبدالعزیز مهرزاد'"),
-                  ("phone: '0785445060'", "phone: ''"),
-                  ("email: 'compliance@exchange.af'", "email: ''"),
-                  ("joinDate: '1401/06/20'", "joinDate: ''"),
-                  ("education: 'لیسانس اقتصاد با تصدیق‌نامه AML/CFT'", "education: 'لیسانس اداره و تجارت'"),
-                  ("experience: '5 سال مسئولیت انطباق با مقررات مبارزه با پولشویی و تأمین مالی تروریسم'", "experience: 'مسئول مستقل پیروی از قوانین و مقررات و AML/CFT'"),
-                  ("tazkiraNo: '0032198-0102-87654'", "tazkiraNo: '72198-0300-1401'"),
-                  ("location: 'دفتر مرکزی - واحد انطباق (AML/CFT)'", "location: 'دفتر مرکزی - واحد پیروی از قوانین و مقررات'"),
-              ],
-              "app/page.tsx": [
-                  ("name: 'محمد فهیم ولد محمد امان'", "name: 'عبدالعزیز مهرزاد ولد عبدالخلیل'"),
-                  ("id: '97484'", "id: '72198-0300-1401'"),
-              ],
-          }
+          path = Path('components/OrgChartCanvas.tsx')
+          text = path.read_text(encoding='utf-8')
 
-          changed = False
-          for filename, pairs in replacements.items():
-              path = Path(filename)
-              text = path.read_text(encoding='utf-8')
-              original = text
-              for old, new in pairs:
-                  text = text.replace(old, new)
-              if text != original:
-                  path.write_text(text, encoding='utf-8')
-                  changed = True
+          marker = "const DEFAULT_ORG_CHART_DATA: OrgChartData = {"
+          helper = """const COMPLIANCE_OFFICER_CANONICAL: Partial<OrgChartNode> = {\n  name: 'عبدالعزیز مهرزاد',\n  title: 'مسئول پیروی از قوانین (Compliance Officer)',\n  phone: '',\n  email: '',\n  joinDate: '',\n  education: 'لیسانس اداره و تجارت',\n  experience: 'مسئول مستقل پیروی از قوانین و مقررات و AML/CFT',\n  tazkiraNo: '72198-0300-1401',\n  location: 'دفتر مرکزی - واحد پیروی از قوانین و مقررات',\n};\n\nconst normalizeOrgChartData = (value: OrgChartData): OrgChartData => ({\n  ...value,\n  executives: value.executives.map((executive) =>\n    executive.title.includes('مسئول پیروی از قوانین')\n      ? { ...executive, ...COMPLIANCE_OFFICER_CANONICAL }\n      : executive\n  ),\n});\n\n"""
+          if "const COMPLIANCE_OFFICER_CANONICAL" not in text:
+              text = text.replace(marker, helper + marker, 1)
 
-          if not changed:
-              print('No legacy compliance officer values found. Nothing to commit.')
-              raise SystemExit(0)
+          text = text.replace(
+              "if (saved) return { ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) };",
+              "if (saved) return normalizeOrgChartData({ ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) });"
+          )
+          text = text.replace(
+              "setData({ ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) });",
+              "setData(normalizeOrgChartData({ ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) }));"
+          )
+          text = text.replace(
+              "setData((prev) => ({ ...prev, ...remote.orgChartData }));",
+              "setData((prev) => normalizeOrgChartData({ ...prev, ...remote.orgChartData }));"
+          )
+
+          # Also repair any remaining visible fallback text.
+          text = text.replace('محمد فهیم', 'عبدالعزیز مهرزاد')
+
+          path.write_text(text, encoding='utf-8')
+
+          # Keep the main page canonical too.
+          page = Path('app/page.tsx')
+          page_text = page.read_text(encoding='utf-8')
+          page_text = page_text.replace("name: 'محمد فهیم ولد محمد امان'", "name: 'عبدالعزیز مهرزاد ولد عبدالخلیل'")
+          page_text = page_text.replace("id: '97484'", "id: '72198-0300-1401'")
+          page.write_text(page_text, encoding='utf-8')
 
       - name: Commit synchronized data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add components/OrgChartCanvas.tsx app/page.tsx
-          git commit -m "fix(dab): replace legacy compliance officer everywhere"
+          git diff --cached --quiet && echo "No changes required" && exit 0
+          git commit -m "fix(dab): make compliance officer canonical in all views"
           git push
-
-      # This workflow is temporary. Remove it after the synchronization commit.
