@@ -40,7 +40,7 @@ export interface DabOfficialHeaderProps {
 
 export default function DabOfficialHeader({
   storageKey,
-  governmentTitle: defaultGov = 'امارت اسلامی افغانستان',
+  governmentTitle: defaultGov = '',
   bankName: defaultBank = 'د افغانستان بانک',
   department: defaultDept = 'آمریت عمومی نظارت از مؤسسات مالی غیر بانکی',
   directorate: defaultDir = 'مدیریت جوازدهی صرافی‌ها و خدمات پولی',
@@ -242,7 +242,7 @@ export default function DabOfficialHeader({
                 type="text"
                 value={data.governmentTitle}
                 onChange={(e) => updateField('governmentTitle', e.target.value)}
-                placeholder="امارت اسلامی افغانستان"
+                placeholder="عنوان حکومت / دولت"
                 className="w-full text-xs p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 font-bold"
               />
             </div>

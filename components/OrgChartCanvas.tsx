@@ -63,6 +63,32 @@ const normalizeOrgChartData = (value: OrgChartData): OrgChartData => ({
   ),
 });
 
+const TreeConnectors = ({ count, color = '#1e3a8a', isDarkTheme = false }: { count: number, color?: string, isDarkTheme?: boolean }) => {
+  const bgColorClass = isDarkTheme ? 'bg-[#1e3a8a] dark:bg-blue-400' : 'bg-[#1e3a8a]';
+  
+  if (count <= 1) {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <div className={`w-0.5 h-8 ${bgColorClass}`}></div>
+      </div>
+    );
+  }
+
+  const widthPercent = `${((count - 1) / count) * 100}%`;
+
+  return (
+    <div className="flex flex-col items-center w-full relative">
+      <div className={`w-0.5 h-6 ${bgColorClass}`}></div>
+      <div className={`h-0.5 ${bgColorClass} transition-all`} style={{ width: widthPercent }}></div>
+      <div className="flex justify-between h-6 transition-all" style={{ width: widthPercent }}>
+        {Array.from({ length: count }).map((_, i) => (
+          <div key={i} className={`w-0.5 h-full ${bgColorClass}`}></div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const DEFAULT_ORG_CHART_DATA: OrgChartData = {
   headerTitle: 'چارت تشکیلاتی و ساختار سازمانی مصوب',
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)',
@@ -1138,126 +1164,87 @@ export default function OrgChartCanvas({
                 })}
               </div>
 
-              {/* Vertical connector down from President */}
-              <div className="w-0.5 h-8 bg-[#1e3a8a]"></div>
-
-              {/* Horizontal line spanning Board of Supervisors */}
-              <div className="w-[82%] max-w-[620px] h-0.5 bg-[#1e3a8a]"></div>
-
-              {/* 3 vertical drop lines to Level 2 items */}
-              <div className="w-[82%] max-w-[620px] flex justify-between h-6">
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a]"></div>
-              </div>
+              {/* Automatic Connector to Level 2 */}
+              <TreeConnectors count={data.boardMembers.length} />
             </div>
 
-            {/* LEVEL 2: Board of Supervisors (3 Boxes) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto items-start">
-              
-              {/* Right Box (RTL Index 0: برکت‌الله - عضو هیئت نظار) */}
-              <div>
-                {renderInteractiveNodeCard({
-                  node: data.boardMembers[2] || { id: 'bm-3', name: 'برکت‌الله', title: 'عضو هیئت نظار' },
-                  variant: 'board',
-                  isDark: false,
-                  badgeText: 'هیئت نظار'
-                })}
-              </div>
-
-              {/* Middle Box (RTL Index 1: بسم‌الله شیرزی - رئیس هیئت نظار - FILLED DARK BLUE) */}
-              <div>
-                {renderInteractiveNodeCard({
-                  node: data.boardMembers[1] || { id: 'bm-2', name: 'بسم‌الله شیرزی', title: 'رئیس هیئت نظار' },
-                  variant: 'board',
-                  isDark: true,
-                  badgeText: 'رئیس نظار',
-                  customClass: 'transform sm:-translate-y-1'
-                })}
-              </div>
-
-              {/* Left Box (RTL Index 2: عظیم‌الله رحمانی - عضو هیئت نظار) */}
-              <div>
-                {renderInteractiveNodeCard({
-                  node: data.boardMembers[0] || { id: 'bm-1', name: 'عظیم‌الله رحمانی', title: 'عضو هیئت نظار' },
-                  variant: 'board',
-                  isDark: false,
-                  badgeText: 'هیئت نظار'
-                })}
-              </div>
-            </div>
-
-            {/* Connector down to Executives */}
-            <div className="flex flex-col items-center relative my-2">
-              <div className="w-0.5 h-6 bg-[#1e3a8a] dark:bg-blue-400"></div>
-              <div className="w-[50%] max-w-[380px] h-0.5 bg-[#1e3a8a] dark:bg-blue-400"></div>
-              <div className="w-[50%] max-w-[380px] flex justify-between h-4">
-                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
-              </div>
-            </div>
-
-            {/* LEVEL 3: Executive Managers (2 Filled Dark Blue Boxes) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto items-start">
-              
-              {/* Right Box (RTL: صالح‌محمد - مسئول عملیاتی) */}
-              <div>
-                {renderInteractiveNodeCard({
-                  node: data.executives[1] || { id: 'exec-2', name: 'صالح‌محمد', title: 'مسئول عملیاتی' },
-                  variant: 'executive',
-                  isDark: true,
-                  badgeText: 'مدیریت شعب و حواله‌ها'
-                })}
-              </div>
-
-              {/* Left Box (RTL: عبدالعزیز مهرزاد - مسئول پیروی از قوانین) */}
-              <div>
-                {renderInteractiveNodeCard({
-                  node: data.executives[0] || { id: 'exec-1', name: 'عبدالعزیز مهرزاد', title: 'مسئول پیروی از قوانین' },
-                  variant: 'executive',
-                  isDark: true,
-                  badgeText: 'AML/CFT Compliance'
-                })}
-              </div>
-            </div>
-
-            {/* LEVEL 4: Provincial Branches under Operational Manager */}
-            <div className="text-center my-4">
-              <span className="inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-950/80 text-[#1e3a8a] dark:text-blue-200 border border-blue-300 dark:border-blue-800 text-xs font-black px-4 py-1.5 rounded-full shadow-xs">
-                <span>نماینده‌ها و نمایندگی‌های ولایتی</span>
-                <span className="text-[10px] bg-[#1e3a8a] text-white px-2 py-0.5 rounded-full font-bold">تحت اثر مستقیم مسئول عملیاتی</span>
-              </span>
-            </div>
-
-            {/* Clean connector down from Operations Manager to Provincial Branches */}
-            <div className="flex flex-col items-center relative mb-2">
-              <div className="w-full max-w-2xl flex justify-end pr-[25%] sm:pr-[25%]">
-                <div className="w-0.5 h-6 bg-[#1e3a8a] dark:bg-blue-400"></div>
-              </div>
-              
-              <div className="w-[90%] max-w-[720px] h-0.5 bg-[#1e3a8a] dark:bg-blue-400 rounded-full"></div>
-              
-              <div className="w-[90%] max-w-[720px] flex justify-between h-4">
-                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
-                <div className="w-0.5 h-full bg-[#1e3a8a] dark:bg-blue-400"></div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
-              {data.branches.map((br) => (
-                <div key={br.id}>
+            {/* LEVEL 2: Board of Supervisors (Dynamic count) */}
+            <div 
+              className="grid gap-4 sm:gap-6 mx-auto items-start justify-center"
+              style={{ 
+                gridTemplateColumns: `repeat(${data.boardMembers.length || 1}, minmax(0, 1fr))`,
+                maxWidth: `${Math.max(data.boardMembers.length * 300, 300)}px`
+              }}
+            >
+              {data.boardMembers.map((bm) => (
+                <div key={bm.id}>
                   {renderInteractiveNodeCard({
-                    node: br,
-                    variant: 'branch',
-                    isDark: false,
-                    badgeText: 'نمایندگی رسمی',
-                    subtitleOverride: br.title
+                    node: bm,
+                    variant: 'board',
+                    isDark: bm.title.includes('رئیس'),
+                    badgeText: bm.title.includes('رئیس') ? 'رئیس نظار' : 'هیئت نظار',
+                    customClass: bm.title.includes('رئیس') ? 'transform sm:-translate-y-1' : ''
                   })}
                 </div>
               ))}
             </div>
+
+            {/* Automatic Connector down to Executives */}
+            <TreeConnectors count={data.executives.length} />
+
+            {/* LEVEL 3: Executive Managers (Dynamic count) */}
+            <div 
+              className="grid gap-6 mx-auto items-start justify-center"
+              style={{ 
+                gridTemplateColumns: `repeat(${data.executives.length || 1}, minmax(0, 1fr))`,
+                maxWidth: `${Math.max(data.executives.length * 300, 300)}px`
+              }}
+            >
+              {data.executives.map((exec) => (
+                <div key={exec.id}>
+                  {renderInteractiveNodeCard({
+                    node: exec,
+                    variant: 'executive',
+                    isDark: true,
+                    badgeText: exec.title.includes('پیروی') ? 'AML/CFT Compliance' : 'کادر اجرایی'
+                  })}
+                </div>
+              ))}
+            </div>
+
+            {/* LEVEL 4: Provincial Branches under Operational Manager */}
+            {data.branches.length > 0 && (
+              <>
+                <div className="text-center my-4">
+                  <span className="inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-950/80 text-[#1e3a8a] dark:text-blue-200 border border-blue-300 dark:border-blue-800 text-xs font-black px-4 py-1.5 rounded-full shadow-xs">
+                    <span>نماینده‌ها و نمایندگی‌های ولایتی</span>
+                    <span className="text-[10px] bg-[#1e3a8a] text-white px-2 py-0.5 rounded-full font-bold">تحت اثر کادر اجرایی</span>
+                  </span>
+                </div>
+
+                {/* Clean automatic connector down to Provincial Branches */}
+                <TreeConnectors count={data.branches.length} />
+
+                <div 
+                  className="grid gap-4 items-start mx-auto justify-center"
+                  style={{
+                    gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`
+                  }}
+                >
+                  {data.branches.map((br) => (
+                    <div key={br.id}>
+                      {renderInteractiveNodeCard({
+                        node: br,
+                        variant: 'branch',
+                        isDark: false,
+                        badgeText: 'نمایندگی رسمی',
+                        subtitleOverride: br.title
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             {/* SECTION: Reporting Relationships & Separation of Duties Table */}
             <div className="pt-8 border-t-2 border-slate-200 dark:border-slate-800 space-y-4">

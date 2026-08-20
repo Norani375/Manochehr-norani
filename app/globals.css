@@ -10,57 +10,6 @@ main header img[alt="لوگوی شرکت"] {
   object-fit: contain !important;
 }
 
-/* DAB headers: show only the approved Dari header text.
-   This also prevents old saved English header values from appearing. */
-main header:has(> p:nth-of-type(3)) {
-  direction: rtl;
-  text-align: center;
-}
-
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(1),
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(2),
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(3) {
-  font-size: 0 !important;
-  line-height: 1.5 !important;
-  margin-right: auto !important;
-  margin-left: auto !important;
-}
-
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(1)::after {
-  content: "دافغانستان بانک";
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(2)::after {
-  content: "آمریت عمومی نظارت از مؤسسات مالی غیر بانکی";
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(3)::after {
-  content: "مدیریت جوازدهی";
-  font-size: 0.875rem;
-  font-weight: 400;
-}
-
-/* Apply the same official DAB header to unified forms that previously
-   displayed only the company name, including company/supporting forms. */
-main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1) {
-  font-size: 0 !important;
-  line-height: 1.5 !important;
-  margin-right: auto !important;
-  margin-left: auto !important;
-}
-
-main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::after {
-  content: "دافغانستان بانک\A آمریت عمومی نظارت از مؤسسات مالی غیر بانکی\A مدیریت جوازدهی";
-  white-space: pre-line;
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.7;
-}
-
 @layer utilities {
   @media print {
     @page {

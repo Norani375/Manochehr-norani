@@ -47,7 +47,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         <AuthProvider>
           <AuthGuard>
             <CompanyProvider>
-              <div className="sticky top-0 z-50 border-b border-blue-200 bg-blue-950 px-4 py-2 text-white shadow-sm">
+              <div className="sticky top-0 z-50 border-b border-blue-200 bg-blue-950 px-4 py-2 text-white shadow-sm print:hidden">
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
                   <span className="text-xs font-bold">مرکز مدیریت جواز و تمدید جواز</span>
                   <Link href="/dab-renewal" className="rounded-lg bg-white px-3 py-1.5 text-xs font-black text-blue-950 hover:bg-blue-50">
