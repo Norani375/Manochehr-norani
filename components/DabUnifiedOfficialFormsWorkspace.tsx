@@ -27,7 +27,7 @@ type SavedForm = {
   status?: string;
 };
 
-const defaultHeader: HeaderValues = {
+const defaultDabHeader: HeaderValues = {
   bank: 'د افغانستان بانک',
   department: 'آمریت عمومی نظارت از مؤسسات مالی غیر بانکی',
   directorate: 'مدیریت جوازدهی',
@@ -37,6 +37,36 @@ const defaultHeader: HeaderValues = {
   address: profile.address,
   logoUrl: '',
 };
+
+const defaultCompanyHeader: HeaderValues = {
+  bank: '',
+  department: '',
+  directorate: '',
+  companyName: profile.legalName,
+  licenseNo: profile.licenseNo,
+  province: profile.province,
+  address: profile.address,
+  logoUrl: '',
+};
+
+function isCompanyIssuedForm(form: DabOfficialFormDefinition): boolean {
+  return form.category === 'company' || form.category === 'supporting-documents';
+}
+
+function getDefaultHeader(form: DabOfficialFormDefinition): HeaderValues {
+  return isCompanyIssuedForm(form) ? defaultCompanyHeader : defaultDabHeader;
+}
+
+function mergeHeader(form: DabOfficialFormDefinition, saved?: Partial<HeaderValues>): HeaderValues {
+  const base = getDefaultHeader(form);
+  const merged = { ...base, ...(saved ?? {}) };
+  if (isCompanyIssuedForm(form)) {
+    merged.bank = '';
+    merged.department = '';
+    merged.directorate = '';
+  }
+  return merged;
+}
 
 const companyFields: Field[] = [
   { key: 'companyName', label: 'نام رسمی شرکت', required: true },
@@ -108,9 +138,10 @@ function initialValues(form: DabOfficialFormDefinition): Values {
 }
 
 function Header({ form, header, editing, onEdit, onChange }: { form: DabOfficialFormDefinition; header: HeaderValues; editing: boolean; onEdit: () => void; onChange: (key: keyof HeaderValues, value: string) => void }) {
+  const companyIssued = isCompanyIssuedForm(form);
   return (
-    <header className="border-2 border-slate-800 bg-white px-6 py-5 text-center print:border-x-0 print:border-t-0">
-      {header.logoUrl ? <img src={header.logoUrl} alt="لوگوی شرکت" className="mx-auto mb-3 h-16 w-16 object-contain" /> : null}
+    <header className="break-inside-avoid border-2 border-slate-800 bg-white px-6 py-5 text-center print:border-x-0 print:border-t-0 print:overflow-visible">
+      {header.logoUrl ? <img src={header.logoUrl} alt="لوگوی شرکت" className="mx-auto mb-3 h-16 w-16 object-contain print:break-inside-avoid" /> : null}
       {editing ? (
         <div className="mx-auto mb-4 grid max-w-5xl gap-3 text-right print:hidden md:grid-cols-2">
           <label className="text-sm">نام نهاد صادرکننده<input value={header.bank} onChange={e => onChange('bank', e.target.value)} className="mt-1 w-full border p-2" /></label>
@@ -123,14 +154,20 @@ function Header({ form, header, editing, onEdit, onChange }: { form: DabOfficial
           <label className="text-sm md:col-span-2">نشانی لوگو<input value={header.logoUrl} onChange={e => onChange('logoUrl', e.target.value)} className="mt-1 w-full border p-2" dir="ltr" /></label>
         </div>
       ) : null}
-      <p className="text-base font-bold">{header.bank}</p>
-      <p className="mt-1 text-sm font-semibold">{header.department}</p>
-      <p className="text-sm">{header.directorate}</p>
+      {companyIssued ? (
+        <p className="text-lg font-bold leading-8">{header.companyName}</p>
+      ) : (
+        <>
+          <p className="text-base font-bold">{header.bank}</p>
+          <p className="mt-1 text-sm font-semibold">{header.department}</p>
+          <p className="text-sm">{header.directorate}</p>
+        </>
+      )}
       <div className="mx-auto mt-4 max-w-4xl border-t border-slate-300 pt-4">
         <h1 className="text-xl font-bold leading-8">{form.title}</h1>
         <p className="mt-1 text-sm text-slate-600">دسته‌بندی: {categoryNames[form.category] ?? 'اسناد رسمی'}</p>
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-2 border-t pt-3 text-sm md:grid-cols-4">
+      <div className="mt-4 grid grid-cols-1 gap-2 border-t pt-3 text-sm print:break-inside-avoid md:grid-cols-4">
         <div>نام شرکت: <strong>{header.companyName}</strong></div>
         <div>شماره جواز: <strong>{header.licenseNo}</strong></div>
         <div>ولایت: <strong>{header.province}</strong></div>
@@ -155,7 +192,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
 
   const form = DAB_OFFICIAL_FORMS.find(item => item.id === active) ?? DAB_OFFICIAL_FORMS[0];
   const values = form ? valuesByForm[form.id] ?? initialValues(form) : {};
-  const header = form ? headersByForm[form.id] ?? defaultHeader : defaultHeader;
+  const header = form ? headersByForm[form.id] ?? getDefaultHeader(form) : defaultDabHeader;
   const fields = form ? getFields(form) : [];
   const filteredForms = useMemo(() => {
     const term = query.trim().toLocaleLowerCase();
@@ -178,7 +215,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
           loadedValues.officerIdentityNo = '72198-0300-1401';
         }
         setValuesByForm(current => ({ ...current, [form.id]: loadedValues }));
-        setHeadersByForm(current => ({ ...current, [form.id]: { ...defaultHeader, ...(saved.header ?? {}) } }));
+        setHeadersByForm(current => ({ ...current, [form.id]: mergeHeader(form, saved.header) }));
       } catch (error) {
         if (!cancelled) setMessage(error instanceof Error ? `خواندن معلومات موفق نشد: ${error.message}` : 'خواندن معلومات موفق نشد.');
       } finally {
@@ -196,7 +233,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
   };
 
   const updateHeader = (key: keyof HeaderValues, value: string) => {
-    setHeadersByForm(current => ({ ...current, [form.id]: { ...(current[form.id] ?? defaultHeader), [key]: value } }));
+    setHeadersByForm(current => ({ ...current, [form.id]: { ...(current[form.id] ?? getDefaultHeader(form)), [key]: value } }));
   };
 
   const selectForm = (id: string) => {
@@ -247,39 +284,49 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
             </div>
           </aside>
 
-          <section className="overflow-hidden bg-white shadow-sm print:shadow-none">
+          <section className="overflow-hidden bg-white shadow-sm print:overflow-visible print:shadow-none">
             <Header form={form} header={header} editing={editingHeader} onEdit={() => setEditingHeader(value => !value)} onChange={updateHeader} />
-            <div className="border-x-2 border-b-2 border-slate-800 p-5 print:p-8">
-              {loading ? <div className="mb-4 border bg-slate-50 p-3 text-sm">در حال خواندن معلومات ثبت‌شده...</div> : null}
+            <div className="border-x-2 border-b-2 border-slate-800 p-5 print:border-x-0 print:p-8">
+              {loading ? <div className="mb-4 border bg-slate-50 p-3 text-sm print:hidden">در حال خواندن معلومات ثبت‌شده...</div> : null}
               <div className="mb-5 grid gap-4 md:grid-cols-2">
                 {fields.map(field => (
-                  <label key={field.key} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
+                  <label key={field.key} className={`break-inside-avoid ${field.type === 'textarea' ? 'md:col-span-2' : ''}`}>
                     <span className="mb-1 block text-sm font-semibold">{field.label}{field.required ? ' *' : ''}</span>
                     {field.type === 'textarea' ? <textarea value={values[field.key] ?? ''} onChange={e => update(field.key, e.target.value)} rows={5} className="w-full border border-slate-400 p-2" /> : <input type={field.type ?? 'text'} value={values[field.key] ?? ''} onChange={e => update(field.key, e.target.value)} className="w-full border border-slate-400 p-2" />}
                   </label>
                 ))}
               </div>
 
-              <div className="mt-6 border-2 border-slate-700 p-4">
+              <div className="mt-6 break-inside-avoid border-2 border-slate-700 p-4">
                 <h2 className="mb-3 font-bold">تأیید و امضا</h2>
                 <div className="grid gap-4 md:grid-cols-3">
-                  <div className="min-h-24 border p-3">درخواست‌کننده<br /><br />امضا: __________________</div>
-                  <div className="min-h-24 border p-3">مسئول شرکت<br /><br />امضا: __________________</div>
-                  <div className="min-h-24 border p-3">مهر شرکت<br /><br />__________________</div>
+                  <div className="min-h-24 break-inside-avoid border p-3">درخواست‌کننده<br /><br />امضا: __________________</div>
+                  <div className="min-h-24 break-inside-avoid border p-3">مسئول شرکت<br /><br />امضا: __________________</div>
+                  <div className="min-h-24 break-inside-avoid border p-3">مهر شرکت<br /><br />__________________</div>
                 </div>
               </div>
 
-              <div className="mt-5 border-t pt-4 text-xs leading-6 text-slate-600">{form.printNotice}</div>
+              <div className="mt-5 break-inside-avoid border-t pt-4 text-xs leading-6 text-slate-600">{form.printNotice}</div>
 
               <div className="mt-5 flex flex-wrap gap-2 print:hidden">
                 <button type="button" disabled={busy || loading} onClick={save} className="border bg-slate-900 px-5 py-2 text-white disabled:opacity-50">{busy ? 'در حال ذخیره...' : 'ذخیره فورم و سربرگ'}</button>
                 <button type="button" onClick={() => window.print()} className="border px-5 py-2">چاپ فورم</button>
               </div>
-              {message ? <p className="mt-3 border p-2 text-sm">{message}</p> : null}
+              {message ? <p className="mt-3 border p-2 text-sm print:hidden">{message}</p> : null}
             </div>
           </section>
         </div>
       </div>
+      <style jsx global>{`
+        @page { size: A4 portrait; margin: 12mm; }
+        @media print {
+          html, body { background: #fff !important; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+          h1, h2, h3, label { break-after: avoid; page-break-after: avoid; }
+          input, textarea { break-inside: avoid; page-break-inside: avoid; }
+        }
+      `}</style>
     </main>
   );
 }
