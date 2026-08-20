@@ -613,7 +613,7 @@ export default function OrgChartCanvas({
         {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
           <div className="absolute -top-3 right-4 flex items-center gap-1.5 z-10">
             <span 
-              className="inline-flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs"
+              className="inline-flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs transition-all duration-300 animate-in fade-in ease-out"
               title={`تعداد پرسنل اختصاص‌یافته به این نمایندگی: ${node.staff?.length || 0} نفر`}
             >
               <Users className="w-2.5 h-2.5 text-blue-200" />
@@ -655,7 +655,7 @@ export default function OrgChartCanvas({
           {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
             <div className="mt-2 flex justify-center">
               <span 
-                className="inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs"
+                className="inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs transition-all duration-300 animate-in fade-in ease-out"
                 title="برنامه‌ریزی ظرفیت نیروی انسانی نمایندگی"
               >
                 <Users className="w-3 h-3 text-blue-200" />
