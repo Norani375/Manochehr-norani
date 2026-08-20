@@ -44,6 +44,23 @@ main header:has(> p:nth-of-type(3)) > p:nth-of-type(3)::after {
   font-weight: 400;
 }
 
+/* Apply the same official DAB header to unified forms that previously
+   displayed only the company name, including company/supporting forms. */
+main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1) {
+  font-size: 0 !important;
+  line-height: 1.5 !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::after {
+  content: "د افغانستان بانک\A آمریت عمومی نظارت از مؤسسات مالی غیر بانکی\A مدیریت جوازدهی";
+  white-space: pre-line;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
 @layer utilities {
   @media print {
     @page {
