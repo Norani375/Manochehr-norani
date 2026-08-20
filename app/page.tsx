@@ -784,6 +784,39 @@ export default function OrgChartPage() {
                 <span>{isDbConnected ? 'متصل (Live)' : 'در حال اتصال...'}</span>
               </div>
             </div>
+
+            {/* Dedicated Search Bar at Top of Sidebar */}
+            <div className="space-y-1.5">
+              <div className="relative flex items-center">
+                <Search className="w-4 h-4 absolute right-3 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    if (activeTab !== 'org-chart' && e.target.value.trim()) {
+                      setActiveTab('org-chart');
+                    }
+                  }}
+                  placeholder="جستجوی پرسنل و چارت..."
+                  className="w-full pl-8 pr-9 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute left-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              {searchTerm && (
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold px-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                  در حال برجسته‌سازی نودهای منطبق در چارت
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Section 1: Main Pages & DAB Forms */}
@@ -1037,7 +1070,12 @@ export default function OrgChartPage() {
         ) : activeTab === 'company-articles' ? (
           <CompanyArticles customLogo={customLogo} companyId={activeCompanyId}/>
         ) : (
-          <OrgChartCanvas customLogo={customLogo} />
+          <OrgChartCanvas 
+            customLogo={customLogo} 
+            companyId={activeCompanyId}
+            isEditMode={isEditMode}
+            searchTerm={searchTerm}
+          />
         )}
         {false && (
         <>

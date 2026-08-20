@@ -412,8 +412,8 @@ export default function CompanyProposal({ customLogo, companyId = 'default' }: C
             </div>
           )}
           
-          <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
-            د افغانستان بانک — Da Afghanistan Bank
+          <div className="text-xs font-black text-blue-900 tracking-wider">
+            د افغانستان بانک
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
             {data.companyName}

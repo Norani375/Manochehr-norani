@@ -188,8 +188,8 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
           </div>
 
           <div className="space-y-1.5">
-            <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
-              د افغانستان بانک — Da Afghanistan Bank
+            <div className="text-xs font-black text-blue-900 tracking-wider">
+              د افغانستان بانک
             </div>
             <div className="text-[11px] font-bold text-slate-500">
               چارچوب معیاری و اصولنامه تجارت افغانستان
@@ -204,9 +204,6 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
             ) : (
               <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight pt-1">{data.companyName}</h1>
             )}
-            <div className="text-[11px] font-mono font-medium text-slate-500 ltr">
-              Barakatullah Ghafouri Money Exchange & MSP Services Co.
-            </div>
           </div>
 
           <div className="pt-2">

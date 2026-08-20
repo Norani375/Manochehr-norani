@@ -42,7 +42,7 @@ const DEFAULT_CHECKLIST_DATA: ChecklistData = {
     { id: 2, position: 'رئیس هیئت نظار', name: 'بسمالله شیرزی', fatherName: 'دوستمحمد', idNo: '1402-0902-45188', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
     { id: 3, position: 'عضو هیئت نظار', name: 'برکتالله غفوری', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', infoForm: '', tin: '9005155800', criminalInquiry: '', sanctions: '' },
     { id: 4, position: 'عضو هیئت نظار', name: 'عظیمالله رحمانی', fatherName: 'محمد آجان', idNo: '1399-1105-35806', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
-    { id: 5, position: 'مسئول رعایت از قانون و مقررات', name: 'محمد فهیم یوسفزی', fatherName: 'محمد امان', idNo: '1399-1103-97484', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 5, position: 'مسئول پیروی از قوانین (Compliance Officer)', name: 'عبدالعزیز مهرزاد', fatherName: '', idNo: '1399-1103-97484', education: 'لیسانس', field: '', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
     { id: 6, position: 'مسئول عملیاتی', name: 'صالحمحمدرحیمی', fatherName: 'عبدالرحیم', idNo: '1402-0201-48424', education: 'لیسانس', field: '', infoForm: '', tin: '9020613858', criminalInquiry: '', sanctions: '' },
   ],
   checklistItems: [
@@ -304,8 +304,8 @@ export default function DabLicenseChecklist({ isEditMode: initialEditMode = true
               )}
             </div>
           </div>
-          <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
-            د افغانستان بانک — Da Afghanistan Bank
+          <div className="text-xs font-black text-blue-900 tracking-wider">
+            د افغانستان بانک
           </div>
           <div className="text-[11px] font-bold text-slate-600">
             آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی — مدیریت جوازدهی

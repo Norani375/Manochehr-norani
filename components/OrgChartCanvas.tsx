@@ -66,7 +66,7 @@ const normalizeOrgChartData = (value: OrgChartData): OrgChartData => ({
 const DEFAULT_ORG_CHART_DATA: OrgChartData = {
   headerTitle: 'چارت تشکیلاتی و ساختار سازمانی مصوب',
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)',
-  companySubEng: 'Barakatullah Ghafouri Money Exchange & MSP Services Co. — Approved Organizational Structure (DAB)',
+  companySubEng: 'ساختار تشکیلاتی و وظایف مصوب — د افغانستان بانک',
   
   president: {
     id: 'pres-1',
@@ -233,9 +233,16 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
 interface OrgChartCanvasProps {
   companyId?: string;
   customLogo?: string | null;
+  isEditMode?: boolean;
+  searchTerm?: string;
 }
 
-export default function OrgChartCanvas({ customLogo, companyId = "default" }: OrgChartCanvasProps) {
+export default function OrgChartCanvas({
+  customLogo,
+  companyId = "default",
+  isEditMode: externalIsEditMode,
+  searchTerm: externalSearchTerm,
+}: OrgChartCanvasProps) {
   const [data, setData] = useState<OrgChartData>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -250,10 +257,21 @@ export default function OrgChartCanvas({ customLogo, companyId = "default" }: Or
 
   const [dbEmployees, setDbEmployees] = useState<EmployeeRecord[]>([]);
   const [expandedNodeIds, setExpandedNodeIds] = useState<Record<string, boolean>>({});
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [internalIsEditMode, setInternalIsEditMode] = useState(false);
+  const isEditMode = externalIsEditMode !== undefined ? externalIsEditMode : internalIsEditMode;
+  const setIsEditMode = (val: boolean | ((prev: boolean) => boolean)) => {
+    if (typeof val === 'function') {
+      setInternalIsEditMode((prev) => val(isEditMode));
+    } else {
+      setInternalIsEditMode(val);
+    }
+  };
+
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [internalSearchTerm, setInternalSearchTerm] = useState('');
+  const searchTerm = externalSearchTerm !== undefined ? externalSearchTerm : internalSearchTerm;
+  const setSearchTerm = setInternalSearchTerm;
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // Sync with Firestore Org Chart Data
@@ -879,8 +897,38 @@ export default function OrgChartCanvas({ customLogo, companyId = "default" }: Or
         <div className="bg-blue-50/70 dark:bg-slate-800/80 border border-blue-200 dark:border-slate-700 rounded-2xl p-5 space-y-4 text-xs print:hidden">
           <h3 className="font-bold text-blue-900 dark:text-blue-300 flex items-center gap-2 border-b border-blue-200 pb-2">
             <Edit3 className="w-4 h-4" />
-            <span>ویرایش عنوان‌ها، مشخصات تماس و سوابق چارت تشکیلاتی</span>
+            <span>ویرایش عنوان‌ها، سربرگ و مشخصات چارت تشکیلاتی</span>
           </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900">
+            <div>
+              <label className="font-bold block mb-1 text-xs">عنوان سربرگ چارت:</label>
+              <input
+                type="text"
+                value={data.headerTitle}
+                onChange={(e) => setData({ ...data, headerTitle: e.target.value })}
+                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-bold text-xs"
+              />
+            </div>
+            <div>
+              <label className="font-bold block mb-1 text-xs">نام شرکت:</label>
+              <input
+                type="text"
+                value={data.companyName}
+                onChange={(e) => setData({ ...data, companyName: e.target.value })}
+                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-bold text-xs"
+              />
+            </div>
+            <div>
+              <label className="font-bold block mb-1 text-xs">عنوان فرعی سربرگ:</label>
+              <input
+                type="text"
+                value={data.companySubEng}
+                onChange={(e) => setData({ ...data, companySubEng: e.target.value })}
+                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg text-xs"
+              />
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>

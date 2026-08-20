@@ -80,7 +80,8 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
       line-height: 1.4 !important;
     }
 
-    .print\\:hidden,
+    .print-hidden,
+    [class*="print:hidden"],
     button,
     aside,
     nav,

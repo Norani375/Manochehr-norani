@@ -448,18 +448,15 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
                       <img src={customLogo || "/assets/dab_logo.png"} alt="Logo" className="max-w-full max-h-full" />
                     </div>
                     <div className="text-center flex-1">
-                      <div className="text-xs font-black text-blue-900 tracking-wider uppercase mb-1">
-                        د افغانستان بانک — Da Afghanistan Bank
+                      <div className="text-xs font-black text-blue-900 tracking-wider mb-1">
+                        د افغانستان بانک
                       </div>
                       <h1 className="text-xl sm:text-2xl font-black mb-1 tracking-tight text-slate-950">
                         شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)
                       </h1>
-                      <p className="text-xs font-mono font-medium text-slate-600 mb-1 ltr">
-                        Barakatullah Ghafouri Money Exchange & MSP Services Co.
-                      </p>
-                      <p className="text-xs font-bold text-slate-700">جواز صرافی: <span className="font-mono font-bold ltr inline-block">DAB/7-0965</span></p>
+                      <p className="text-xs font-bold text-slate-700">جواز صرافی: <span className="font-mono font-bold inline-block">7-0965</span></p>
                       <div className="mt-4 inline-block bg-slate-900 text-white px-8 py-2 rounded-full text-sm font-black shadow-xs">
-                        فورم خلص سوانح، مشخصات و سوابق پرسونل (DAB Staff Profile Record)
+                        فورم خلص سوانح، مشخصات و سوابق پرسونل
                       </div>
                     </div>
                     <div className="w-28 h-28 opacity-0">Logo Space</div>

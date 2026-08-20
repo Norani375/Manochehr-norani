@@ -51,7 +51,7 @@ const DEFAULT_RENEWAL_CHECKLIST_DATA: RenewalChecklistData = {
     { id: 2, position: 'رئیس هیئت نظار', name: 'بسمالله شیرزی', fatherName: 'دوستمحمد', idNo: '1402-0902-45188', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
     { id: 3, position: 'عضو هیئت نظار', name: 'برکتالله غفوری', fatherName: 'عبدالغفور', idNo: '1399-1104-55522', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '9005155800', criminalInquiry: '', sanctions: '' },
     { id: 4, position: 'عضو هیئت نظار', name: 'عظیمالله رحمانی', fatherName: 'محمد آجان', idNo: '1399-1105-35806', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
-    { id: 5, position: 'مسئول رعایت از قانون و مقررات', name: 'محمد فهیم یوسفزی', fatherName: 'محمد امان', idNo: '1399-1103-97484', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
+    { id: 5, position: 'مسئول پیروی از قوانین (Compliance Officer)', name: 'عبدالعزیز مهرزاد', fatherName: '', idNo: '1399-1103-97484', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '', criminalInquiry: '', sanctions: '' },
     { id: 6, position: 'مسئول عملیاتی', name: 'صالحمحمدرحیمی', fatherName: 'عبدالرحیم', idNo: '1402-0201-48424', education: 'لیسانس', field: '', statusType: 'سابقه', infoForm: '', tin: '9020613858', criminalInquiry: '', sanctions: '' },
   ],
   checklistItems: [
@@ -296,7 +296,7 @@ export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode
         <div className="flex flex-col items-center text-center border-b-2 border-slate-900 pb-6 space-y-2 relative">
           <div className="flex items-center justify-between w-full">
             <div className="text-right text-[11px] font-bold space-y-1">
-              <p className="text-xs font-black text-blue-900">د افغانستان بانک — Da Afghanistan Bank</p>
+              <p className="text-xs font-black text-blue-900">د افغانستان بانک</p>
               <p>آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی</p>
               <p className="text-slate-600">مدیریت جوازدهی صرافی‌ها و خدمات پولی</p>
             </div>
@@ -306,15 +306,15 @@ export default function DabLicenseRenewalChecklist({ isEditMode: initialEditMode
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={customLogo} alt="Logo" className="w-16 h-16 object-contain mb-1" />
               ) : (
-                <div className="w-16 h-16 bg-blue-900 text-white rounded-full flex items-center justify-center font-black text-xl mb-1 shadow-md">
-                  DAB
+                <div className="w-16 h-16 bg-blue-900 text-white rounded-full flex items-center justify-center font-black text-xs mb-1 shadow-md">
+                  لوگوی شرکت
                 </div>
               )}
             </div>
 
-            <div className="text-left text-[11px] font-mono font-bold space-y-1 dir-ltr">
-              <p className="text-blue-900">License Renewal Checklist</p>
-              <p>DAB/7-0965</p>
+            <div className="text-left text-[11px] font-bold space-y-1">
+              <p className="text-blue-900">چک‌لست تمدید جواز</p>
+              <p className="font-mono">7-0965</p>
             </div>
           </div>
 

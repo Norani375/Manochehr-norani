@@ -400,16 +400,13 @@ export default function DabGuaranteeForm({
           </div>
 
           <div className="text-center mb-3">
-            <h1 className="text-xl font-black text-slate-900 mb-1">د افغانستان بانک — Da Afghanistan Bank</h1>
+            <h1 className="text-xl font-black text-slate-900 mb-1">د افغانستان بانک</h1>
             <h2 className="text-base font-extrabold text-slate-800 mb-1">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</h2>
             <h3 className="text-sm font-bold text-slate-700 mb-2">مدیریت جوازدهی صرافی‌ها و خدمات پولی</h3>
           </div>
 
           <div className="inline-block bg-slate-100 border-2 border-slate-700 font-black text-slate-950 px-6 py-2 rounded-xl text-base shadow-xs">
             تعهدنامه و تضمین‌خط بانکی و سهمداران شرکت صرافی و خدمات پولی
-          </div>
-          <div className="text-[11px] font-mono text-slate-500 font-bold mt-1 ltr">
-            MSP Shareholder Guarantee & Financial Commitment Form
           </div>
         </div>
 

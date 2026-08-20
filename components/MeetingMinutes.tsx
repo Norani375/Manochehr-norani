@@ -364,8 +364,8 @@ export default function MeetingMinutes({
           </div>
 
           <div className="text-center space-y-1.5">
-            <div className="text-xs font-black text-blue-900 tracking-wider uppercase">
-              د افغانستان بانک — Da Afghanistan Bank (DAB)
+            <div className="text-xs font-black text-blue-900 tracking-wider">
+              د افغانستان بانک
             </div>
             <div className="text-[11px] font-bold text-slate-600">
               آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی

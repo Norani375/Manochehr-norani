@@ -62,7 +62,7 @@ const DEFAULT_LETTER_DATA: LicenseRenewalLetterData = {
         { id: 3, name: 'برکت‌الله غفوری', position: 'عضو هیئت نظار' },
         { id: 4, name: 'عظیم‌الله رحمانی', position: 'عضو هیئت نظار' },
         { id: 5, name: 'صالح‌محمد', position: 'مسئول عملیاتی' },
-        { id: 6, name: 'محمد فهیم', position: 'مسئول رعایت قوانین' },
+        { id: 6, name: 'عبدالعزیز مهرزاد', position: 'مسئول پیروی از قوانین (Compliance Officer)' },
       ]
     },
     {

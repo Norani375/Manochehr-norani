@@ -42,7 +42,6 @@ export default function DabLicenseRenewalForm1() {
           <div className="mt-1 font-semibold">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</div>
           <div>مدیریت جوازدهی صرافی‌ها و خدمات پولی</div>
           <h1 className="mt-5 text-xl font-bold">فورم شماره (۱) — فورم درخواستی تمدید جواز شرکت صرافی و خدمات پولی (دفتر مرکزی)</h1>
-          <p className="mt-2 text-sm font-semibold">Form No. 1: Central Office MSP License Renewal Application Form</p>
         </header>
 
         <section className="mt-4 border-2 border-slate-800 p-4 leading-7">

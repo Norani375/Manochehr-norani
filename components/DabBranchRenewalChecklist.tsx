@@ -614,7 +614,7 @@ export default function DabBranchRenewalChecklist({
           <div className="flex flex-col items-center text-center border-b-2 border-slate-900 pb-6 space-y-3 relative">
             <div className="flex items-center justify-between w-full">
               <div className="text-right text-[11px] font-bold space-y-1">
-                <p className="text-xs font-black text-blue-900">د افغانستان بانک — Da Afghanistan Bank</p>
+                <p className="text-xs font-black text-blue-900">د افغانستان بانک</p>
                 <p>آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی</p>
                 <p className="text-slate-600">مدیریت جوازدهی نمایندگی‌ها</p>
               </div>
@@ -628,8 +628,8 @@ export default function DabBranchRenewalChecklist({
                     className="w-16 h-16 object-contain mb-1"
                   />
                 ) : (
-                  <div className="w-16 h-16 bg-teal-800 text-white rounded-full flex items-center justify-center font-black text-xl mb-1 shadow-md">
-                    DAB
+                  <div className="w-16 h-16 bg-teal-800 text-white rounded-full flex items-center justify-center font-black text-xs mb-1 shadow-md">
+                    لوگوی شرکت
                   </div>
                 )}
               </div>

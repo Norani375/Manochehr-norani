@@ -84,7 +84,7 @@ const DEFAULT_DIRECTIVES: RegulatoryDirective[] = [
       'ارسال گزارش ماهوار تطبیق به مدیریت نظارت DAB'
     ],
     companyComplianceStatus: 'compliant',
-    assignedOfficer: 'محمد فهیم (مسئول رعایت قوانین)',
+    assignedOfficer: 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
     notes: 'تمام شعبات به شمول نمایندگی کابل و تخار از اجرای این متحدالمال مطلع شده و چک‌لیست KYC فعال گردید.',
     updatedAt: new Date().toISOString()
   },
@@ -105,7 +105,7 @@ const DEFAULT_DIRECTIVES: RegulatoryDirective[] = [
       'اخذ تأییدیه کتبی از رئیس هیئت نظار قبل از ارسال به FinTRACA'
     ],
     companyComplianceStatus: 'compliant',
-    assignedOfficer: 'محمد فهیم (مسئول رعایت قوانین)',
+    assignedOfficer: 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
     notes: 'سیستم ثبت خودکار معاملات نقدی بزرگ در سامانه فعال بوده و ماهانه ارسال می‌گردد.',
     updatedAt: new Date().toISOString()
   },
@@ -147,7 +147,7 @@ const DEFAULT_DIRECTIVES: RegulatoryDirective[] = [
       'ثبت گواهی اشتراک در دوسیه کارمندان'
     ],
     companyComplianceStatus: 'in_progress',
-    assignedOfficer: 'محمد فهیم (مسئول رعایت قوانین)',
+    assignedOfficer: 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
     notes: 'جلسه اول برگزار شد؛ دوره تکمیلی در ماه جاری برگزار خواهد گردید.',
     updatedAt: new Date().toISOString()
   }
@@ -164,7 +164,7 @@ const DEFAULT_REPORTS: ComplianceReport[] = [
     date: '۱۴۰۴/۱۱/۲۰',
     status: 'submitted_to_dab',
     severity: 'high',
-    complianceOfficer: 'محمد فهیم ولد محمد امان',
+    complianceOfficer: 'عبدالعزیز مهرزاد',
     branchName: 'نمایندگی کابل — سرای شهزاده',
     subjectDetails: {
       fullName: 'احمد رشاد ولد غلام سخی',
@@ -214,7 +214,7 @@ const DEFAULT_REPORTS: ComplianceReport[] = [
     date: '۱۴۰۴/۱۰/۲۸',
     status: 'submitted_to_dab',
     severity: 'normal',
-    complianceOfficer: 'محمد فهیم ولد محمد امان',
+    complianceOfficer: 'عبدالعزیز مهرزاد',
     branchName: 'دفتر مرکزی — ولایت کندز',
     subjectDetails: {
       fullName: 'حاجی عبدالمتین ولد نورمحمد',
@@ -263,7 +263,7 @@ const DEFAULT_REPORTS: ComplianceReport[] = [
     date: '۱۴۰۴/۱۱/۱۵',
     status: 'approved',
     severity: 'medium',
-    complianceOfficer: 'محمد فهیم ولد محمد امان',
+    complianceOfficer: 'عبدالعزیز مهرزاد',
     branchName: 'تمام نمایندگی‌ها (کندز، کابل، تخار، امام‌صاحب، کشم)',
     subjectDetails: {
       fullName: 'ارزیابی ساختار نظارتی شعبات شرکت صرافی برکت‌الله غفوری',
@@ -312,7 +312,7 @@ const DEFAULT_SUBMISSIONS: AuthoritySubmission[] = [
     incomingDabRefNo: 'DAB-FinTRACA-IN-1404-982',
     status: 'received_by_dab',
     receiptNotes: 'راپور به شماره ثبت ۹۸۲ در سیستم FinTRACA وصول و رسید رسمی الکترونیکی صادر گردید.',
-    submittedBy: 'محمد فهیم (مسئول رعایت قوانین)',
+    submittedBy: 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
     updatedAt: new Date().toISOString()
   },
   {
@@ -328,7 +328,7 @@ const DEFAULT_SUBMISSIONS: AuthoritySubmission[] = [
     incomingDabRefNo: 'DAB-NBFIS-1404-4412',
     status: 'accepted',
     receiptNotes: 'راپور ماهوار LCTR ماه جدی پذیرفته و در دوسیه نظارتی شرکت درج گردید.',
-    submittedBy: 'محمد فهیم (مسئول رعایت قوانین)',
+    submittedBy: 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
     updatedAt: new Date().toISOString()
   }
 ];
@@ -363,7 +363,7 @@ export default function ComplianceReporting({
     title: '',
     severity: 'medium',
     status: 'draft',
-    complianceOfficer: 'محمد فهیم ولد محمد امان',
+    complianceOfficer: 'عبدالعزیز مهرزاد',
     branchName: 'دفتر مرکزی — ولایت کندز',
     authorityTarget: 'FinTRACA',
     reportingPeriod: '۱۴۰۴',
@@ -411,7 +411,7 @@ export default function ComplianceReporting({
     summary: '',
     actionItems: [''],
     companyComplianceStatus: 'in_progress',
-    assignedOfficer: 'محمد فهیم (مسئول رعایت قوانین)',
+    assignedOfficer: 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
     notes: ''
   });
 
@@ -426,7 +426,7 @@ export default function ComplianceReporting({
     targetAuthority: 'آمریت تحلیل معاملات و راپورهای مالی (FinTRACA) — د افغانستان بانک',
     submissionMethod: 'SECURE_DAB_PORTAL',
     officialDispatchNo: `BG-COMP/${new Date().getFullYear()}/${Math.floor(100 + Math.random() * 900)}`,
-    submittedBy: 'محمد فهیم (مسئول رعایت قوانین)',
+    submittedBy: 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
     receiptNotes: ''
   });
 
@@ -545,7 +545,7 @@ export default function ComplianceReporting({
       date: formData.date || new Date().toLocaleDateString('fa-IR'),
       status: (formData.status as ComplianceReportStatus) || 'draft',
       severity: (formData.severity as ComplianceSeverity) || 'medium',
-      complianceOfficer: formData.complianceOfficer || 'محمد فهیم ولد محمد امان',
+      complianceOfficer: formData.complianceOfficer || 'عبدالعزیز مهرزاد',
       branchName: formData.branchName || 'دفتر مرکزی — کندز',
       subjectDetails: formData.subjectDetails || {
         fullName: 'نامشخص',
@@ -610,7 +610,7 @@ export default function ComplianceReporting({
       summary: directiveForm.summary || '',
       actionItems: (directiveForm.actionItems || []).filter(item => item.trim().length > 0),
       companyComplianceStatus: directiveForm.companyComplianceStatus || 'in_progress',
-      assignedOfficer: directiveForm.assignedOfficer || 'محمد فهیم (مسئول رعایت قوانین)',
+      assignedOfficer: directiveForm.assignedOfficer || 'عبدالعزیز مهرزاد (مسئول پیروی از قوانین)',
       notes: directiveForm.notes || '',
       updatedAt: new Date().toISOString()
     };
@@ -739,7 +739,7 @@ export default function ComplianceReporting({
                   title: '',
                   severity: 'high',
                   status: 'draft',
-                  complianceOfficer: 'محمد فهیم ولد محمد امان',
+                  complianceOfficer: 'عبدالعزیز مهرزاد',
                   branchName: 'دفتر مرکزی — ولایت کندز',
                   authorityTarget: 'FinTRACA',
                   reportingPeriod: '۱۴۰۴',
@@ -1056,7 +1056,7 @@ export default function ComplianceReporting({
                     title: '',
                     severity: 'high',
                     status: 'draft',
-                    complianceOfficer: 'محمد فهیم ولد محمد امان',
+                    complianceOfficer: 'عبدالعزیز مهرزاد',
                     branchName: 'دفتر مرکزی — ولایت کندز',
                     authorityTarget: 'FinTRACA',
                     reportingPeriod: '۱۴۰۴',
@@ -1419,7 +1419,7 @@ export default function ComplianceReporting({
             <div className="border-b-2 border-slate-900 pb-6 mb-6">
               <div className="flex items-center justify-between">
                 <div className="text-right space-y-1">
-                  <div className="text-xs font-black text-slate-900">د افغانستان بانک — Da Afghanistan Bank</div>
+                  <div className="text-xs font-black text-slate-900">د افغانستان بانک</div>
                   <div className="text-[11px] font-bold text-slate-700">آمریت تحلیل معاملات و راپورهای مالی (FinTRACA)</div>
                   <div className="text-[11px] font-bold text-slate-700">آمریت عمومی نظارت بر مؤسسات مالی غیربانکی</div>
                 </div>
@@ -1429,7 +1429,6 @@ export default function ComplianceReporting({
                     <img src={customLogo} alt="Logo" className="max-w-full max-h-full object-contain" />
                   ) : (
                     <div className="text-center font-black text-[10px] text-blue-900">
-                      <div>DAB / MSP</div>
                       <div>لوگوی شرکت</div>
                     </div>
                   )}
@@ -1583,8 +1582,8 @@ export default function ComplianceReporting({
             <div className="grid grid-cols-2 gap-8 pt-8 border-t-2 border-slate-900 text-center text-xs">
               <div className="space-y-12">
                 <div>
-                  <div className="font-black text-slate-900">محمد فهیم ولد محمد امان</div>
-                  <div className="text-slate-600 font-bold">مسئول رعایت از قوانین و مقررات (Compliance Officer)</div>
+                  <div className="font-black text-slate-900">عبدالعزیز مهرزاد</div>
+                  <div className="text-slate-600 font-bold">مسئول پیروی از قوانین (Compliance Officer)</div>
                   <div className="text-[11px] text-slate-400">امضاء و تاریخ</div>
                 </div>
               </div>
