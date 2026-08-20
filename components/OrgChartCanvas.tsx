@@ -5,7 +5,7 @@ import {
   Building2, Edit3, Save, RotateCcw, Download, Printer, ShieldCheck, Briefcase, 
   Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2, 
   Search, FileCode, Loader2, Phone, Mail, Calendar, GraduationCap, IdCard, MapPin, 
-  ChevronDown, ChevronUp, Maximize2, Minimize2, Database, Sparkles, Copy, ExternalLink
+  ChevronDown, ChevronUp, Maximize2, Minimize2, Database, Sparkles, Copy, ExternalLink, GitBranch
 } from 'lucide-react';
 import { exportElementToPdf } from '@/lib/pdfExport';
 import { exportElementToWord } from '@/lib/wordExport';
@@ -283,7 +283,29 @@ export default function OrgChartCanvas({
 
   const [dbEmployees, setDbEmployees] = useState<EmployeeRecord[]>([]);
   const [expandedNodeIds, setExpandedNodeIds] = useState<Record<string, boolean>>({});
+  const [collapsedBranches, setCollapsedBranches] = useState<Record<string, boolean>>({});
   const [internalIsEditMode, setInternalIsEditMode] = useState(false);
+
+  const toggleBranchCollapse = (branchKey: string) => {
+    setCollapsedBranches((prev) => ({
+      ...prev,
+      [branchKey]: !prev[branchKey],
+    }));
+  };
+
+  const hasCollapsedBranches = Object.values(collapsedBranches).some(Boolean);
+
+  const toggleAllBranchesCollapse = () => {
+    if (hasCollapsedBranches) {
+      setCollapsedBranches({});
+    } else {
+      setCollapsedBranches({
+        president: true,
+        board: true,
+        branches: true,
+      });
+    }
+  };
   const isEditMode = externalIsEditMode !== undefined ? externalIsEditMode : internalIsEditMode;
   const setIsEditMode = (val: boolean | ((prev: boolean) => boolean)) => {
     if (typeof val === 'function') {
@@ -461,8 +483,11 @@ export default function OrgChartCanvas({
   };
 
   const handlePdfExport = async () => {
+    const previousCollapsed = { ...collapsedBranches };
+    setCollapsedBranches({}); // Expand all branches for full export
     setIsExporting(true);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 80));
       await exportElementToPdf({
         elementId: 'org-chart-exact-canvas',
         filename: 'چارت_سازمانی_شرکت_صرافی.pdf',
@@ -472,13 +497,17 @@ export default function OrgChartCanvas({
       console.error(error);
       alert('خطا در دانلود فایل PDF.');
     } finally {
+      setCollapsedBranches(previousCollapsed);
       setIsExporting(false);
     }
   };
 
   const handleWordExport = async () => {
+    const previousCollapsed = { ...collapsedBranches };
+    setCollapsedBranches({}); // Expand all branches for full export
     setIsExporting(true);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 80));
       await exportElementToWord({
         elementId: 'org-chart-exact-canvas',
         filename: 'چارت_سازمانی_شرکت_صرافی.doc',
@@ -489,18 +518,24 @@ export default function OrgChartCanvas({
       console.error(error);
       alert('خطا در دانلود فایل Word.');
     } finally {
+      setCollapsedBranches(previousCollapsed);
       setIsExporting(false);
     }
   };
 
-  // Reusable Interactive Node Card Component with Click-to-Expand
+  // Reusable Interactive Node Card Component with Click-to-Expand & Sub-Branch Collapse
   const renderInteractiveNodeCard = ({
     node,
     variant = 'standard',
     isDark = false,
     badgeText,
     subtitleOverride,
-    customClass = ''
+    customClass = '',
+    hasSubBranches = false,
+    isSubBranchCollapsed = false,
+    onToggleSubBranch,
+    subBranchCount,
+    subBranchLabel
   }: {
     node: OrgChartNode;
     variant?: 'president' | 'board' | 'executive' | 'branch' | 'standard';
@@ -508,6 +543,11 @@ export default function OrgChartCanvas({
     badgeText?: string;
     subtitleOverride?: string;
     customClass?: string;
+    hasSubBranches?: boolean;
+    isSubBranchCollapsed?: boolean;
+    onToggleSubBranch?: () => void;
+    subBranchCount?: number;
+    subBranchLabel?: string;
   }) => {
     const isExpanded = !!expandedNodeIds[node.id];
     const enriched = getEnrichedNode(node);
@@ -595,7 +635,7 @@ export default function OrgChartCanvas({
           </div>
 
           {/* Quick Collapse/Expand CTA chip */}
-          <div className="mt-2.5 flex items-center justify-center">
+          <div className="mt-2.5 flex items-center justify-center gap-2">
             <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md transition-all ${
               isExpanded 
                 ? isDark 
@@ -618,6 +658,39 @@ export default function OrgChartCanvas({
               )}
             </span>
           </div>
+
+          {/* Dedicated Sub-Branch Collapse Button */}
+          {hasSubBranches && onToggleSubBranch && (
+            <div className="mt-3 pt-2 border-t border-slate-200/40 dark:border-slate-800/60 flex justify-center print:hidden">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSubBranch();
+                }}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-black transition-all border cursor-pointer ${
+                  isSubBranchCollapsed
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-xs animate-pulse'
+                    : isDark
+                      ? 'bg-blue-950/90 hover:bg-blue-900 text-blue-200 border-blue-700/80'
+                      : 'bg-blue-50 hover:bg-blue-100 text-[#1e3a8a] border-blue-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-blue-300 dark:border-slate-700'
+                }`}
+                title={isSubBranchCollapsed ? 'نمایش شاخه زیرمجموعه' : 'بستن و فشرده‌سازی شاخه زیرمجموعه'}
+              >
+                {isSubBranchCollapsed ? (
+                  <>
+                    <ChevronDown className="w-3.5 h-3.5" />
+                    <span>نمایش {subBranchLabel || 'شاخه زیرمجموعه'} ({subBranchCount ?? ''})</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp className="w-3.5 h-3.5" />
+                    <span>بستن {subBranchLabel || 'شاخه زیرمجموعه'} ({subBranchCount ?? ''})</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* EXPANDED CONTENT TRAY (Unfolds when clicked) */}
@@ -853,10 +926,24 @@ export default function OrgChartCanvas({
           <button
             onClick={expandedCount > 0 ? collapseAllNodes : expandAllNodes}
             className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-            title={expandedCount > 0 ? 'بستن همه کارت‌ها' : 'باز کردن جزئیات تمام کارت‌ها'}
+            title={expandedCount > 0 ? 'بستن مشخصات کارت‌ها' : 'باز کردن مشخصات و سوابق کارت‌ها'}
           >
             {expandedCount > 0 ? <Minimize2 className="w-4 h-4 text-blue-600" /> : <Maximize2 className="w-4 h-4 text-blue-600" />}
-            <span>{expandedCount > 0 ? `بستن همه (${expandedCount})` : 'نمایش تمام جزئیات'}</span>
+            <span>{expandedCount > 0 ? `بستن مشخصات` : 'نمایش جزئیات'}</span>
+          </button>
+
+          {/* Toggle Branch Collapse Button */}
+          <button
+            onClick={toggleAllBranchesCollapse}
+            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border cursor-pointer ${
+              hasCollapsedBranches
+                ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700'
+            }`}
+            title={hasCollapsedBranches ? 'باز کردن تمام شاخه‌های بسته‌شده' : 'فشرده‌سازی تمام شاخه‌های زیرمجموعه'}
+          >
+            <GitBranch className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span>{hasCollapsedBranches ? 'باز کردن همه شاخه‌ها' : 'فشرده‌سازی شاخه‌ها'}</span>
           </button>
 
           <button
@@ -1160,91 +1247,193 @@ export default function OrgChartCanvas({
                   variant: 'president',
                   isDark: true,
                   badgeText: '۱۰۰٪ سهمدار',
-                  customClass: 'text-center'
+                  customClass: 'text-center',
+                  hasSubBranches: true,
+                  isSubBranchCollapsed: !!collapsedBranches['president'],
+                  onToggleSubBranch: () => toggleBranchCollapse('president'),
+                  subBranchCount: data.boardMembers.length + data.executives.length + data.branches.length,
+                  subBranchLabel: 'زیرمجموعه‌های رئیس'
                 })}
               </div>
 
-              {/* Automatic Connector to Level 2 */}
-              <TreeConnectors count={data.boardMembers.length} />
-            </div>
-
-            {/* LEVEL 2: Board of Supervisors (Dynamic count) */}
-            <div 
-              className="grid gap-4 sm:gap-6 mx-auto items-start justify-center"
-              style={{ 
-                gridTemplateColumns: `repeat(${data.boardMembers.length || 1}, minmax(0, 1fr))`,
-                maxWidth: `${Math.max(data.boardMembers.length * 300, 300)}px`
-              }}
-            >
-              {data.boardMembers.map((bm) => (
-                <div key={bm.id}>
-                  {renderInteractiveNodeCard({
-                    node: bm,
-                    variant: 'board',
-                    isDark: bm.title.includes('رئیس'),
-                    badgeText: bm.title.includes('رئیس') ? 'رئیس نظار' : 'هیئت نظار',
-                    customClass: bm.title.includes('رئیس') ? 'transform sm:-translate-y-1' : ''
-                  })}
+              {/* Collapsed state placeholder for President's sub-tree */}
+              {collapsedBranches['president'] ? (
+                <div className="flex flex-col items-center py-6 animate-in fade-in">
+                  <div className="w-0.5 h-8 bg-[#1e3a8a] dark:bg-blue-400"></div>
+                  <button
+                    type="button"
+                    onClick={() => toggleBranchCollapse('president')}
+                    className="group px-5 py-3 bg-amber-500/10 dark:bg-amber-500/20 hover:bg-amber-500/20 border-2 border-dashed border-amber-500/80 text-amber-900 dark:text-amber-300 rounded-2xl text-xs font-black flex items-center gap-2.5 shadow-sm transition-all cursor-pointer print:hidden"
+                  >
+                    <Layers className="w-4 h-4 text-amber-600 animate-pulse" />
+                    <span>تمام شاخه‌های زیرمجموعه بسته‌شده‌اند ({data.boardMembers.length + data.executives.length + data.branches.length} پست تشکیلاتی) — جهت باز کردن کلیک کنید</span>
+                    <ChevronDown className="w-4 h-4 text-amber-600" />
+                  </button>
                 </div>
-              ))}
-            </div>
+              ) : (
+                <>
+                  {/* Automatic Connector to Level 2 */}
+                  <TreeConnectors count={data.boardMembers.length} />
 
-            {/* Automatic Connector down to Executives */}
-            <TreeConnectors count={data.executives.length} />
-
-            {/* LEVEL 3: Executive Managers (Dynamic count) */}
-            <div 
-              className="grid gap-6 mx-auto items-start justify-center"
-              style={{ 
-                gridTemplateColumns: `repeat(${data.executives.length || 1}, minmax(0, 1fr))`,
-                maxWidth: `${Math.max(data.executives.length * 300, 300)}px`
-              }}
-            >
-              {data.executives.map((exec) => (
-                <div key={exec.id}>
-                  {renderInteractiveNodeCard({
-                    node: exec,
-                    variant: 'executive',
-                    isDark: true,
-                    badgeText: exec.title.includes('پیروی') ? 'AML/CFT Compliance' : 'کادر اجرایی'
-                  })}
-                </div>
-              ))}
-            </div>
-
-            {/* LEVEL 4: Provincial Branches under Operational Manager */}
-            {data.branches.length > 0 && (
-              <>
-                <div className="text-center my-4">
-                  <span className="inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-950/80 text-[#1e3a8a] dark:text-blue-200 border border-blue-300 dark:border-blue-800 text-xs font-black px-4 py-1.5 rounded-full shadow-xs">
-                    <span>نماینده‌ها و نمایندگی‌های ولایتی</span>
-                    <span className="text-[10px] bg-[#1e3a8a] text-white px-2 py-0.5 rounded-full font-bold">تحت اثر کادر اجرایی</span>
-                  </span>
-                </div>
-
-                {/* Clean automatic connector down to Provincial Branches */}
-                <TreeConnectors count={data.branches.length} />
-
-                <div 
-                  className="grid gap-4 items-start mx-auto justify-center"
-                  style={{
-                    gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`
-                  }}
-                >
-                  {data.branches.map((br) => (
-                    <div key={br.id}>
-                      {renderInteractiveNodeCard({
-                        node: br,
-                        variant: 'branch',
-                        isDark: false,
-                        badgeText: 'نمایندگی رسمی',
-                        subtitleOverride: br.title
-                      })}
+                  {/* LEVEL 2: Board of Supervisors (Dynamic count) */}
+                  <div className="w-full space-y-4">
+                    {/* Level 2 Section Bar */}
+                    <div className="flex items-center justify-between px-2 print:hidden">
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <span>سطح ۲: هیئت نظار ({data.boardMembers.length} عضو)</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => toggleBranchCollapse('board')}
+                        className="text-[11px] font-extrabold text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-800 transition-all cursor-pointer"
+                      >
+                        {collapsedBranches['board'] ? '▶️ نمایش کادر اجرایی' : '🔽 بستن شاخه‌های پایین‌تر'}
+                      </button>
                     </div>
-                  ))}
-                </div>
-              </>
-            )}
+
+                    <div 
+                      className="grid gap-4 sm:gap-6 mx-auto items-start justify-center"
+                      style={{ 
+                        gridTemplateColumns: `repeat(${data.boardMembers.length || 1}, minmax(0, 1fr))`,
+                        maxWidth: `${Math.max(data.boardMembers.length * 300, 300)}px`
+                      }}
+                    >
+                      {data.boardMembers.map((bm) => (
+                        <div key={bm.id}>
+                          {renderInteractiveNodeCard({
+                            node: bm,
+                            variant: 'board',
+                            isDark: bm.title.includes('رئیس'),
+                            badgeText: bm.title.includes('رئیس') ? 'رئیس نظار' : 'هیئت نظار',
+                            customClass: bm.title.includes('رئیس') ? 'transform sm:-translate-y-1' : ''
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* If Board sub-branches collapsed */}
+                  {collapsedBranches['board'] ? (
+                    <div className="flex flex-col items-center py-6 animate-in fade-in">
+                      <div className="w-0.5 h-8 bg-[#1e3a8a] dark:bg-blue-400"></div>
+                      <button
+                        type="button"
+                        onClick={() => toggleBranchCollapse('board')}
+                        className="group px-5 py-2.5 bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 border-2 border-dashed border-blue-400 text-[#1e3a8a] dark:text-blue-200 rounded-2xl text-xs font-black flex items-center gap-2 shadow-sm transition-all cursor-pointer print:hidden"
+                      >
+                        <GitBranch className="w-4 h-4 text-blue-600" />
+                        <span>شاخه‌های کادر اجرایی و نمایندگی‌ها بسته‌شده‌اند ({data.executives.length + data.branches.length} واحد) — جهت باز کردن کلیک کنید</span>
+                        <ChevronDown className="w-4 h-4 text-blue-600" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Automatic Connector down to Executives */}
+                      <TreeConnectors count={data.executives.length} />
+
+                      {/* LEVEL 3: Executive Managers (Dynamic count) */}
+                      <div className="w-full space-y-4">
+                        <div className="flex items-center justify-between px-2 print:hidden">
+                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                            سطح ۳: کادر اجرایی و مدیریت ارشد ({data.executives.length} مسئول)
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => toggleBranchCollapse('branches')}
+                            className="text-[11px] font-extrabold text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-800 transition-all cursor-pointer"
+                          >
+                            {collapsedBranches['branches'] ? '▶️ نمایش نمایندگی‌های ولایتی' : '🔽 بستن نمایندگی‌های ولایتی'}
+                          </button>
+                        </div>
+
+                        <div 
+                          className="grid gap-6 mx-auto items-start justify-center"
+                          style={{ 
+                            gridTemplateColumns: `repeat(${data.executives.length || 1}, minmax(0, 1fr))`,
+                            maxWidth: `${Math.max(data.executives.length * 300, 300)}px`
+                          }}
+                        >
+                          {data.executives.map((exec) => (
+                            <div key={exec.id}>
+                              {renderInteractiveNodeCard({
+                                node: exec,
+                                variant: 'executive',
+                                isDark: true,
+                                badgeText: exec.title.includes('پیروی') ? 'AML/CFT Compliance' : 'کادر اجرایی',
+                                hasSubBranches: exec.title.includes('عملیاتی') || exec.id === 'exec-2',
+                                isSubBranchCollapsed: !!collapsedBranches['branches'],
+                                onToggleSubBranch: () => toggleBranchCollapse('branches'),
+                                subBranchCount: data.branches.length,
+                                subBranchLabel: 'نمایندگی‌های ولایتی'
+                              })}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* LEVEL 4: Provincial Branches under Operational Manager */}
+                      {data.branches.length > 0 && (
+                        <>
+                          {collapsedBranches['branches'] ? (
+                            <div className="flex flex-col items-center py-6 animate-in fade-in">
+                              <div className="w-0.5 h-8 bg-[#1e3a8a] dark:bg-blue-400"></div>
+                              <button
+                                type="button"
+                                onClick={() => toggleBranchCollapse('branches')}
+                                className="group px-5 py-2.5 bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 border-2 border-dashed border-indigo-400 text-indigo-900 dark:text-indigo-200 rounded-2xl text-xs font-black flex items-center gap-2 shadow-sm transition-all cursor-pointer print:hidden"
+                              >
+                                <Building2 className="w-4 h-4 text-indigo-600" />
+                                <span>شاخه نمایندگی‌های ولایتی فشرده شده است ({data.branches.length} نمایندگی) — جهت باز کردن کلیک کنید</span>
+                                <ChevronDown className="w-4 h-4 text-indigo-600" />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="text-center my-4">
+                                <span className="inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-950/80 text-[#1e3a8a] dark:text-blue-200 border border-blue-300 dark:border-blue-800 text-xs font-black px-4 py-1.5 rounded-full shadow-xs">
+                                  <span>نماینده‌ها و نمایندگی‌های ولایتی</span>
+                                  <span className="text-[10px] bg-[#1e3a8a] text-white px-2 py-0.5 rounded-full font-bold">تحت اثر کادر اجرایی</span>
+                                </span>
+                              </div>
+
+                              {/* Clean automatic connector down to Provincial Branches */}
+                              <TreeConnectors count={data.branches.length} />
+
+                              <div 
+                                className="grid gap-4 items-start mx-auto justify-center"
+                                style={{
+                                  gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`
+                                }}
+                              >
+                                {data.branches.map((br) => {
+                                  const isStaffCollapsed = !!collapsedBranches[`staff-${br.id}`];
+                                  return (
+                                    <div key={br.id} className="space-y-2">
+                                      {renderInteractiveNodeCard({
+                                        node: br,
+                                        variant: 'branch',
+                                        isDark: false,
+                                        badgeText: 'نمایندگی رسمی',
+                                        subtitleOverride: br.title,
+                                        hasSubBranches: !!(br.staff && br.staff.length > 0),
+                                        isSubBranchCollapsed: isStaffCollapsed,
+                                        onToggleSubBranch: () => toggleBranchCollapse(`staff-${br.id}`),
+                                        subBranchCount: br.staff?.length,
+                                        subBranchLabel: 'کارکنان'
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
 
             {/* SECTION: Reporting Relationships & Separation of Duties Table */}
             <div className="pt-8 border-t-2 border-slate-200 dark:border-slate-800 space-y-4">
