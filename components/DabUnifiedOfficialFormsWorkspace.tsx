@@ -10,6 +10,18 @@ import { getDabOfficialFormPrefill } from '@/lib/dabOfficialFormPrefill';
 type FieldType = 'text' | 'date' | 'number' | 'textarea';
 type Field = { key: string; label: string; type?: FieldType; required?: boolean };
 type Values = Record<string, string>;
+type HeaderValues = { bank: string; department: string; directorate: string; companyName: string; licenseNo: string; province: string; address: string; logoUrl: string };
+
+const defaultHeader: HeaderValues = {
+  bank: 'د افغانستان بانک',
+  department: 'آمریت عمومی نظارت از مؤسسات مالی غیر بانکی',
+  directorate: 'مدیریت جوازدهی',
+  companyName: profile.legalName,
+  licenseNo: profile.licenseNo,
+  province: profile.province,
+  address: profile.address,
+  logoUrl: '',
+};
 
 const companyFields: Field[] = [
   { key: 'companyName', label: 'نام رسمی شرکت', required: true },
@@ -73,29 +85,44 @@ const categoryNames: Record<string, string> = {
 };
 
 function getFields(form: DabOfficialFormDefinition): Field[] {
-  const specific = fieldsByForm[form.id];
-  if (specific) return specific;
-  return [...companyFields, { key: 'applicantName', label: 'نام درخواست‌کننده' }, { key: 'applicationDate', label: 'تاریخ درخواست', type: 'date' }, { key: 'details', label: 'جزئیات و معلومات لازم', type: 'textarea' }, { key: 'supportingDocuments', label: 'اسناد حمایوی', type: 'textarea' }];
+  return fieldsByForm[form.id] ?? [...companyFields, { key: 'applicantName', label: 'نام درخواست‌کننده' }, { key: 'applicationDate', label: 'تاریخ درخواست', type: 'date' }, { key: 'details', label: 'جزئیات و معلومات لازم', type: 'textarea' }, { key: 'supportingDocuments', label: 'اسناد حمایوی', type: 'textarea' }];
 }
 
 function initialValues(form: DabOfficialFormDefinition): Values {
   return { ...Object.fromEntries(getFields(form).map(field => [field.key, ''])), ...getDabOfficialFormPrefill(form) };
 }
 
-function Header({ form }: { form: DabOfficialFormDefinition }) {
+function Header({ form, header, editing, onEdit, onChange }: { form: DabOfficialFormDefinition; header: HeaderValues; editing: boolean; onEdit: () => void; onChange: (key: keyof HeaderValues, value: string) => void }) {
   return (
     <header className="border-2 border-slate-800 bg-white px-6 py-5 text-center print:border-x-0 print:border-t-0">
-      <p className="text-base font-bold">د افغانستان بانک</p>
-      <p className="mt-1 text-sm font-semibold">آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</p>
-      <p className="text-sm">مدیریت جوازدهی</p>
+      {header.logoUrl ? <img src={header.logoUrl} alt="لوگوی شرکت" className="mx-auto mb-3 h-16 w-16 object-contain" /> : null}
+      {editing ? (
+        <div className="mx-auto mb-4 grid max-w-5xl gap-2 text-right print:hidden md:grid-cols-2">
+          <label className="text-sm">نام نهاد صادرکننده<input value={header.bank} onChange={e => onChange('bank', e.target.value)} className="mt-1 w-full border p-2" /></label>
+          <label className="text-sm">آمریت<input value={header.department} onChange={e => onChange('department', e.target.value)} className="mt-1 w-full border p-2" /></label>
+          <label className="text-sm">مدیریت<input value={header.directorate} onChange={e => onChange('directorate', e.target.value)} className="mt-1 w-full border p-2" /></label>
+          <label className="text-sm">نام شرکت<input value={header.companyName} onChange={e => onChange('companyName', e.target.value)} className="mt-1 w-full border p-2" /></label>
+          <label className="text-sm">شماره جواز<input value={header.licenseNo} onChange={e => onChange('licenseNo', e.target.value)} className="mt-1 w-full border p-2" /></label>
+          <label className="text-sm">ولایت<input value={header.province} onChange={e => onChange('province', e.target.value)} className="mt-1 w-full border p-2" /></label>
+          <label className="text-sm md:col-span-2">آدرس<input value={header.address} onChange={e => onChange('address', e.target.value)} className="mt-1 w-full border p-2" /></label>
+          <label className="text-sm md:col-span-2">نشانی لوگو<input value={header.logoUrl} onChange={e => onChange('logoUrl', e.target.value)} placeholder="اختیاری" className="mt-1 w-full border p-2" dir="ltr" /></label>
+        </div>
+      ) : null}
+      <p className="text-base font-bold">{header.bank}</p>
+      <p className="mt-1 text-sm font-semibold">{header.department}</p>
+      <p className="text-sm">{header.directorate}</p>
       <div className="mx-auto mt-4 max-w-4xl border-t border-slate-300 pt-4">
         <h1 className="text-xl font-bold leading-8">{form.title}</h1>
         <p className="mt-1 text-sm text-slate-600">دسته‌بندی: {categoryNames[form.category] ?? 'اسناد رسمی'}</p>
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-2 border-t pt-3 text-sm md:grid-cols-3">
-        <div>نام شرکت: <strong>{profile.legalName}</strong></div>
-        <div>شماره جواز: <strong>{profile.licenseNo}</strong></div>
-        <div>ولایت: <strong>{profile.province}</strong></div>
+      <div className="mt-4 grid grid-cols-1 gap-2 border-t pt-3 text-sm md:grid-cols-4">
+        <div>نام شرکت: <strong>{header.companyName}</strong></div>
+        <div>شماره جواز: <strong>{header.licenseNo}</strong></div>
+        <div>ولایت: <strong>{header.province}</strong></div>
+        <div>آدرس: <strong>{header.address}</strong></div>
+      </div>
+      <div className="mt-4 flex justify-center print:hidden">
+        <button type="button" onClick={onEdit} className="border bg-white px-4 py-2 text-sm font-semibold">{editing ? 'پایان ویرایش سربرگ' : 'ویرایش سربرگ'}</button>
       </div>
     </header>
   );
@@ -104,12 +131,15 @@ function Header({ form }: { form: DabOfficialFormDefinition }) {
 export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default' }: { companyId?: string; [key: string]: unknown }) {
   const [active, setActive] = useState(DAB_OFFICIAL_FORMS[0]?.id ?? 'license-application');
   const [valuesByForm, setValuesByForm] = useState<Record<string, Values>>({});
+  const [headersByForm, setHeadersByForm] = useState<Record<string, HeaderValues>>({});
   const [query, setQuery] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [editingHeader, setEditingHeader] = useState(false);
 
   const form = DAB_OFFICIAL_FORMS.find(item => item.id === active) ?? DAB_OFFICIAL_FORMS[0];
   const values = form ? valuesByForm[form.id] ?? initialValues(form) : {};
+  const header = form ? headersByForm[form.id] ?? defaultHeader : defaultHeader;
   const filteredForms = useMemo(() => {
     const term = query.trim().toLocaleLowerCase();
     return term ? DAB_OFFICIAL_FORMS.filter(item => `${item.title} ${categoryNames[item.category] ?? ''}`.toLocaleLowerCase().includes(term)) : DAB_OFFICIAL_FORMS;
@@ -121,11 +151,15 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
     setValuesByForm(current => ({ ...current, [form.id]: { ...(current[form.id] ?? initialValues(form)), [key]: value } }));
   };
 
+  const updateHeader = (key: keyof HeaderValues, value: string) => {
+    setHeadersByForm(current => ({ ...current, [form.id]: { ...(current[form.id] ?? defaultHeader), [key]: value } }));
+  };
+
   const save = async () => {
     setBusy(true);
     try {
-      await setDoc(doc(db, `companies/${companyId}/dabOfficialForms/${form.id}`), { formId: form.id, title: form.title, category: form.category, values, status: 'draft', updatedAt: new Date().toISOString() }, { merge: true });
-      setMessage('فورم با موفقیت ذخیره شد.');
+      await setDoc(doc(db, `companies/${companyId}/dabOfficialForms/${form.id}`), { formId: form.id, title: form.title, category: form.category, values, header, status: 'draft', updatedAt: new Date().toISOString() }, { merge: true });
+      setMessage('فورم و سربرگ با موفقیت ذخیره شد.');
     } catch (error) {
       setMessage(error instanceof Error ? `ذخیره ناموفق بود: ${error.message}` : 'ذخیره ناموفق بود.');
     } finally {
@@ -143,7 +177,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="جستجوی فورم" className="mb-3 w-full border p-2 text-right" />
             <div className="max-h-[70vh] space-y-1 overflow-auto">
               {filteredForms.map(item => (
-                <button key={item.id} type="button" onClick={() => setActive(item.id)} className={`w-full border px-3 py-2 text-right text-sm ${item.id === form.id ? 'border-slate-900 bg-slate-100 font-bold' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
+                <button key={item.id} type="button" onClick={() => { setActive(item.id); setEditingHeader(false); }} className={`w-full border px-3 py-2 text-right text-sm ${item.id === form.id ? 'border-slate-900 bg-slate-100 font-bold' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
                   <span className="block">{item.title}</span>
                   <span className="mt-1 block text-xs text-slate-500">{categoryNames[item.category] ?? 'اسناد رسمی'}</span>
                 </button>
@@ -152,7 +186,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
           </aside>
 
           <section id="dab-official-form" className="overflow-hidden bg-white shadow-sm print:shadow-none">
-            <Header form={form} />
+            <Header form={form} header={header} editing={editingHeader} onEdit={() => setEditingHeader(current => !current)} onChange={updateHeader} />
             <div className="border-x-2 border-b-2 border-slate-800 p-5 print:p-8">
               <div className="mb-5 grid gap-4 md:grid-cols-2">
                 {getFields(form).map(field => (
@@ -179,7 +213,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
               <div className="mt-5 border-t pt-4 text-xs leading-6 text-slate-600">{form.printNotice}</div>
 
               <div className="mt-5 flex flex-wrap gap-2 print:hidden">
-                <button type="button" disabled={busy} onClick={save} className="border bg-slate-900 px-5 py-2 text-white disabled:opacity-50">{busy ? 'در حال ذخیره...' : 'ذخیره فورم'}</button>
+                <button type="button" disabled={busy} onClick={save} className="border bg-slate-900 px-5 py-2 text-white disabled:opacity-50">{busy ? 'در حال ذخیره...' : 'ذخیره فورم و سربرگ'}</button>
                 <button type="button" onClick={() => window.print()} className="border px-5 py-2">چاپ فورم</button>
               </div>
               {message ? <p className="mt-3 border p-2 text-sm">{message}</p> : null}
