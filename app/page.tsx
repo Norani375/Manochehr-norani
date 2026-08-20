@@ -89,8 +89,8 @@ const DEFAULT_ORG_DATA: PersonnelNode[] = [
   {
     key: 'compliance_officer',
     title: 'مسئول پیروی از قوانین',
-    name: 'محمد فهیم ولد محمد امان',
-    id: '97484',
+    name: 'عبدالعزیز مهرزاد ولد عبدالخلیل',
+    id: '72198-0300-1401',
     category: 'executive'
   },
   {

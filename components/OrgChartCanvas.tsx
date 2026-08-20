@@ -110,16 +110,16 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
   executives: [
     {
       id: 'exec-1',
-      name: 'محمد فهیم',
+      name: 'عبدالعزیز مهرزاد',
       title: 'مسئول پیروی از قوانین (Compliance Officer)',
       bgType: 'dark',
-      phone: '0785445060',
-      email: 'compliance@exchange.af',
-      joinDate: '1401/06/20',
-      education: 'لیسانس اقتصاد با تصدیق‌نامه AML/CFT',
-      experience: '5 سال مسئولیت انطباق با مقررات مبارزه با پولشویی و تأمین مالی تروریسم',
-      tazkiraNo: '0032198-0102-87654',
-      location: 'دفتر مرکزی - واحد انطباق (AML/CFT)',
+      phone: '',
+      email: '',
+      joinDate: '',
+      education: 'لیسانس اداره و تجارت',
+      experience: 'مسئول مستقل پیروی از قوانین و مقررات و AML/CFT',
+      tazkiraNo: '72198-0300-1401',
+      location: 'دفتر مرکزی - واحد پیروی از قوانین و مقررات',
       responsibilities: 'پایش معاملات مشکوک (STR/LCTR)، احراز هویت مشتریان (KYC) و گزارش‌دهی به د افغانستان بانک'
     },
     {
@@ -1144,7 +1144,7 @@ export default function OrgChartCanvas({ customLogo, companyId = "default" }: Or
               {/* Left Box (RTL: محمد فهیم - مسئول پیروی از قوانین) */}
               <div>
                 {renderInteractiveNodeCard({
-                  node: data.executives[0] || { id: 'exec-1', name: 'محمد فهیم', title: 'مسئول پیروی از قوانین' },
+                  node: data.executives[0] || { id: 'exec-1', name: 'عبدالعزیز مهرزاد', title: 'مسئول پیروی از قوانین' },
                   variant: 'executive',
                   isDark: true,
                   badgeText: 'AML/CFT Compliance'
