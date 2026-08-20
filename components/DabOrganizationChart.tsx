@@ -5,9 +5,11 @@ import { barakatullahGhafouriProfile } from '@/lib/barakatullahGhafouriProfile';
 
 type OrgNode = { id: string; title: string; subtitle: string; children?: OrgNode[] };
 
+// Single source of truth: the compliance officer is defined only in the company profile.
 const complianceOfficer = barakatullahGhafouriProfile.complianceOfficer;
 const complianceOfficerName = `${complianceOfficer.name} ولد ${complianceOfficer.fatherName}`;
 const complianceOfficerDetails = `تذکره ${complianceOfficer.identityNo} — ${complianceOfficer.education}`;
+const complianceOfficerRole = 'مسئول پیروی از قوانین و مقررات و AML/CFT';
 
 const initialChart: OrgNode = {
   id: 'shareholders',
@@ -101,7 +103,8 @@ export default function DabOrganizationChart() {
             <span className="text-xs font-semibold text-slate-500">مسئول پیروی از قوانین و مقررات</span>
             <strong className="text-lg">{complianceOfficerName}</strong>
             <span className="text-sm text-slate-600">{complianceOfficerDetails}</span>
-            <span className="text-sm text-slate-600">مسئول مستقل پیروی از قوانین و مقررات و AML/CFT</span>
+            <span className="text-sm text-slate-600">{complianceOfficerRole}</span>
+            <span className="mt-2 inline-flex w-fit border px-2 py-1 text-xs font-semibold">منبع مرکزی معلومات شرکت</span>
           </div>
         </section>
 
@@ -130,7 +133,8 @@ export default function DabOrganizationChart() {
                 <div className="mt-4 border p-3 text-sm">
                   <p className="font-semibold">{complianceOfficerName}</p>
                   <p className="mt-1 text-slate-600">{complianceOfficerDetails}</p>
-                  <p className="mt-2 text-slate-600">مسئول مستقل پیروی از قوانین و مقررات و AML/CFT</p>
+                  <p className="mt-2 text-slate-600">{complianceOfficerRole}</p>
+                  <p className="mt-2 text-xs font-semibold">این رکورد از پروفایل مرکزی شرکت خوانده می‌شود.</p>
                 </div>
               ) : (
                 <p className="mt-4 text-sm">این بخش به ساختار تشکیلاتی و معلومات ثبت‌شده شرکت مربوط است.</p>
