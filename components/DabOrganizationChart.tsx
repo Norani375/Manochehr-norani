@@ -104,7 +104,7 @@ export default function DabOrganizationChart() {
             <strong className="text-lg">{complianceOfficerName}</strong>
             <span className="text-sm text-slate-600">{complianceOfficerDetails}</span>
             <span className="text-sm text-slate-600">{complianceOfficerRole}</span>
-            <span className="mt-2 inline-flex w-fit border px-2 py-1 text-xs font-semibold">منبع مرکزی معلومات شرکت</span>
+            <span className="mt-2 inline-flex w-fit border px-2 py-1 text-xs font-semibold print:hidden">منبع مرکزی معلومات شرکت</span>
           </div>
         </section>
 

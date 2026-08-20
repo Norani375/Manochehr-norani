@@ -1,4 +1,5 @@
 'use client';
+import { toEnglishDigits } from '@/lib/utils';
 
 import React, { useState, useEffect } from 'react';
 import { 
@@ -289,7 +290,7 @@ export default function MeetingMinutes({
                   <label className="text-[10px] font-bold block mb-1 text-slate-500">نمبر تذکره / هویت (LTR):</label>
                   <input className="w-full p-2 border rounded-lg text-xs font-mono ltr text-left" placeholder="1399-1104-55522" value={p.idNo} onChange={e => {
                     const updated = [...data.participants];
-                    updated[i].idNo = e.target.value;
+                    updated[i].idNo = toEnglishDigits(e.target.value);
                     setData({ ...data, participants: updated });
                   }} />
                 </div>
@@ -353,7 +354,7 @@ export default function MeetingMinutes({
         {/* Official Header */}
         <DabOfficialHeader
           storageKey={`meeting_minutes_${companyId}`}
-          governmentTitle="امارت اسلامی افغانستان"
+          
           bankName="د افغانستان بانک"
           department="آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی"
           directorate="مدیریت عمومی نظارت و امور حقوقی صرافی‌ها"

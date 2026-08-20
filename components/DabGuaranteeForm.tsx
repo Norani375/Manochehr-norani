@@ -1,4 +1,5 @@
 'use client';
+import { toEnglishDigits } from '@/lib/utils';
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
@@ -128,23 +129,27 @@ const DEFAULT_FORM_DATA: GuaranteeFormData = {
   formDate: new Date().toISOString().split('T')[0],
 };
 
+
+
 interface EditableFieldProps {
   isEditMode: boolean;
   value: string;
-  onChange: (val: string) => void;
+  onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  dir?: string;
+  isTazkira?: boolean;
 }
-
-const EditableField = ({ isEditMode, value, onChange, placeholder, className = "" }: EditableFieldProps) => {
+const EditableField = ({ isEditMode, value, onChange, placeholder, className = "", dir, isTazkira }: EditableFieldProps) => {
   if (isEditMode) {
     return (
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(isTazkira ? toEnglishDigits(e.target.value) : e.target.value)}
         placeholder={placeholder}
-        className={`w-full px-2 py-1 border border-slate-300 rounded bg-white text-xs ${className}`}
+        dir={dir || (isTazkira ? "ltr" : undefined)}
+        className={`w-full px-2 py-1 border border-slate-300 rounded bg-white text-xs ${isTazkira ? 'text-left font-sans' : ''} ${className}`}
       />
     );
   }
@@ -379,7 +384,7 @@ export default function DabGuaranteeForm({
         {/* Official Header */}
         <DabOfficialHeader
           storageKey={`guarantee_form_${companyId}`}
-          governmentTitle="امارت اسلامی افغانستان"
+          
           bankName="د افغانستان بانک"
           department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
           directorate="مدیریت جوازدهی"
@@ -411,7 +416,7 @@ export default function DabGuaranteeForm({
                   <span className="text-[11px] font-normal text-slate-300">سهم‌دار ضامن #{idx + 1}</span>
                 </div>
                 <div className="p-3">
-                  <div className="flex flex-col lg:flex-row gap-3 items-stretch">
+                  <div className="flex flex-col md:flex-row print:flex-row gap-3 items-stretch">
                     {/* 3-Column Information Table */}
                     <div className="flex-1 overflow-x-auto">
                       <table className="w-full border-collapse border-2 border-slate-900 text-xs">
@@ -487,7 +492,7 @@ export default function DabGuaranteeForm({
                             <td className="border border-slate-900 p-1.5 align-middle">
                               <div className="flex items-center gap-2">
                                 <span className="font-bold w-16 text-slate-800 shrink-0">نمبر تذکره:</span>
-                                <EditableField isEditMode={isEditMode} value={guarantor.tazkiraNo} onChange={(val) => updateGuarantor(idx, 'tazkiraNo', val)} className="font-mono" />
+                                <EditableField isEditMode={isEditMode} value={guarantor.tazkiraNo} onChange={(val) => updateGuarantor(idx, 'tazkiraNo', val)} isTazkira className="font-mono" />
                               </div>
                             </td>
                             <td className="border border-slate-900 p-1.5 align-middle">

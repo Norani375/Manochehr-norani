@@ -1,4 +1,5 @@
 'use client';
+import { toEnglishDigits } from '@/lib/utils';
 
 import React, { useState, useEffect } from 'react';
 import { Printer, Download, BookOpen, Edit2, Check, ShieldCheck, Plus, Trash2, Save, RotateCcw } from 'lucide-react';
@@ -179,7 +180,7 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
         {/* Header / Emblem */}
         <DabOfficialHeader
           storageKey={`company_articles_${companyId}`}
-          governmentTitle="امارت اسلامی افغانستان"
+          
           bankName="د افغانستان بانک"
           department="چارچوب معیاری و اصولنامه تجارت افغانستان"
           directorate="آمریت عمومی نظارت بر مؤسسات مالی غیر بانکی"
@@ -317,8 +318,9 @@ export default function CompanyArticles({ customLogo, companyId = 'default' }: C
                               <input
                                 type="text"
                                 value={s.tazkiraNo}
-                                onChange={(e) => updateShareholder(s.id, 'tazkiraNo', e.target.value)}
-                                className="w-full border px-1 text-center font-mono"
+                                dir="ltr"
+                                onChange={(e) => updateShareholder(s.id, 'tazkiraNo', toEnglishDigits(e.target.value))}
+                                className="w-full border px-1 text-left font-sans"
                               />
                             ) : (
                               s.tazkiraNo

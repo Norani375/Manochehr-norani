@@ -1,4 +1,5 @@
 'use client';
+import { toEnglishDigits } from '@/lib/utils';
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
@@ -218,23 +219,27 @@ const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
   supervisorDate: '',
 };
 
+
+
 interface EditableFieldProps {
   isEditMode: boolean;
   value: string;
-  onChange: (val: string) => void;
+  onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  dir?: string;
+  isTazkira?: boolean;
 }
-
-const EditableField = ({ isEditMode, value, onChange, placeholder, className = "" }: EditableFieldProps) => {
+const EditableField = ({ isEditMode, value, onChange, placeholder, className = "", dir, isTazkira }: EditableFieldProps) => {
   if (isEditMode) {
     return (
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(isTazkira ? toEnglishDigits(e.target.value) : e.target.value)}
         placeholder={placeholder}
-        className={`w-full px-2 py-1 border border-slate-300 rounded bg-white text-xs ${className}`}
+        dir={dir || (isTazkira ? "ltr" : undefined)}
+        className={`w-full px-2 py-1 border border-slate-300 rounded bg-white text-xs ${isTazkira ? 'text-left font-sans' : ''} ${className}`}
       />
     );
   }
@@ -490,7 +495,7 @@ export default function DabBranchRenewalForm({
         {/* Official Header */}
         <DabOfficialHeader
           storageKey={`branch_renewal_form2_${companyId}`}
-          governmentTitle="امارت اسلامی افغانستان"
+          
           bankName="د افغانستان بانک"
           department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
           directorate="مدیریت جوازدهی نمایندگی‌ها"
@@ -701,7 +706,7 @@ export default function DabBranchRenewalForm({
                   <td className="border border-slate-400 p-1">
                     <EditableField isEditMode={renderAll ? false : isEditMode}
                       value={branchData.repTazkiraNo}
-                      onChange={(val) => updateField('repTazkiraNo', val)}
+                      onChange={(val) => updateField('repTazkiraNo', val)} isTazkira
                       className="font-mono text-center"
                     />
                   </td>

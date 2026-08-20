@@ -1,4 +1,5 @@
 'use client';
+import { toEnglishDigits } from '@/lib/utils';
 
 import { useState } from 'react';
 import DabOfficialHeader from './DabOfficialHeader';
@@ -90,7 +91,7 @@ export default function DabFxGuaranteeForm() {
       <div className="mx-auto max-w-6xl bg-white print:max-w-none">
         <DabOfficialHeader
           storageKey="dab_fx_guarantee_header"
-          governmentTitle="امارت اسلامی افغانستان"
+          
           bankName="د افغانستان بانک"
           department="آمریت عمومی نظارت امور مالی غیر بانکی"
           directorate="مدیریت جوازدهی"

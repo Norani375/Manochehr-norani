@@ -1,4 +1,5 @@
 'use client';
+import { toEnglishDigits } from '@/lib/utils';
 
 import { useState } from 'react';
 import DabOfficialHeader from './DabOfficialHeader';
@@ -36,7 +37,7 @@ export default function DabFxResponsibleEmployeeForm() {
       <article className="mx-auto max-w-5xl bg-white p-6 shadow-sm print:max-w-none print:p-0 print:shadow-none">
         <DabOfficialHeader
           storageKey="dab_fx_responsible_employee_header"
-          governmentTitle="امارت اسلامی افغانستان"
+          
           bankName="د افغانستان بانک"
           department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
           directorate="مدیریت جوازدهی"
@@ -54,8 +55,9 @@ export default function DabFxResponsibleEmployeeForm() {
                   <input
                     type={type === 'date' ? 'date' : 'text'}
                     value={values[key] ?? ''}
-                    onChange={event => update(key, event.target.value)}
-                    className="mt-1 w-full border border-slate-400 p-2 font-normal"
+                    onChange={event => update(key, key === 'identityNo' ? toEnglishDigits(event.target.value) : event.target.value)}
+                    dir={key === 'identityNo' ? 'ltr' : undefined}
+                    className={`mt-1 w-full border border-slate-400 p-2 font-normal ${key === 'identityNo' ? 'text-left font-sans' : ''}`}
                   />
                 </label>
               ))}

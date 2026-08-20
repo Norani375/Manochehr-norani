@@ -547,7 +547,7 @@ export default function OrgChartCanvas({
         <div className="absolute -top-3 left-4 flex items-center gap-1.5 z-10">
           {enriched.hasDbMatch && (
             <span 
-              className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-xs"
+              className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-xs print:hidden"
               title="متصل به دیتابیس زنده سوانح پرسنل (Firestore Database)"
             >
               <Database className="w-2.5 h-2.5" />
@@ -631,7 +631,7 @@ export default function OrgChartCanvas({
             }`}
           >
             {/* Database Connection Notice */}
-            <div className={`p-2 rounded-xl border flex items-center justify-between gap-2 text-[11px] ${
+            <div className={`p-2 rounded-xl border flex items-center justify-between gap-2 text-[11px] print:hidden ${
               enriched.hasDbMatch 
                 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
                 : 'bg-blue-50/60 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900 text-blue-800 dark:text-blue-300'

@@ -1,4 +1,5 @@
 'use client';
+import { toEnglishDigits } from '@/lib/utils';
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
@@ -522,7 +523,7 @@ export default function DabLicenseRenewalForm({
         {/* Official Header */}
         <DabOfficialHeader
           storageKey={`license_renewal_form1_${companyId}`}
-          governmentTitle="امارت اسلامی افغانستان"
+          
           bankName="د افغانستان بانک"
           department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
           directorate="مدیریت جوازدهی صرافی‌ها و خدمات پولی"
@@ -609,9 +610,10 @@ export default function DabLicenseRenewalForm({
                   <td className="border border-slate-300 p-1">
                     <input
                       type="text"
+                      dir="ltr"
                       value={sh.tazkiraNo}
-                      onChange={(e) => updateShareholder(idx, 'tazkiraNo', e.target.value)}
-                      className="w-full p-1 border rounded bg-white text-center font-mono"
+                      onChange={(e) => updateShareholder(idx, 'tazkiraNo', toEnglishDigits(e.target.value))}
+                      className="w-full p-1 border rounded bg-white text-left font-sans"
                     />
                   </td>
                   <td className="border border-slate-300 p-1 font-bold">
