@@ -46,17 +46,22 @@ function GuarantorSection({ index, data, setData }: { index: number; data: Guara
   const update = (key: keyof Guarantor, value: string) => setData({ ...data, [key]: value });
   return <section className="mb-8 break-inside-avoid">
     <h2 className="mb-3 text-right text-lg font-bold">{index}. شهرت سهم دار {index === 1 ? 'اول' : index === 2 ? 'دوم' : 'سوم'} شرکت تضمین کننده:</h2>
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_180px_1fr]">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr_200px] print:grid-cols-[1fr_1fr_200px]">
       <div className="space-y-3">
         <Input label="اسم و محل فعالیت تشبث" value={data.business} onChange={(v) => update('business', v)} />
         <Input label="سکونت اصلی" value={data.mainResidence} onChange={(v) => update('mainResidence', v)} />
         <Input label="سکونت فعلی" value={data.currentResidence} onChange={(v) => update('currentResidence', v)} />
       </div>
-      <div className="flex min-h-[180px] items-center justify-center border-2 border-dashed border-slate-500 text-center text-xs font-semibold">
-        عکس تضمین کننده در اینجا نصب و با مهر تضمین کننده تاپه گردد
-      </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2">
         {labels.slice(0, 4).map(([key, label]) => <Input key={key} label={label} value={data[key]} onChange={(v) => update(key, v)} />)}
+      </div>
+      <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-slate-900 bg-slate-50">
+        <div className="w-full border-b border-slate-900 bg-slate-200 p-2 text-center text-xs font-black text-slate-900">
+          محل نصب عکس و تاپه
+        </div>
+        <div className="m-2 flex flex-1 flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-400 bg-white p-3 text-center text-xs font-bold leading-relaxed text-slate-800">
+          عکس تضمین کننده در اینجا نصب و با مهر تضمین کننده تاپه گردد
+        </div>
       </div>
     </div>
     <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
