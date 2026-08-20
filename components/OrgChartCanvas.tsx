@@ -42,6 +42,27 @@ export interface OrgChartData {
   footerNote: string;
 }
 
+const COMPLIANCE_OFFICER_CANONICAL: Partial<OrgChartNode> = {
+  name: 'عبدالعزیز مهرزاد',
+  title: 'مسئول پیروی از قوانین (Compliance Officer)',
+  phone: '',
+  email: '',
+  joinDate: '',
+  education: 'لیسانس اداره و تجارت',
+  experience: 'مسئول مستقل پیروی از قوانین و مقررات و AML/CFT',
+  tazkiraNo: '72198-0300-1401',
+  location: 'دفتر مرکزی - واحد پیروی از قوانین و مقررات',
+};
+
+const normalizeOrgChartData = (value: OrgChartData): OrgChartData => ({
+  ...value,
+  executives: value.executives.map((executive) =>
+    executive.title.includes('مسئول پیروی از قوانین')
+      ? { ...executive, ...COMPLIANCE_OFFICER_CANONICAL }
+      : executive
+  ),
+});
+
 const DEFAULT_ORG_CHART_DATA: OrgChartData = {
   headerTitle: 'چارت تشکیلاتی و ساختار سازمانی مصوب',
   companyName: 'شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)',
@@ -219,7 +240,7 @@ export default function OrgChartCanvas({ customLogo, companyId = "default" }: Or
     if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem(`bg_org_chart_v2_${companyId}`);
-        if (saved) return { ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) };
+        if (saved) return normalizeOrgChartData({ ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) });
       } catch (e) {
         console.error(e);
       }
@@ -241,7 +262,7 @@ export default function OrgChartCanvas({ customLogo, companyId = "default" }: Or
       try {
         const saved = localStorage.getItem(`bg_org_chart_v2_${companyId}`);
         if (saved) {
-          setData({ ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) });
+          setData(normalizeOrgChartData({ ...DEFAULT_ORG_CHART_DATA, ...JSON.parse(saved) }));
         } else {
           setData(DEFAULT_ORG_CHART_DATA);
         }
@@ -255,7 +276,7 @@ export default function OrgChartCanvas({ customLogo, companyId = "default" }: Or
         if (snapshot.exists()) {
           const remote = snapshot.data();
           if (remote && remote.orgChartData) {
-            setData((prev) => ({ ...prev, ...remote.orgChartData }));
+            setData((prev) => normalizeOrgChartData({ ...prev, ...remote.orgChartData }));
           }
         }
       }, (err) => console.warn(err));
@@ -1141,7 +1162,7 @@ export default function OrgChartCanvas({ customLogo, companyId = "default" }: Or
                 })}
               </div>
 
-              {/* Left Box (RTL: محمد فهیم - مسئول پیروی از قوانین) */}
+              {/* Left Box (RTL: عبدالعزیز مهرزاد - مسئول پیروی از قوانین) */}
               <div>
                 {renderInteractiveNodeCard({
                   node: data.executives[0] || { id: 'exec-1', name: 'عبدالعزیز مهرزاد', title: 'مسئول پیروی از قوانین' },
