@@ -1,33 +1,9 @@
-@import "tailwindcss";
-
-/* Shared form-header rules */
-main header img[alt="لوگوی شرکت"] {
-  display: block !important;
-  width: 4rem !important;
-  height: 4rem !important;
-  margin-right: auto !important;
-  margin-left: auto !important;
-  object-fit: contain !important;
-}
-
-/* DAB headers: show only the approved Dari header text.
-   This also prevents old saved English header values from appearing. */
-main header:has(> p:nth-of-type(3)) {
-  direction: rtl;
-  text-align: center;
-}
-
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(1),
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(2),
-main header:has(> p:nth-of-type(3)) > p:nth-of-type(3) {
-  font-size: 0 !important;
-  line-height: 1.5 !important;
-  margin-right: auto !important;
-  margin-left: auto !important;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 main header:has(> p:nth-of-type(3)) > p:nth-of-type(1)::after {
-  content: "د افغانستان بانک";
+  content: "دافغانستان بانک";
   font-size: 1rem;
   font-weight: 700;
 }
@@ -54,7 +30,7 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1) {
 }
 
 main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::after {
-  content: "د افغانستان بانک\A آمریت عمومی نظارت از مؤسسات مالی غیر بانکی\A مدیریت جوازدهی";
+  content: "دافغانستان بانک\A آمریت عمومی نظارت از مؤسسات مالی غیر بانکی\A مدیریت جوازدهی";
   white-space: pre-line;
   font-size: 0.9rem;
   font-weight: 700;
@@ -73,157 +49,28 @@ main header:has(> div > h1):not(:has(> p:nth-of-type(3))) > p:nth-of-type(1)::af
       height: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-      background: #ffffff !important;
-      color: #000000 !important;
-      overflow: visible !important;
-      font-size: 11pt !important;
-      line-height: 1.4 !important;
     }
 
-    .print\\:hidden,
-    button,
-    aside,
-    nav,
-    [role="dialog"],
-    .modal-overlay,
-    .fixed.inset-0 {
+    body {
+      background: #fff !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .print\:hidden {
       display: none !important;
     }
 
-    main {
-      padding: 0 !important;
-      margin: 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-
-    * {
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-      color-adjust: exact !important;
-      box-shadow: none !important;
-      overflow: visible !important;
-      max-height: none !important;
-      scrollbar-width: none !important;
-    }
-
-    *::-webkit-scrollbar {
+    .no-print {
       display: none !important;
     }
 
-    input[type="text"],
-    input[type="number"],
-    select,
-    textarea {
-      border: none !important;
-      border-bottom: 1px solid #000000 !important;
-      background: transparent !important;
-      color: #000000 !important;
-      padding: 0 4px !important;
-      font-weight: bold !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      appearance: none !important;
-      -webkit-appearance: none !important;
-    }
-
-    select {
-      background-image: none !important;
-    }
-
-    table, tr, td, th, tbody, thead,
-    .dab-signature-box,
-    .dab-section-card,
-    #dab-official-form,
-    #dab-branch-renewal-form,
-    #dab-license-renewal-form,
-    #meeting-minutes-canvas,
-    #company-articles-canvas,
-    #company-proposal-canvas,
-    #license-checklist-canvas,
-    #dab-license-renewal-checklist-canvas,
-    #dab-branch-renewal-checklist-canvas,
-    #dab-license-renewal-letter-canvas,
-    #org-chart-exact-canvas,
-    #employee-management-cv-canvas {
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
-    }
-
-    tr, th, td {
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
-    }
-
-    h1, h2, h3, h4 {
-      page-break-after: avoid !important;
-      break-after: avoid !important;
-    }
-
-    table, th, td {
-      border-color: #000000 !important;
-    }
-
-    #org-chart-export-canvas,
-    #org-chart-exact-canvas {
-      width: 100% !important;
-      max-width: 100% !important;
-      padding: 2px !important;
-      margin: 0 auto !important;
-      background-color: #ffffff !important;
-      background-image: none !important;
-      color: #000000 !important;
-      box-shadow: none !important;
-      border: none !important;
-      page-break-inside: avoid !important;
-      break-inside: avoid !important;
-    }
-
-    #org-chart-export-canvas .p-6,
-    #org-chart-export-canvas .p-5 {
-      padding: 0.4rem 0.6rem !important;
-    }
-    #org-chart-export-canvas .p-4 {
-      padding: 0.35rem !important;
-    }
-    #org-chart-export-canvas .p-3 {
-      padding: 0.25rem !important;
-    }
-    #org-chart-export-canvas .mb-6,
-    #org-chart-export-canvas .mb-8 {
-      margin-bottom: 0.35rem !important;
-    }
-    #org-chart-export-canvas .gap-6,
-    #org-chart-export-canvas .gap-8 {
-      gap: 0.35rem !important;
-    }
-
-    #org-chart-export-canvas button,
-    #org-chart-export-canvas .absolute.top-2.right-2,
-    #org-chart-export-canvas .absolute.top-1\\.5.right-1\\.5 {
-      display: none !important;
-    }
-
-    #org-chart-export-canvas [class*="rounded-"] {
-      border-width: 1.5px !important;
-      border-style: solid !important;
-      border-color: #000000 !important;
+    .print\:shadow-none {
       box-shadow: none !important;
     }
 
-    #org-chart-export-canvas .bg-gradient-to-br {
-      background: #000000 !important;
-      color: #ffffff !important;
-      border-color: #000000 !important;
-    }
-
-    /* Keep form logos centered in printed output. */
-    main header img[alt="لوگوی شرکت"] {
-      display: block !important;
-      margin-right: auto !important;
-      margin-left: auto !important;
-      break-inside: avoid !important;
-      page-break-inside: avoid !important;
+    .print\:border-0 {
+      border: 0 !important;
     }
   }
 }
