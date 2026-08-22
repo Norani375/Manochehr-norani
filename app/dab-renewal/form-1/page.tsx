@@ -1,5 +1,5 @@
-import DabOfficialForm1 from '@/components/DabOfficialForm1';
+import DabStandardFormsWorkspace from '@/components/DabStandardFormsWorkspace';
 
 export default function DabOfficialForm1Page() {
-  return <DabOfficialForm1 />;
+  return <DabStandardFormsWorkspace />;
 }
