@@ -57,6 +57,45 @@ main header img[alt="لوگوی شرکت"] {
   display: none !important;
 }
 
+/* Organization chart: compact official view. Each chart card shows only name and role. */
+#org-chart-export-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"]],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"]],
+#org-chart-export-canvas [id^="org-node-"] > div[class*="pt-2.5"][class*="px-4"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="pt-2.5"][class*="px-4"],
+#org-chart-export-canvas [id^="org-node-"] > div[class*="border-t"][class*="py-4"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="border-t"][class*="py-4"],
+#org-chart-export-canvas [id^="org-node-"] > div[class*="mt-3"][class*="border-t"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="mt-3"][class*="border-t"],
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div[class*="mt-2"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div[class*="mt-2"],
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > button,
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > button {
+  display: none !important;
+}
+
+/* Keep the chart compact and aligned across all hierarchy levels. */
+#org-chart-export-canvas [id^="org-node-"],
+#org-chart-exact-canvas [id^="org-node-"] {
+  min-width: 190px;
+  max-width: 260px;
+  min-height: 92px;
+}
+
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] {
+  padding: 0.85rem 1rem !important;
+}
+
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child,
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child {
+  margin-bottom: 0.15rem !important;
+}
+
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > div:nth-child(2),
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > div:nth-child(2) {
+  width: 100% !important;
+}
+
 @layer utilities {
   @media print {
     @page {
