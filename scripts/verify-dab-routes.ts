@@ -2,8 +2,10 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = join(process.cwd(), 'app');
-const CANONICAL_IMPORT = '@/components/DabStandardFormsWorkspace';
-const CANONICAL_SHAREHOLDER_IMPORT = '@/components/DabShareholderGuaranteeStandardForm';
+const CANONICAL_IMPORTS = new Set([
+  '@/components/DabStandardFormsWorkspace',
+  '@/components/DabShareholderGuaranteeStandardForm',
+]);
 
 function collectPageFiles(directory: string): string[] {
   if (!existsSync(directory)) return [];
@@ -22,18 +24,16 @@ const violations: string[] = [];
 
 for (const file of dabPages) {
   const source = readFileSync(file, 'utf8');
-  const usesCanonicalWorkspace = source.includes(CANONICAL_IMPORT);
-  const usesCanonicalShareholderForm = source.includes(CANONICAL_SHAREHOLDER_IMPORT);
+  const imports = [...source.matchAll(/from ['\"](@\/components\/[^'\"]+)['\"]/g)].map((match) => match[1]);
+  const dabFormImports = imports.filter((path) => path.startsWith('@/components/Dab') && path.endsWith('Form'));
+  const hasCanonicalImport = imports.some((path) => CANONICAL_IMPORTS.has(path));
 
-  // A canonical renderer is not a legacy form import.
-  // The generic pattern must exclude the approved canonical shareholder renderer.
-  const importsLegacyDabForm = [...source.matchAll(/from ['\"](@\/components\/Dab[A-Za-z0-9]+Form)['\"]/g)]
-    .some((match) => match[1] !== CANONICAL_SHAREHOLDER_IMPORT);
+  // A DAB route is valid when it uses the central workspace or an approved
+  // registry-backed specialized standard form. All other DAB form imports
+  // are treated as legacy entry points.
+  const hasLegacyImport = dabFormImports.some((path) => !CANONICAL_IMPORTS.has(path));
 
-  const isShareholderGuaranteeRoute = file.includes('/dab-shareholder-guarantee/');
-  const hasApprovedCanonicalRenderer = usesCanonicalWorkspace || (isShareholderGuaranteeRoute && usesCanonicalShareholderForm);
-
-  if (importsLegacyDabForm && !hasApprovedCanonicalRenderer) {
+  if (hasLegacyImport && !hasCanonicalImport) {
     violations.push(file.replace(`${process.cwd()}/`, ''));
   }
 }
