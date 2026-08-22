@@ -22,13 +22,14 @@ const violations: string[] = [];
 
 for (const file of dabPages) {
   const source = readFileSync(file, 'utf8');
-  const importsLegacyDabForm = /from ['\"]@\/components\/Dab[A-Za-z0-9]+Form['\"]/.test(source);
   const usesCanonicalWorkspace = source.includes(CANONICAL_IMPORT);
   const usesCanonicalShareholderForm = source.includes(CANONICAL_SHAREHOLDER_IMPORT);
 
-  // The shareholder guarantee form is a dedicated canonical renderer.
-  // It is allowed to bypass the generic workspace because it is itself
-  // the canonical implementation for shareholder-guarantee.
+  // A canonical renderer is not a legacy form import.
+  // The generic pattern must exclude the approved canonical shareholder renderer.
+  const importsLegacyDabForm = [...source.matchAll(/from ['\"](@\/components\/Dab[A-Za-z0-9]+Form)['\"]/g)]
+    .some((match) => match[1] !== CANONICAL_SHAREHOLDER_IMPORT);
+
   const isShareholderGuaranteeRoute = file.includes('/dab-shareholder-guarantee/');
   const hasApprovedCanonicalRenderer = usesCanonicalWorkspace || (isShareholderGuaranteeRoute && usesCanonicalShareholderForm);
 
