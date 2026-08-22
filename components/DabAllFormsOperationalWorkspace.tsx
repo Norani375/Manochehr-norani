@@ -64,7 +64,7 @@ const masterValues: Values = {
   guarantor3: '',
   guarantorBusiness: `اسم تشبث: ${profile.guarantorBusiness.name}\nنوع فعالیت: ${profile.guarantorBusiness.type}\nنمبر جواز: ${profile.guarantorBusiness.licenseNo}\nتماس: ${profile.guarantorBusiness.phone}\nتاریخ اعتبار: ${profile.guarantorBusiness.expiryDate}\nاداره صادر کننده: ${profile.guarantorBusiness.issuer}\nآدرس: ${profile.guarantorBusiness.address}`,
   guaranteedShareholder: profile.shareholders[0].name, guaranteeDate: '2026-08-09',
-  boardCertification: `برکت‌الله غفوری، رئیس هیئت نظار، اهلیت و شهرت نماینده معرفی‌شده را تصدیق می‌نماید.`,
+  boardCertification: `بسم‌الله شیرزی، رئیس هیئت نظار، اهلیت و شهرت نماینده معرفی‌شده را تصدیق می‌نماید.`,
   employeeList: profile.branches[0].staff.map((s) => `${s.name} ولد ${s.fatherName} — ${s.education} — TIN ${s.tin || '-'}`).join('\n'),
 };
 

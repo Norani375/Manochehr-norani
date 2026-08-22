@@ -206,8 +206,8 @@ const DEFAULT_BRANCH_RENEWAL_DATA: BranchRenewalData = {
   educationLevel: 'baccalaureate',
   educationOtherText: '',
 
-  boardHeadName: 'برکت‌الله غفوری',
-  boardHeadFather: 'عبدالغفور',
+  boardHeadName: 'بسم‌الله شیرزی',
+  boardHeadFather: 'دوست محمد',
   shareholder1Name: 'برکت‌الله غفوری (مالک 100٪)',
   shareholder2Name: '',
 

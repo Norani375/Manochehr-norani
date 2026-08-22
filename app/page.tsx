@@ -1334,10 +1334,13 @@ export default function OrgChartPage() {
                   onPointerUp={dragProps.onPointerUp}
                   style={dragProps.style}
                   onClick={() => isEditMode && setEditingNode(president!)}
-                  className={`bg-slate-900 dark:bg-slate-800 text-white rounded-[2rem] p-6 shadow-2xl border border-slate-800 dark:border-slate-700 w-80 text-center relative transition-all duration-300 ${
+                  className={`bg-slate-900 dark:bg-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 w-80 text-center relative transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden ${
                     isEditMode ? 'hover:ring-4 hover:ring-amber-400/30' : ''
                   } ${matchesSearch(president!) ? 'ring-4 ring-blue-500' : ''} ${dragProps.classNameAddons}`}
                 >
+                  {/* Top Gold/Amber Accent Line */}
+                  <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600" />
+
                   {isEditMode && (
                     <button
                       type="button"
@@ -1345,22 +1348,25 @@ export default function OrgChartPage() {
                         e.stopPropagation();
                         setEditingNode(president!);
                       }}
-                      className="absolute -top-3 -right-3 bg-amber-500 text-slate-950 p-2 rounded-2xl shadow-xl border-4 border-white dark:border-slate-800 z-10 hover:bg-amber-400 cursor-pointer"
+                      className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1.5 rounded-xl shadow-lg z-10 hover:bg-amber-400 cursor-pointer"
                     >
-                      <Edit3 className="w-4 h-4" />
+                      <Edit3 className="w-3.5 h-3.5" />
                     </button>
                   )}
                   {/* Print-Only 'Report To' Hierarchy Edge Badge */}
-                  <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                  <div className="hidden print:flex print-reports-to-label absolute top-2 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
                     <span className="text-amber-300 font-black">گزارش به:</span>
                     <span className="font-bold">مجمع عمومی سهمداران / DAB</span>
                   </div>
-                  <div className="inline-flex p-3 bg-blue-500/20 rounded-2xl mb-3 text-blue-400">
-                    <Award className="w-7 h-7" />
+
+                  <div className="p-6">
+                    <div className="inline-flex p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl mb-3 text-amber-400">
+                      <Award className="w-7 h-7" />
+                    </div>
+                    <div className="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-black mb-1">{president!.title}</div>
+                    <div className="text-xl font-black tracking-tight">{president!.name}</div>
+                    <div className="text-[10px] text-slate-400 mt-2 font-bold tracking-widest uppercase">Chairman & Founder</div>
                   </div>
-                  <div className="text-[11px] uppercase tracking-[0.2em] text-blue-400 font-black mb-1">{president!.title}</div>
-                  <div className="text-xl font-black tracking-tight">{president!.name}</div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 font-bold tracking-widest uppercase">Chairman & Founder</div>
                 </div>
 
                 {/* Vertical connector */}
@@ -1371,12 +1377,12 @@ export default function OrgChartPage() {
 
           {/* Level 2: Board of Supervisors Box */}
           <div className="flex flex-col items-center relative w-full max-w-5xl">
-            <div className={`${theme === 'dark' ? 'bg-slate-800/40' : 'bg-slate-50/50'} rounded-[2.5rem] p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm w-full transition-colors`}>
+            <div className={`${theme === 'dark' ? 'bg-slate-800/40' : 'bg-slate-50/50'} rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xs w-full transition-colors`}>
               <div className="text-center mb-8">
-                <span className={`inline-flex items-center gap-2.5 px-5 py-2 rounded-full text-xs font-black tracking-wide shadow-sm ${
+                <span className={`inline-flex items-center gap-2.5 px-5 py-2 rounded-full text-xs font-black tracking-wide shadow-xs ${
                   theme === 'dark' ? 'bg-slate-800 text-blue-400 border border-slate-700' : 'bg-white text-blue-900 border border-slate-200'
                 }`}>
-                  <ShieldCheck className="w-4 h-4" />
+                  <ShieldCheck className="w-4 h-4 text-indigo-500" />
                   هیئت نظار • شورای نظارت عالی شرکت
                 </span>
               </div>
@@ -1393,10 +1399,13 @@ export default function OrgChartPage() {
                       onPointerUp={dragProps.onPointerUp}
                       style={dragProps.style}
                       onClick={() => isEditMode && setEditingNode(member)}
-                      className={`bg-white dark:bg-slate-900 rounded-[1.5rem] p-5 shadow-sm border transition-all duration-300 relative ${
+                      className={`bg-white dark:bg-slate-900 rounded-2xl shadow-xs border transition-all duration-300 relative overflow-hidden hover:shadow-xl hover:-translate-y-1 ${
                         isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
-                      } ${matchesSearch(member) ? 'border-blue-500 ring-4 ring-blue-500/10' : 'border-slate-100 dark:border-slate-800'} ${dragProps.classNameAddons}`}
+                      } ${matchesSearch(member) ? 'border-blue-500 ring-4 ring-blue-500/10' : 'border-slate-200/90 dark:border-slate-800'} ${dragProps.classNameAddons}`}
                     >
+                      {/* Top Indigo Gradient Accent Line */}
+                      <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600" />
+
                       {isEditMode && (
                         <button
                           type="button"
@@ -1410,18 +1419,23 @@ export default function OrgChartPage() {
                         </button>
                       )}
                       {/* Print-Only 'Report To' Hierarchy Edge Badge */}
-                      <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                      <div className="hidden print:flex print-reports-to-label absolute top-2 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
                         <span className="text-amber-300 font-black">گزارش به:</span>
                         <span className="font-bold">مجمع عمومی / رئیس هیئت مدیره</span>
                       </div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="p-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                          <UserCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+
+                      <div className="p-5">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/40 rounded-xl">
+                            <UserCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                          </div>
+                          <span className="text-[10px] font-black bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-900/40">
+                            عضو هیئت نظار
+                          </span>
                         </div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Board</span>
+                        <div className="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 mb-1">{member.title}</div>
+                        <div className="text-base font-black text-slate-900 dark:text-white leading-snug">{member.name}</div>
                       </div>
-                      <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{member.title}</div>
-                      <div className="text-sm font-black text-slate-900 dark:text-white">{member.name}</div>
                     </div>
                   );
                 })}
@@ -1446,10 +1460,13 @@ export default function OrgChartPage() {
                         onPointerUp={dragProps.onPointerUp}
                         style={dragProps.style}
                         onClick={() => isEditMode && setEditingNode(operations!)}
-                        className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
+                        className={`bg-slate-900 dark:bg-slate-900 text-white rounded-2xl shadow-xl w-full max-w-xs text-center relative transition-all duration-300 overflow-hidden hover:shadow-2xl hover:-translate-y-1 border border-slate-800 ${
                           isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
                         } ${matchesSearch(operations!) ? 'ring-4 ring-blue-500/30' : ''} ${dragProps.classNameAddons}`}
                       >
+                        {/* Top Deep Blue Accent Bar */}
+                        <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600" />
+
                         {isEditMode && (
                           <button
                             type="button"
@@ -1463,15 +1480,18 @@ export default function OrgChartPage() {
                           </button>
                         )}
                         {/* Print-Only 'Report To' Hierarchy Edge Badge */}
-                        <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                        <div className="hidden print:flex print-reports-to-label absolute top-2 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
                           <span className="text-amber-300 font-black">گزارش به:</span>
                           <span className="font-bold">رئیس هیئت مدیره ({president?.name || ''})</span>
                         </div>
-                        <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
-                          <Briefcase className="w-5 h-5" />
+
+                        <div className="p-5">
+                          <div className="inline-flex p-2.5 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-3 text-blue-400">
+                            <Briefcase className="w-5 h-5" />
+                          </div>
+                          <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{operations!.title}</div>
+                          <div className="text-base font-black">{operations!.name}</div>
                         </div>
-                        <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{operations!.title}</div>
-                        <div className="text-base font-black">{operations!.name}</div>
                       </div>
                     );
                   })()}
@@ -1536,12 +1556,15 @@ export default function OrgChartPage() {
                                 onPointerUp={dragProps.onPointerUp}
                                 style={dragProps.style}
                                 onClick={() => isEditMode && setEditingNode(branch)}
-                                className={`bg-white dark:bg-slate-900 rounded-2xl p-4 border text-center shadow-sm relative transition-all duration-300 w-full ${
+                                className={`bg-white dark:bg-slate-900 rounded-2xl border text-center shadow-xs relative transition-all duration-300 w-full overflow-hidden hover:shadow-xl hover:-translate-y-1 ${
                                   isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
-                                } ${matchesSearch(branch) ? 'border-blue-500 ring-2 ring-blue-500/10' : 'border-slate-100 dark:border-slate-800'} ${
+                                } ${matchesSearch(branch) ? 'border-blue-500 ring-2 ring-blue-500/10' : 'border-slate-200/90 dark:border-slate-800'} ${
                                   selectedBranchFilter === branch.key ? 'border-blue-600 ring-4 ring-blue-600/10' : ''
                                 } ${dragProps.classNameAddons}`}
                               >
+                                {/* Top Teal Accent Line */}
+                                <div className="h-1.5 w-full bg-gradient-to-r from-teal-400 via-emerald-500 to-cyan-500" />
+
                                 {isEditMode && (
                                   <button
                                     type="button"
@@ -1549,37 +1572,39 @@ export default function OrgChartPage() {
                                       e.stopPropagation();
                                       setEditingNode(branch);
                                     }}
-                                    className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded-lg z-10 hover:bg-amber-400 cursor-pointer"
+                                    className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-1 rounded-lg z-10 hover:bg-amber-400 cursor-pointer"
                                   >
                                     <Edit3 className="w-3 h-3" />
                                   </button>
                                 )}
 
-                                <div className="flex items-center justify-end mb-2">
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedBranchFilter(selectedBranchFilter === branch.key ? 'all' : branch.key);
-                                    }}
-                                    className={`p-1.5 rounded-lg transition-all ${
-                                      selectedBranchFilter === branch.key
-                                        ? 'bg-blue-600 text-white shadow-md'
-                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-400'
-                                    }`}
-                                  >
-                                    <Filter className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
+                                <div className="p-4">
+                                  <div className="flex items-center justify-end mb-2">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedBranchFilter(selectedBranchFilter === branch.key ? 'all' : branch.key);
+                                      }}
+                                      className={`p-1.5 rounded-lg transition-all ${
+                                        selectedBranchFilter === branch.key
+                                          ? 'bg-teal-600 text-white shadow-md'
+                                          : 'bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                                      }`}
+                                    >
+                                      <Filter className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
 
-                                <div className="text-[11px] font-black text-blue-600 dark:text-blue-400 mb-1">{branch.title}</div>
-                                <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">{branch.name}</div>
-                                <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
-                                  <span className="text-amber-300 font-black">گزارش به:</span>
-                                  <span className="font-bold">مدیر بخش عملیاتی ({operations?.name || ''})</span>
-                                </div>
-                                <div className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md mt-2 border border-blue-100 dark:border-blue-900/40 inline-block print:hidden">
-                                  گزارش به: مدیر بخش عملیاتی
+                                  <div className="text-[11px] font-black text-teal-600 dark:text-teal-400 mb-1">{branch.title}</div>
+                                  <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">{branch.name}</div>
+                                  <div className="hidden print:flex print-reports-to-label absolute top-2 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                                    <span className="text-amber-300 font-black">گزارش به:</span>
+                                    <span className="font-bold">مدیر بخش عملیاتی ({operations?.name || ''})</span>
+                                  </div>
+                                  <div className="text-[10px] text-teal-800 dark:text-teal-300 font-extrabold bg-teal-50 dark:bg-teal-950/50 px-2.5 py-0.5 rounded-full mt-2.5 border border-teal-100 dark:border-teal-900/40 inline-block print:hidden">
+                                    گزارش به: مدیر بخش عملیاتی
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -1601,10 +1626,13 @@ export default function OrgChartPage() {
                         onPointerUp={dragProps.onPointerUp}
                         style={dragProps.style}
                         onClick={() => isEditMode && setEditingNode(compliance!)}
-                        className={`bg-slate-900 dark:bg-slate-800 text-white rounded-2xl p-5 shadow-xl w-full max-w-xs text-center relative transition-all duration-300 ${
+                        className={`bg-slate-900 dark:bg-slate-900 text-white rounded-2xl shadow-xl w-full max-w-xs text-center relative transition-all duration-300 overflow-hidden hover:shadow-2xl hover:-translate-y-1 border border-slate-800 ${
                           isEditMode ? 'hover:ring-2 hover:ring-amber-400' : ''
                         } ${matchesSearch(compliance!) ? 'ring-4 ring-blue-500/30' : ''} ${dragProps.classNameAddons}`}
                       >
+                        {/* Top Emerald Gradient Line */}
+                        <div className="h-1.5 w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600" />
+
                         {isEditMode && (
                           <button
                             type="button"
@@ -1618,19 +1646,22 @@ export default function OrgChartPage() {
                           </button>
                         )}
                         {/* Print-Only 'Report To' Hierarchy Edge Badge */}
-                        <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                        <div className="hidden print:flex print-reports-to-label absolute top-2 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
                           <span className="text-amber-300 font-black">گزارش به:</span>
                           <span className="font-bold">هیئت نظار و د افغانستان بانک</span>
                         </div>
-                        <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
-                          <Shield className="w-5 h-5" />
+
+                        <div className="p-5">
+                          <div className="inline-flex p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3 text-emerald-400">
+                            <Shield className="w-5 h-5" />
+                          </div>
+                          <div className="text-[11px] font-black text-emerald-400 uppercase tracking-widest mb-1">{compliance!.title}</div>
+                          <div className="text-base font-black">{compliance!.name}</div>
                         </div>
-                        <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-1">{compliance!.title}</div>
-                        <div className="text-base font-black">{compliance!.name}</div>
                       </div>
                     );
                   })()}
-                  <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-2xl text-[11px] font-medium text-amber-800 dark:text-amber-400 text-center max-w-xs leading-relaxed">
+                  <div className="mt-4 p-4 bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 rounded-2xl text-[11px] font-bold text-emerald-900 dark:text-emerald-300 text-center max-w-xs leading-relaxed shadow-xs">
                     {compliance?.description || 'مسئول مستقیم رعایت مقررات و قوانین بانکی (AML/CFT) با مسیر گزارش‌دهی مستقیم به هیئت نظار.'}
                   </div>
                 </div>

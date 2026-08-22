@@ -1,8 +1,11 @@
 if (typeof window !== 'undefined') {
   try {
-    const desc = Object.getOwnPropertyDescriptor(window, 'fetch') || Object.getOwnPropertyDescriptor(Object.getPrototypeOf(window), 'fetch');
+    let currentFetch = window.fetch;
+    const desc =
+      Object.getOwnPropertyDescriptor(window, 'fetch') ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(window), 'fetch');
+
     if (!desc || !desc.set) {
-      let currentFetch = window.fetch;
       Object.defineProperty(window, 'fetch', {
         get() {
           return currentFetch;
@@ -18,3 +21,4 @@ if (typeof window !== 'undefined') {
     // Safe fallback if property definition fails
   }
 }
+

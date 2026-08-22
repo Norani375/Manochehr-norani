@@ -649,32 +649,44 @@ export default function OrgChartCanvas({
       bodyBadgeText = `سقف ظرفیت تکمیل شد (${staffCount}/${staffCapacityThreshold} نفر)`;
     }
 
+    let topAccentGradient = 'bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600';
+    if (variant === 'president') {
+      topAccentGradient = 'bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600';
+    } else if (variant === 'board') {
+      topAccentGradient = 'bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600';
+    } else if (variant === 'branch') {
+      topAccentGradient = 'bg-gradient-to-r from-teal-400 via-emerald-500 to-cyan-500';
+    }
+
     return (
       <div 
         id={`org-node-${node.id}`}
         onClick={() => toggleNodeExpand(node.id)}
         className={`
-          group relative transition-all duration-300 ease-out cursor-pointer rounded-2xl select-none
+          group relative transition-all duration-300 ease-out cursor-pointer rounded-2xl select-none overflow-hidden
           ${isDark 
-            ? 'bg-[#1e3a8a] text-white border-2 border-blue-900/80 shadow-md hover:shadow-xl hover:border-blue-400' 
-            : 'bg-white dark:bg-slate-900 border-2 border-[#1e3a8a] text-slate-900 dark:text-white shadow-sm hover:shadow-lg hover:border-blue-600'
+            ? 'bg-slate-900 text-white border border-blue-800/80 shadow-md hover:shadow-2xl hover:border-blue-400 hover:-translate-y-1' 
+            : 'bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-slate-900 dark:text-white shadow-xs hover:shadow-xl hover:border-blue-500 hover:-translate-y-1'
           }
           ${isExpanded 
-            ? 'ring-3 ring-blue-500 shadow-xl z-20 ' + (isDark ? 'bg-[#1a347c]' : 'bg-blue-50/20 dark:bg-slate-850') 
-            : 'hover:scale-[1.02]'
+            ? 'ring-2 ring-blue-500 shadow-xl z-20 ' + (isDark ? 'bg-slate-850' : 'bg-blue-50/20 dark:bg-slate-850') 
+            : ''
           }
           ${highlightClass}
           ${customClass}
         `}
       >
+        {/* Top Role Gradient Accent Bar */}
+        <div className={`h-1.5 w-full ${topAccentGradient}`} />
+
         {/* Print-Only 'Report To' Hierarchy Edge Badge */}
         {reportsTo && (
-          <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+          <div className="hidden print:flex print-reports-to-label absolute top-2 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
             <span className="text-amber-300 font-black">گزارش به:</span>
             <span className="font-bold">{reportsTo}</span>
           </div>
         )}
-        {/* Custom Hover Tooltip (reveals employee ID, phone & email on hover without cluttering main chart) */}
+        {/* Custom Hover Tooltip */}
         <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-64 p-3 bg-slate-900/95 dark:bg-slate-950/95 text-white rounded-2xl shadow-2xl border border-slate-700/80 backdrop-blur-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:-translate-y-1 transition-all duration-200 pointer-events-none z-50 text-right dir-rtl print:hidden">
           {/* Tooltip Arrow */}
           <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900/95 border-b border-r border-slate-700/80 rotate-45" />
@@ -727,38 +739,39 @@ export default function OrgChartCanvas({
           </div>
         </div>
 
-        {/* Top Floating Badge for Database Sync or Role */}
-        <div className="absolute -top-3 left-4 flex items-center gap-1.5 z-10">
-          {enriched.hasDbMatch && (
-            <span 
-              className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-700 text-slate-100 shadow-2xs border border-slate-600 print:hidden"
-              title="متصل به دیتابیس زنده سوانح پرسنل (Firestore Database)"
-            >
-              <Database className="w-2.5 h-2.5 text-slate-300" />
-              <span>دیتابیس</span>
-            </span>
-          )}
-          {badgeText && (
-            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shadow-2xs border ${
-              isDark 
-                ? 'bg-blue-900/90 text-blue-100 border-blue-700' 
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
-            }`}>
-              {badgeText}
-            </span>
-          )}
-        </div>
+        {/* Integrated Badges Bar */}
+        {(enriched.hasDbMatch || badgeText || variant === 'branch' || (node.staff && node.staff.length > 0)) && (
+          <div className="pt-2.5 px-4 flex items-center justify-between gap-1.5 text-[9px] print:hidden">
+            <div className="flex items-center gap-1.5">
+              {enriched.hasDbMatch && (
+                <span 
+                  className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-slate-700"
+                  title="متصل به دیتابیس زنده سوانح پرسنل (Firestore Database)"
+                >
+                  <Database className="w-2.5 h-2.5 text-blue-500" />
+                  <span>دیتابیس</span>
+                </span>
+              )}
+              {badgeText && (
+                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${
+                  isDark 
+                    ? 'bg-blue-900/90 text-blue-100 border-blue-700' 
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700'
+                }`}>
+                  {badgeText}
+                </span>
+              )}
+            </div>
 
-        {/* Top Right Staff Member Badge for Branch Node Capacity Planning */}
-        {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
-          <div className="absolute -top-3 right-4 flex items-center gap-1.5 z-10">
-            <span 
-              className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-md border transition-all duration-300 animate-in fade-in ease-out group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:shadow-md ${badgeBgClasses}`}
-              title={`تعداد پرسنل: ${staffCount} نفر (سقف مجاز: ${staffCapacityThreshold} نفر)`}
-            >
-              {topBadgeIcon}
-              <span>{topBadgeText}</span>
-            </span>
+            {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
+              <span 
+                className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-0.5 rounded-full border transition-all ${badgeBgClasses}`}
+                title={`تعداد پرسنل: ${staffCount} نفر (سقف مجاز: ${staffCapacityThreshold} نفر)`}
+              >
+                {topBadgeIcon}
+                <span>{topBadgeText}</span>
+              </span>
+            )}
           </div>
         )}
 
