@@ -84,9 +84,19 @@ function ChartCard({ node, onChange }: { node?: OrgNode; onChange: (id: string, 
   if (!node) return null;
 
   return (
-    <article className="mx-auto flex min-h-[86px] w-full max-w-sm flex-col justify-center border border-slate-300 bg-white px-4 py-3 text-center shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-colors hover:border-slate-400 hover:bg-slate-50 sm:min-h-[92px] sm:px-5 print:min-h-0 print:border-slate-400 print:bg-white print:px-3 print:py-2 print:shadow-none">
-      <input value={node.name} aria-label="نام" onChange={(event) => onChange(node.id, 'name', event.target.value)} className="block w-full truncate border-0 bg-transparent text-center text-[15px] font-bold leading-7 text-slate-950 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-base print:text-[11px] print:leading-4" />
-      <input value={node.role} aria-label="وظیفه" onChange={(event) => onChange(node.id, 'role', event.target.value)} className="mt-0.5 block w-full truncate border-0 bg-transparent text-center text-[13px] font-medium leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-sm print:text-[10px] print:leading-4" />
+    <article className="mx-auto flex min-h-[86px] w-full max-w-sm flex-col justify-center rounded-lg border border-slate-300 bg-slate-50/80 px-4 py-3 text-center shadow-sm transition-colors hover:border-slate-400 hover:bg-white sm:min-h-[94px] sm:px-5 print:min-h-0 print:rounded-none print:border-slate-400 print:bg-white print:px-3 print:py-2 print:shadow-none">
+      <input
+        value={node.name}
+        aria-label="نام"
+        onChange={(event) => onChange(node.id, 'name', event.target.value)}
+        className="block w-full truncate border-0 bg-transparent text-center text-[16px] font-bold leading-7 text-slate-950 outline-none focus:ring-0 sm:text-[17px] print:text-[12px] print:leading-4"
+      />
+      <input
+        value={node.role}
+        aria-label="وظیفه"
+        onChange={(event) => onChange(node.id, 'role', event.target.value)}
+        className="mt-1 block w-full truncate border-0 bg-transparent text-center text-[14px] font-medium leading-6 text-slate-700 outline-none focus:ring-0 sm:text-[15px] print:text-[10px] print:leading-4"
+      />
     </article>
   );
 }
