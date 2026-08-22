@@ -2,19 +2,30 @@
 
 ## Canonical form registry
 
-All DAB form routes use the canonical `DAB_OFFICIAL_FORMS` registry through `DabStandardFormsWorkspace`.
+All active DAB form routes use the canonical `DAB_OFFICIAL_FORMS` registry through `DabStandardFormsWorkspace`.
 
-| Legacy route | Canonical form ID | Data preservation |
+| Route | Canonical form ID | Data preservation |
 |---|---|---|
-| `/dab-fx-guarantee` | `fx-guarantee` | Existing canonical Firestore records are preserved. Legacy component remains in the repository for source/data compatibility. |
+| `/dab-fx-guarantee` | `fx-guarantee` | Existing canonical Firestore records are preserved. |
 | `/dab-fx-responsible-employee` | `fx-responsible-employee` | Existing canonical Firestore records are preserved. |
 | `/dab-organization-chart` | `organization-chart` | Existing canonical Firestore records are preserved. |
 | `/dab-renewal-form-1` | `license-renewal` | Existing canonical Firestore records are preserved. |
 | `/dab-renewal` | `license-renewal` | Existing canonical Firestore records are preserved. |
+| `/dab-renewal/form-1` | `license-renewal` | Existing canonical Firestore records are preserved. |
 | `/dab-shareholder-guarantee` | `shareholder-guarantee` | Existing canonical Firestore records are preserved. |
 
-## Rule
+## Single source of truth
 
-The route layer no longer creates a second form implementation. The canonical workspace is the single user interface for DAB forms. Form IDs remain stable so existing `companies/{companyId}/dabOfficialForms/{formId}` records are not deleted.
+The route layer must not create a second DAB form implementation. The canonical registry is the source for form identity, title, category and official source.
 
-The old specialized components are retained for compatibility and audit history. They are not the active route UI.
+## Data rule
+
+Form IDs remain stable. Existing records under `companies/{companyId}/dabOfficialForms/{formId}` must not be deleted during route or UI consolidation.
+
+## Legacy components
+
+Specialized form components can remain for compatibility and audit history. They must not be used as active DAB route entry points.
+
+## Verification
+
+CI runs both `verify:dab` and `verify:dab-routes` before the production build. This prevents a new active DAB route from bypassing the canonical workspace.
