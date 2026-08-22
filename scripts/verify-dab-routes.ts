@@ -6,6 +6,7 @@ const CANONICAL_IMPORTS = new Set([
   '@/components/DabStandardFormsWorkspace',
   '@/components/DabShareholderGuaranteeStandardForm',
   '@/components/DabLicenseRenewalOfficialForm',
+  '@/components/DabOrganizationChartStandardForm',
 ]);
 
 function collectPageFiles(directory: string): string[] {
@@ -28,10 +29,6 @@ for (const file of dabPages) {
   const imports = [...source.matchAll(/from ['\"](@\/components\/[^'\"]+)['\"]/g)].map((match) => match[1]);
   const dabFormImports = imports.filter((path) => path.startsWith('@/components/Dab') && path.endsWith('Form'));
   const hasCanonicalImport = imports.some((path) => CANONICAL_IMPORTS.has(path));
-
-  // A DAB route is valid when it uses the central workspace or an approved
-  // registry-backed specialized standard form. All other DAB form imports
-  // are treated as legacy entry points.
   const hasLegacyImport = dabFormImports.some((path) => !CANONICAL_IMPORTS.has(path));
 
   if (hasLegacyImport && !hasCanonicalImport) {
