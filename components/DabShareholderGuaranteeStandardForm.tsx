@@ -10,6 +10,7 @@ export type GuaranteeRow = {
   shareholderName: string;
   shareholderFatherName: string;
   shareholderIdentityNo: string;
+  shareholderPhoto: string | null;
   guarantorName: string;
   guarantorFatherName: string;
   guarantorIdentityNo: string;
@@ -45,6 +46,7 @@ function defaults(): FormData {
       shareholderName: shareholder.name ?? '',
       shareholderFatherName: shareholder.fatherName ?? '',
       shareholderIdentityNo: shareholder.identityNo ?? '',
+      shareholderPhoto: null,
       guarantorName: profile.guarantors[index]?.name ?? profile.guarantors[0]?.name ?? '',
       guarantorFatherName: profile.guarantors[index]?.fatherName ?? profile.guarantors[0]?.fatherName ?? '',
       guarantorIdentityNo: profile.guarantors[index]?.identityNo ?? profile.guarantors[0]?.identityNo ?? '',
@@ -89,11 +91,27 @@ export default function DabShareholderGuaranteeStandardForm({ companyId = 'defau
     setData((current) => ({ ...current, [key]: value }));
   };
 
-  const updateRow = (id: string, key: keyof GuaranteeRow, value: string) => {
+  const updateRow = (id: string, key: keyof GuaranteeRow, value: string | null) => {
     setData((current) => ({
       ...current,
       rows: current.rows.map((row) => row.id === id ? { ...row, [key]: value } : row),
     }));
+  };
+
+  const handleShareholderPhoto = (id: string, file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      window.alert('لطفاً یک فایل عکس انتخاب کنید.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      window.alert('حجم عکس نباید بیشتر از ۲ مگابایت باشد.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => updateRow(id, 'shareholderPhoto', String(reader.result));
+    reader.readAsDataURL(file);
   };
 
   const addRow = () => {
@@ -101,7 +119,7 @@ export default function DabShareholderGuaranteeStandardForm({ companyId = 'defau
       ...current,
       rows: [...current.rows, {
         id: crypto.randomUUID(),
-        shareholderName: '', shareholderFatherName: '', shareholderIdentityNo: '',
+        shareholderName: '', shareholderFatherName: '', shareholderIdentityNo: '', shareholderPhoto: null,
         guarantorName: '', guarantorFatherName: '', guarantorIdentityNo: '',
         guarantorPhone: '', guarantorAddress: '', relationship: '',
       }],
@@ -155,9 +173,10 @@ export default function DabShareholderGuaranteeStandardForm({ companyId = 'defau
 
           <Section title="۲. معلومات سهمدار و ضامن">
             <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="w-full min-w-[1050px] border-collapse text-sm">
+              <table className="w-full min-w-[1220px] border-collapse text-sm">
                 <thead className="bg-slate-100 text-slate-700">
                   <tr>
+                    <th className="border-b border-slate-200 px-3 py-3 text-right font-semibold">عکس سهمدار</th>
                     <th className="border-b border-slate-200 px-3 py-3 text-right font-semibold">سهمدار</th>
                     <th className="border-b border-slate-200 px-3 py-3 text-right font-semibold">نام پدر</th>
                     <th className="border-b border-slate-200 px-3 py-3 text-right font-semibold">شماره تذکره</th>
@@ -170,8 +189,25 @@ export default function DabShareholderGuaranteeStandardForm({ companyId = 'defau
                   </tr>
                 </thead>
                 <tbody>
-                  {data.rows.map((row, index) => (
+                  {data.rows.map((row) => (
                     <tr key={row.id} className="align-top even:bg-slate-50/60">
+                      <td className="border-b border-slate-200 px-2 py-2">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="h-[4cm] w-[3cm] overflow-hidden border border-slate-700 bg-slate-50 text-center print:h-[4cm] print:w-[3cm]">
+                            {row.shareholderPhoto ? (
+                              <img src={row.shareholderPhoto} alt="عکس سهمدار" className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="flex h-full items-center justify-center px-1 text-[9px] leading-4 text-slate-400">عکس ۳×۴</div>
+                            )}
+                          </div>
+                          {editing && (
+                            <label className="cursor-pointer rounded-md border border-slate-300 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 print:hidden">
+                              انتخاب عکس
+                              <input type="file" accept="image/*" className="hidden" onChange={(event) => handleShareholderPhoto(row.id, event.target.files?.[0])} />
+                            </label>
+                          )}
+                        </div>
+                      </td>
                       <Cell value={row.shareholderName} editing={editing} onChange={(value) => updateRow(row.id, 'shareholderName', value)} />
                       <Cell value={row.shareholderFatherName} editing={editing} onChange={(value) => updateRow(row.id, 'shareholderFatherName', value)} />
                       <Cell value={row.shareholderIdentityNo} editing={editing} onChange={(value) => updateRow(row.id, 'shareholderIdentityNo', value)} dir="ltr" />
@@ -188,6 +224,7 @@ export default function DabShareholderGuaranteeStandardForm({ companyId = 'defau
                 </tbody>
               </table>
             </div>
+            <p className="mt-3 text-xs font-medium text-slate-500">سایز عکس سهمدار: ۳×۴ سانتی‌متر. عکس در همان نسبت چاپ می‌شود.</p>
             {editing && <button type="button" onClick={addRow} className="mt-3 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 print:hidden">+ افزودن ردیف</button>}
           </Section>
 
