@@ -40,7 +40,7 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
   const get = (id: string) => nodes.find((item) => item.id === id);
 
   return (
-    <main dir="rtl" className="min-h-screen bg-slate-50 px-3 py-5 text-slate-950 sm:px-5 sm:py-7 print:bg-white print:p-0">
+    <main dir="rtl" className="min-h-screen bg-slate-100 px-3 py-5 text-slate-950 sm:px-5 sm:py-7 print:bg-white print:p-0">
       <section className="mx-auto w-full max-w-6xl print:max-w-none">
         <div className="mx-auto w-full max-w-5xl">
           <ChartCard node={get('shareholders')} onChange={updateNode} />
@@ -50,8 +50,8 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
           <ChartCard node={get('management')} onChange={updateNode} />
 
           <div className="relative mt-7 pt-7 sm:mt-8 sm:pt-8 print:mt-5 print:pt-5">
-            <div className="absolute left-1/2 top-0 h-7 w-px bg-slate-400 sm:h-8 print:h-5" aria-hidden="true" />
-            <div className="absolute left-[16.666%] right-[16.666%] top-7 h-px bg-slate-400 sm:top-8 print:top-5" aria-hidden="true" />
+            <div className="absolute left-1/2 top-0 h-7 w-px bg-slate-500 sm:h-8 print:h-5" aria-hidden="true" />
+            <div className="absolute left-[16.666%] right-[16.666%] top-7 h-px bg-slate-500 sm:top-8 print:top-5" aria-hidden="true" />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 print:grid-cols-3 print:gap-3">
               <ChartCard node={get('finance')} onChange={updateNode} />
               <ChartCard node={get('compliance')} onChange={updateNode} />
@@ -59,7 +59,7 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
             </div>
           </div>
 
-          <div className="mx-auto h-5 w-px bg-slate-400 print:h-4" aria-hidden="true" />
+          <div className="mx-auto h-5 w-px bg-slate-500 print:h-4" aria-hidden="true" />
           <ChartCard node={get('branches')} onChange={updateNode} />
         </div>
       </section>
@@ -77,25 +77,25 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
 }
 
 function VerticalLine() {
-  return <div className="mx-auto h-6 w-px bg-slate-400 sm:h-7 print:h-5" aria-hidden="true" />;
+  return <div className="mx-auto h-6 w-px bg-slate-500 sm:h-7 print:h-5" aria-hidden="true" />;
 }
 
 function ChartCard({ node, onChange }: { node?: OrgNode; onChange: (id: string, field: 'role' | 'name', value: string) => void }) {
   if (!node) return null;
 
   return (
-    <article className="mx-auto flex min-h-[86px] w-full max-w-sm flex-col justify-center rounded-lg border border-slate-300 bg-slate-50/80 px-4 py-3 text-center shadow-sm transition-colors hover:border-slate-400 hover:bg-white sm:min-h-[94px] sm:px-5 print:min-h-0 print:rounded-none print:border-slate-400 print:bg-white print:px-3 print:py-2 print:shadow-none">
+    <article className="mx-auto flex min-h-[86px] w-full max-w-sm flex-col justify-center rounded-lg border border-slate-400 bg-white px-4 py-3 text-center shadow-sm transition-colors hover:border-slate-500 hover:bg-slate-50 sm:min-h-[94px] sm:px-5 print:min-h-0 print:rounded-none print:border-slate-500 print:bg-white print:px-3 print:py-2 print:shadow-none">
       <input
         value={node.name}
         aria-label="نام"
         onChange={(event) => onChange(node.id, 'name', event.target.value)}
-        className="block w-full truncate border-0 bg-transparent text-center text-[16px] font-bold leading-7 text-slate-950 outline-none focus:ring-0 sm:text-[17px] print:text-[12px] print:leading-4"
+        className="block w-full truncate border-0 bg-transparent text-center text-[17px] font-extrabold leading-7 text-slate-950 outline-none focus:ring-0 sm:text-[18px] print:text-[12px] print:leading-4"
       />
       <input
         value={node.role}
         aria-label="وظیفه"
         onChange={(event) => onChange(node.id, 'role', event.target.value)}
-        className="mt-1 block w-full truncate border-0 bg-transparent text-center text-[14px] font-medium leading-6 text-slate-700 outline-none focus:ring-0 sm:text-[15px] print:text-[10px] print:leading-4"
+        className="mt-1 block w-full truncate border-0 bg-transparent text-center text-[15px] font-semibold leading-6 text-slate-800 outline-none focus:ring-0 sm:text-[16px] print:text-[10px] print:leading-4"
       />
     </article>
   );
