@@ -483,13 +483,7 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
                           </div>
                         </div>
 
-                        <div className="text-left text-[10px] space-y-1 border-r border-slate-200 pr-3 font-bold text-slate-600 shrink-0 min-w-[110px]">
-                          <div>کد پرسونل:</div>
-                          <div className="font-mono text-xs font-black text-blue-900">EMP-{editingEmployee.id.substring(0, 6).toUpperCase()}</div>
-                          <div className="pt-2 border-t border-slate-200 mt-2">تاریخ تنظیم:</div>
-                          <div className="font-mono text-xs font-bold text-slate-900">{editingEmployee.formDate || '۱۴۰۳'}</div>
-                          <div className="text-[9px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-center mt-1">تأییدشده</div>
-                        </div>
+                        <div className="w-24 sm:w-28 shrink-0"></div>
                       </div>
 
                       {/* Personal & Employment Details Grid */}
