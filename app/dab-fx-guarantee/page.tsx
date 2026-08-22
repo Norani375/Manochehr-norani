@@ -1,7 +1,7 @@
 'use client';
 
-import DabFxGuaranteeForm from '@/components/DabFxGuaranteeForm';
+import DabStandardFormsWorkspace from '@/components/DabStandardFormsWorkspace';
 
 export default function DabFxGuaranteePage() {
-  return <DabFxGuaranteeForm />;
+  return <DabStandardFormsWorkspace />;
 }
