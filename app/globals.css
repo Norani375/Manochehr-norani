@@ -300,5 +300,26 @@ main header img[alt="لوگوی شرکت"] {
     #org-chart-exact-canvas button {
       display: none !important;
     }
+
+    /* Print-only CSS labels that appear on card edges when printing */
+    #org-chart-export-canvas .print-reports-to-label {
+      display: flex !important;
+      position: absolute !important;
+      top: -11px !important;
+      right: 10px !important;
+      background-color: #1e3a8a !important;
+      color: #ffffff !important;
+      border: 1.5px solid #1d4ed8 !important;
+      border-radius: 6px !important;
+      padding: 2px 8px !important;
+      font-size: 9px !important;
+      font-weight: 800 !important;
+      z-index: 50 !important;
+      white-space: nowrap !important;
+      direction: rtl !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
   }
 }

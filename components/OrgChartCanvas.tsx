@@ -593,7 +593,8 @@ export default function OrgChartCanvas({
     isSubBranchCollapsed = false,
     onToggleSubBranch,
     subBranchCount,
-    subBranchLabel
+    subBranchLabel,
+    reportsTo
   }: {
     node: OrgChartNode;
     variant?: 'president' | 'board' | 'executive' | 'branch' | 'standard';
@@ -606,6 +607,7 @@ export default function OrgChartCanvas({
     onToggleSubBranch?: () => void;
     subBranchCount?: number;
     subBranchLabel?: string;
+    reportsTo?: string;
   }) => {
     const isExpanded = !!expandedNodeIds[node.id];
     const enriched = getEnrichedNode(node);
@@ -665,6 +667,13 @@ export default function OrgChartCanvas({
           ${customClass}
         `}
       >
+        {/* Print-Only 'Report To' Hierarchy Edge Badge */}
+        {reportsTo && (
+          <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+            <span className="text-amber-300 font-black">گزارش به:</span>
+            <span className="font-bold">{reportsTo}</span>
+          </div>
+        )}
         {/* Custom Hover Tooltip (reveals employee ID, phone & email on hover without cluttering main chart) */}
         <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-64 p-3 bg-slate-900/95 dark:bg-slate-950/95 text-white rounded-2xl shadow-2xl border border-slate-700/80 backdrop-blur-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:-translate-y-1 transition-all duration-200 pointer-events-none z-50 text-right dir-rtl print:hidden">
           {/* Tooltip Arrow */}
@@ -1470,7 +1479,8 @@ export default function OrgChartCanvas({
                   isSubBranchCollapsed: !!collapsedBranches['president'],
                   onToggleSubBranch: () => toggleBranchCollapse('president'),
                   subBranchCount: (data.boardMembers?.length || 0) + (data.executives?.length || 0) + (data.branches?.length || 0),
-                  subBranchLabel: 'زیرمجموعه‌های رئیس'
+                  subBranchLabel: 'زیرمجموعه‌های رئیس',
+                  reportsTo: 'مجمع عمومی سهمداران / د افغانستان بانک'
                 })}
               </div>
 
@@ -1524,7 +1534,8 @@ export default function OrgChartCanvas({
                               variant: 'board',
                               isDark: bm.title.includes('رئیس'),
                               badgeText: bm.title.includes('رئیس') ? 'رئیس نظار' : 'هیئت نظار',
-                              customClass: bm.title.includes('رئیس') ? 'transform sm:-translate-y-1' : ''
+                              customClass: bm.title.includes('رئیس') ? 'transform sm:-translate-y-1' : '',
+                              reportsTo: `مجمع عمومی / ${data.president.name}`
                             })}
                           </div>
                         ))}
@@ -1574,21 +1585,30 @@ export default function OrgChartCanvas({
                               maxWidth: `${Math.max((data.executives || []).length * 340, 340)}px`
                             }}
                           >
-                            {(data.executives || []).map((exec) => (
-                              <div key={exec.id}>
-                                {renderInteractiveNodeCard({
-                                  node: exec,
-                                  variant: 'executive',
-                                  isDark: true,
-                                  badgeText: exec.title.includes('پیروی') ? 'AML/CFT Compliance' : 'کادر اجرایی',
-                                  hasSubBranches: exec.title.includes('عملیاتی') || exec.id === 'exec-2',
-                                  isSubBranchCollapsed: !!collapsedBranches['branches'],
-                                  onToggleSubBranch: () => toggleBranchCollapse('branches'),
-                                  subBranchCount: (data.branches || []).length,
-                                  subBranchLabel: 'نمایندگی‌های ولایتی'
-                                })}
-                              </div>
-                            ))}
+                            {(data.executives || []).map((exec) => {
+                              let execReportsTo = `مدیر اجرائیه / ${data.president.name}`;
+                              if (exec.title.includes('پیروی') || exec.title.includes('Compliance')) {
+                                execReportsTo = 'هیئت نظار و د افغانستان بانک';
+                              } else if (exec.title.includes('اجرائیه') || exec.title.includes('عملیاتی')) {
+                                execReportsTo = `رئیس هیئت مدیره (${data.president.name})`;
+                              }
+                              return (
+                                <div key={exec.id}>
+                                  {renderInteractiveNodeCard({
+                                    node: exec,
+                                    variant: 'executive',
+                                    isDark: true,
+                                    badgeText: exec.title.includes('پیروی') ? 'AML/CFT Compliance' : 'کادر اجرایی',
+                                    hasSubBranches: exec.title.includes('عملیاتی') || exec.id === 'exec-2',
+                                    isSubBranchCollapsed: !!collapsedBranches['branches'],
+                                    onToggleSubBranch: () => toggleBranchCollapse('branches'),
+                                    subBranchCount: (data.branches || []).length,
+                                    subBranchLabel: 'نمایندگی‌های ولایتی',
+                                    reportsTo: execReportsTo
+                                  })}
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
@@ -1631,6 +1651,7 @@ export default function OrgChartCanvas({
                                 >
                                   {(data.branches || []).map((br) => {
                                     const isStaffCollapsed = !!collapsedBranches[`staff-${br.id}`];
+                                    const execManagerName = data.executives.find(e => e.title.includes('عملیاتی') || e.title.includes('اجرائیه'))?.name || 'مدیر بخش عملیاتی';
                                     return (
                                       <div key={br.id} className="space-y-2">
                                         {renderInteractiveNodeCard({
@@ -1643,7 +1664,8 @@ export default function OrgChartCanvas({
                                           isSubBranchCollapsed: isStaffCollapsed,
                                           onToggleSubBranch: () => toggleBranchCollapse(`staff-${br.id}`),
                                           subBranchCount: br.staff?.length,
-                                          subBranchLabel: 'کارکنان'
+                                          subBranchLabel: 'کارکنان',
+                                          reportsTo: `مدیریت عملیات و اجرائیه (${execManagerName})`
                                         })}
                                       </div>
                                     );

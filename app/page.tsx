@@ -1350,6 +1350,11 @@ export default function OrgChartPage() {
                       <Edit3 className="w-4 h-4" />
                     </button>
                   )}
+                  {/* Print-Only 'Report To' Hierarchy Edge Badge */}
+                  <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                    <span className="text-amber-300 font-black">گزارش به:</span>
+                    <span className="font-bold">مجمع عمومی سهمداران / DAB</span>
+                  </div>
                   <div className="inline-flex p-3 bg-blue-500/20 rounded-2xl mb-3 text-blue-400">
                     <Award className="w-7 h-7" />
                   </div>
@@ -1404,6 +1409,11 @@ export default function OrgChartPage() {
                           <Edit3 className="w-3.5 h-3.5" />
                         </button>
                       )}
+                      {/* Print-Only 'Report To' Hierarchy Edge Badge */}
+                      <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                        <span className="text-amber-300 font-black">گزارش به:</span>
+                        <span className="font-bold">مجمع عمومی / رئیس هیئت مدیره</span>
+                      </div>
                       <div className="flex items-center justify-between mb-2">
                         <div className="p-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                           <UserCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -1452,6 +1462,11 @@ export default function OrgChartPage() {
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
                         )}
+                        {/* Print-Only 'Report To' Hierarchy Edge Badge */}
+                        <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                          <span className="text-amber-300 font-black">گزارش به:</span>
+                          <span className="font-bold">رئیس هیئت مدیره ({president?.name || ''})</span>
+                        </div>
                         <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
                           <Briefcase className="w-5 h-5" />
                         </div>
@@ -1559,7 +1574,11 @@ export default function OrgChartPage() {
 
                                 <div className="text-[11px] font-black text-blue-600 dark:text-blue-400 mb-1">{branch.title}</div>
                                 <div className="text-sm font-black text-slate-900 dark:text-white leading-tight">{branch.name}</div>
-                                <div className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md mt-2 border border-blue-100 dark:border-blue-900/40 inline-block">
+                                <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                                  <span className="text-amber-300 font-black">گزارش به:</span>
+                                  <span className="font-bold">مدیر بخش عملیاتی ({operations?.name || ''})</span>
+                                </div>
+                                <div className="text-[10px] text-blue-800 dark:text-blue-300 font-extrabold bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md mt-2 border border-blue-100 dark:border-blue-900/40 inline-block print:hidden">
                                   گزارش به: مدیر بخش عملیاتی
                                 </div>
                               </div>
@@ -1598,6 +1617,11 @@ export default function OrgChartPage() {
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
                         )}
+                        {/* Print-Only 'Report To' Hierarchy Edge Badge */}
+                        <div className="hidden print:flex print-reports-to-label absolute -top-3.5 right-3 bg-[#1e3a8a] text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-md border border-blue-700 shadow-xs z-30 items-center gap-1 dir-rtl whitespace-nowrap">
+                          <span className="text-amber-300 font-black">گزارش به:</span>
+                          <span className="font-bold">هیئت نظار و د افغانستان بانک</span>
+                        </div>
                         <div className="inline-flex p-2 bg-slate-800 dark:bg-slate-700 rounded-xl mb-3 text-slate-400">
                           <Shield className="w-5 h-5" />
                         </div>
