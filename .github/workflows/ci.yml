@@ -41,5 +41,8 @@ jobs:
       - name: DAB form registry check
         run: bun run verify:dab
 
+      - name: DAB route standardization check
+        run: bun run verify:dab-routes
+
       - name: Production build
         run: bun run build
