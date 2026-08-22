@@ -1,88 +1,85 @@
 'use client';
-import { toEnglishDigits } from '@/lib/utils';
 
 import { useState } from 'react';
 import DabOfficialHeader from './DabOfficialHeader';
 
-const sourceUrl = 'https://dab.gov.af/sites/default/files/2019-03/%D9%81%D9%88%D8%B1%D9%85%D8%B6%D9%85%D8%A7%D9%86%D8%AA%D8%B5%D8%B1%D8%A7%D9%81%DB%8C3.pdf';
-
 type Guarantor = {
   fullName: string;
   businessNameLocation: string;
+  currentResidence: string;
   province: string;
   fatherName: string;
   district: string;
-  grandfatherName: string;
-  area: string;
   tazkiraNo: string;
-  village: string;
-  currentResidence: string;
+  area: string;
   phone: string;
-  email: string;
-  businessType: string;
-  businessName: string;
-  businessLicenseNo: string;
-  businessPhone: string;
-  businessEmail: string;
-  businessAddress: string;
-  businessLicenseExpiry: string;
+  village: string;
 };
 
 const emptyGuarantor: Guarantor = {
   fullName: '',
   businessNameLocation: '',
+  currentResidence: '',
   province: '',
   fatherName: '',
   district: '',
-  grandfatherName: '',
-  area: '',
   tazkiraNo: '',
-  village: '',
-  currentResidence: '',
+  area: '',
   phone: '',
-  email: '',
-  businessType: '',
-  businessName: '',
-  businessLicenseNo: '',
-  businessPhone: '',
-  businessEmail: '',
-  businessAddress: '',
-  businessLicenseExpiry: '',
+  village: '',
 };
-
-const undertakingText = [
-  'تضمین هذا باید با حضور شخص تضمین کننده در مقابل کارمند مسئول صرافی در مدیریت جوازدهی آمریت عمومی نظارت امور مالی یا در مقابل کارمند مسئول صرافی در آمریت زون مربوطه/مدیریت نمایندگی د افغانستان بانک در ولایات امضاء و شصت گذاری گردد.',
-  'در صورت که متضمن ترک تضمین می نماید و یا نمی خواهد از مالک صرافی فوق الذکر تضمین نماید، هر دو جناح (تضمین کننده و مالک صرافی) مکلف است تا د افغانستان بانک را عندالموقع باخبر سازند.',
-  'هرگاه معلومات ضامن که در بخش اول این فورم ارائه گردیده تغییر نماید و یا تشبث و جواز فعالیت ضامن لغو گردد، تضمین کننده و مالک صرافی مکلف اند تا د افغانستان بانک را عندالموقع کتباً اطلاع دهد. در غیر آن مسئولیت بدوش ضامن و مالک صرافی می باشد.',
-  'تضمین متذکره صرف برای سه سال بوده و در زمان تمدید جواز فوق الذکر، ضمانت خط هذا تجدید می گردد.',
-];
 
 function Field({ label, value, onChange, textarea = false }: { label: string; value: string; onChange: (value: string) => void; textarea?: boolean }) {
   return (
     <label className={textarea ? 'md:col-span-2' : ''}>
       <span className="mb-1 block text-sm font-semibold">{label}</span>
       {textarea ? (
-        <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} className="w-full border border-slate-400 p-2" />
+        <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} className="w-full border border-slate-500 bg-white p-2" />
       ) : (
-        <input value={value} onChange={(e) => onChange(e.target.value)} className="w-full border border-slate-400 p-2" />
+        <input value={value} onChange={(e) => onChange(e.target.value)} className="w-full border border-slate-500 bg-white p-2" />
       )}
     </label>
   );
 }
 
+function GuarantorBlock({ index, value, onChange }: { index: number; value: Guarantor; onChange: (value: Guarantor) => void }) {
+  const update = (key: keyof Guarantor, next: string) => onChange({ ...value, [key]: next });
+  return (
+    <section className="break-inside-avoid border-2 border-slate-800 p-5 md:p-7">
+      <div className="mb-5 grid gap-4 md:grid-cols-2">
+        <Field label={`اسم و محل فعالیت تشبث تضمین کننده ${index}`} value={value.businessNameLocation} onChange={(v) => update('businessNameLocation', v)} textarea />
+        <Field label="سکونت فعلی" value={value.currentResidence} onChange={(v) => update('currentResidence', v)} textarea />
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="order-first row-span-5 flex min-h-56 items-center justify-center border-2 border-dashed border-slate-500 p-4 text-center text-sm">
+          عکس تضمین کننده در اینجا نصب و با مهر تضمین کننده تاپه گردد.
+        </div>
+        <Field label="اسم" value={value.fullName} onChange={(v) => update('fullName', v)} />
+        <Field label="ولد" value={value.fatherName} onChange={(v) => update('fatherName', v)} />
+        <Field label="ولایت" value={value.province} onChange={(v) => update('province', v)} />
+        <Field label="ولسوالی" value={value.district} onChange={(v) => update('district', v)} />
+        <Field label="نمبر تذکره" value={value.tazkiraNo} onChange={(v) => update('tazkiraNo', v)} />
+        <Field label="ناحیه" value={value.area} onChange={(v) => update('area', v)} />
+        <Field label="شماره تماس" value={value.phone} onChange={(v) => update('phone', v)} />
+        <Field label="قریه" value={value.village} onChange={(v) => update('village', v)} />
+      </div>
+    </section>
+  );
+}
+
 export default function DabFxGuaranteeForm() {
-  const [g, setG] = useState<Guarantor>(emptyGuarantor);
-  const [ownerName, setOwnerName] = useState('');
-  const [ownerFatherName, setOwnerFatherName] = useState('');
-  const [ownerTazkiraNo, setOwnerTazkiraNo] = useState('');
-  const [province, setProvince] = useState('');
+  const [guarantors, setGuarantors] = useState<Guarantor[]>([
+    { ...emptyGuarantor },
+    { ...emptyGuarantor },
+    { ...emptyGuarantor },
+  ]);
+  const [company, setCompany] = useState({ name: '', type: '', licenseNo: '', phone: '', expiry: '', email: '', issuer: '', address: '' });
+  const [owner, setOwner] = useState({ name: '', province: '', fatherName: '', tazkiraNo: '' });
   const [date, setDate] = useState('');
   const [saved, setSaved] = useState(false);
 
-  const update = (key: keyof Guarantor, value: string) => setG((current) => ({ ...current, [key]: value }));
-
   const saveDraft = () => {
-    window.localStorage.setItem('dab-fx-guarantee-draft', JSON.stringify({ guarantor: g, ownerName, ownerFatherName, ownerTazkiraNo, province, date }));
+    window.localStorage.setItem('dab-fx-shareholder-guarantee-draft', JSON.stringify({ guarantors, company, owner, date }));
     setSaved(true);
   };
 
@@ -91,75 +88,78 @@ export default function DabFxGuaranteeForm() {
       <div className="mx-auto max-w-6xl bg-white print:max-w-none">
         <DabOfficialHeader
           storageKey="dab_fx_guarantee_header"
-          
           bankName="د افغانستان بانک"
-          department="آمریت عمومی نظارت امور مالی غیر بانکی"
+          department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
           directorate="مدیریت جوازدهی"
-          formNumber="فورم شماره ۱"
-          formTitle="فورم ضمانت خط صرافی"
-          guidelineText="مطابق فایل رسمی منتشرشده د افغانستان بانک"
+          formNumber=""
+          formTitle="فورم تضمین سر سهمدار / سهمداران شرکت صرافی و خدمات پولی"
+          guidelineText=""
           isEditable={true}
         />
 
         <section className="border-x-2 border-b-2 border-slate-800 p-5 md:p-8">
-          <h2 className="mb-4 border-b pb-2 text-lg font-bold">بخش اول: شهرت مکمل تضمین کننده</h2>
-          <div className="mb-6 grid gap-4 md:grid-cols-2">
-            <Field label="اسم" value={g.fullName} onChange={(v) => update('fullName', v)} />
-            <Field label="اسم و محل فعالیت تشبث" value={g.businessNameLocation} onChange={(v) => update('businessNameLocation', v)} />
-            <Field label="ولد" value={g.fatherName} onChange={(v) => update('fatherName', v)} />
-            <Field label="ولدیت" value={g.grandfatherName} onChange={(v) => update('grandfatherName', v)} />
-            <Field label="ولایت سکونت اصلی" value={g.province} onChange={(v) => update('province', v)} />
-            <Field label="ولایت سکونت فعلی" value={g.currentResidence} onChange={(v) => update('currentResidence', v)} />
-            <Field label="ولسوالی سکونت اصلی" value={g.district} onChange={(v) => update('district', v)} />
-            <Field label="ناحیه" value={g.area} onChange={(v) => update('area', v)} />
-            <Field label="قریه" value={g.village} onChange={(v) => update('village', v)} />
-            <Field label="نمبر تذکره" value={g.tazkiraNo} onChange={(v) => update('tazkiraNo', v)} />
-            <Field label="شماره تماس" value={g.phone} onChange={(v) => update('phone', v)} />
-            <Field label="ایمیل آدرس" value={g.email} onChange={(v) => update('email', v)} />
+          <h2 className="mb-4 border-b-2 border-slate-800 pb-2 text-lg font-bold">بخش اول: شهرت تضمین کنندگان</h2>
+          <p className="mb-6 text-sm leading-7">تمامی سهمداران شرکت تضمین کننده نیاز است تا از سهمدار شرکت صرافی و خدمات پولی، تضمین نمایند.</p>
+          <div className="space-y-6">
+            {guarantors.map((g, i) => (
+              <GuarantorBlock key={i} index={i + 1} value={g} onChange={(next) => setGuarantors((current) => current.map((item, index) => index === i ? next : item))} />
+            ))}
           </div>
 
-          <div className="mb-6 border-2 border-slate-400 p-4">
-            <div className="mb-4 text-sm font-semibold">عکس تضمین کننده در اینجا نصب و با مهر تضمین کننده تاپه گردد.</div>
-            <div className="mx-auto h-44 w-36 border-2 border-dashed border-slate-500 text-center text-xs text-slate-500 pt-16">محل عکس</div>
+          <div className="break-inside-avoid mt-6 border-2 border-slate-800 p-5">
+            <p className="font-bold">نوت</p>
+            <p className="mt-2 text-sm leading-7">در صورتیکه شرکت تضمین کننده علاوه بر سهمداران موجود، دارایی سهمدار دیگر باشد، فورم جداگانه تکمیل گردد.</p>
           </div>
 
-          <h3 className="mb-4 border-b pb-2 text-base font-bold">معلومات در مورد تشبث یا فعالیت ضامن</h3>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field label="اسم تشبث" value={g.businessName} onChange={(v) => update('businessName', v)} />
-            <Field label="نوع فعالیت" value={g.businessType} onChange={(v) => update('businessType', v)} />
-            <Field label="نمبر جواز" value={g.businessLicenseNo} onChange={(v) => update('businessLicenseNo', v)} />
-            <Field label="تاریخ اعتبار" value={g.businessLicenseExpiry} onChange={(v) => update('businessLicenseExpiry', v)} />
-            <Field label="شماره تماس تشبث" value={g.businessPhone} onChange={(v) => update('businessPhone', v)} />
-            <Field label="ایمیل آدرس تشبث" value={g.businessEmail} onChange={(v) => update('businessEmail', v)} />
-            <Field label="آدرس تشبث" value={g.businessAddress} onChange={(v) => update('businessAddress', v)} textarea />
-          </div>
-
-          <div className="mt-8 border-t-2 border-slate-800 pt-6">
-            <h2 className="mb-4 text-lg font-bold">بخش دوم: تعهدات و اقرار تضمین کننده</h2>
-            <div className="space-y-3 text-sm leading-7">
-              {undertakingText.map((item, index) => <p key={item}>{index + 1}. {item}</p>)}
-              <p>5. این جانب ({g.fullName || '_________________'}) که شهرت مکمل ام در فوق ذکر گردیده است، با رضایت تام اظهار میدارم که از محترم ({ownerName || '_________________'}) ولد ({ownerFatherName || '_________________'}) دارنده نمبر تذکره ({ownerTazkiraNo || '_________'}) که می خواهد جواز صرافی را در ولایت ({province || '_________________'}) اخذ نماید، تضمین نموده و در صورت هر گونه تخلف و تخطی که از قوانین و مقررات نافذه کشور از آدرس صرافی وی سر زند، ایشان را در وقت معینه به مرجع مربوطه یا د افغانستان بانک حاضر می نمایم و در اقرار خود صادق می باشم.</p>
-              <p>عکس و مهر بنده در فورم هذا و نقل تذکره تابعیت با جواز قابل اعتبار بنده به این تضمین خط ضمیمه گردیده و صحت است.</p>
+          <section className="break-inside-avoid mt-6 border-2 border-slate-800 p-5 md:p-7">
+            <h3 className="mb-5 border-b pb-2 text-lg font-bold">مشخصات شرکت تضمین کننده</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="اسم تشبث" value={company.name} onChange={(v) => setCompany({ ...company, name: v })} />
+              <Field label="نوع فعالیت" value={company.type} onChange={(v) => setCompany({ ...company, type: v })} />
+              <Field label="نمبر جواز" value={company.licenseNo} onChange={(v) => setCompany({ ...company, licenseNo: v })} />
+              <Field label="شماره تماس شرکت" value={company.phone} onChange={(v) => setCompany({ ...company, phone: v })} />
+              <Field label="تاريخ اعتبار" value={company.expiry} onChange={(v) => setCompany({ ...company, expiry: v })} />
+              <Field label="ایمیل آدرس" value={company.email} onChange={(v) => setCompany({ ...company, email: v })} />
+              <Field label="اداره صادر کننده جواز" value={company.issuer} onChange={(v) => setCompany({ ...company, issuer: v })} />
+              <Field label="آدرس تشبث" value={company.address} onChange={(v) => setCompany({ ...company, address: v })} textarea />
             </div>
+          </section>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <Field label="نام مالک صرافی" value={ownerName} onChange={setOwnerName} />
-              <Field label="نام پدر مالک صرافی" value={ownerFatherName} onChange={setOwnerFatherName} />
-              <Field label="شماره تذکره مالک صرافی" value={ownerTazkiraNo} onChange={setOwnerTazkiraNo} />
-              <Field label="ولایت صرافی" value={province} onChange={setProvince} />
+          <section className="break-inside-avoid mt-8 border-2 border-slate-800 p-5 md:p-7">
+            <h2 className="mb-5 border-b-2 border-slate-800 pb-2 text-lg font-bold">بخش دوم: شهرت سهمدار شرکت صرافی و خدمات پولی (شخص تضمین شونده)</h2>
+            <p className="text-sm leading-8">
+              مایان هریک که شهرت مکمل مان در فوق ذکر گردیده است، با رضایت کامل اظهار میداریم که سهمدار/سهمداران آتی الذکر که می‌خواهد جواز شرکت صرافی و خدمات پولی را تحت نام ({owner.name || '_________________'}) در ولایت ({owner.province || '_________________'}) اخذ/تمدید نماید، تضمین نموده و در صورت هر گونه تخلف و تخطی که از قوانین و مقررات نافذه کشور از آدرس شرکت صرافی و خدمات پولی ایشان انجام یابد، ایشان را در وقت معینه به مرجع مربوط یا د افغانستان بانک حاضر می‌نماییم و در اقرار خود صادق می‌باشیم.
+            </p>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              <Field label="اسم" value={owner.name} onChange={(v) => setOwner({ ...owner, name: v })} />
+              <Field label="ولد" value={owner.fatherName} onChange={(v) => setOwner({ ...owner, fatherName: v })} />
+              <Field label="شماره تذکره" value={owner.tazkiraNo} onChange={(v) => setOwner({ ...owner, tazkiraNo: v })} />
+              <Field label="ولایت" value={owner.province} onChange={(v) => setOwner({ ...owner, province: v })} />
             </div>
+          </section>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <div className="min-h-28 border p-4">امضاء تضمین کننده:<br /><br />_________________</div>
-              <div className="min-h-28 border p-4">شصت تضمین کننده:<br /><br />_________________</div>
-              <div className="min-h-28 border p-4">تاریخ:<br /><br />{date || '____ / ____ / ____'}</div>
+          <section className="break-inside-avoid mt-8 border-2 border-slate-800 p-5 md:p-7">
+            <h2 className="mb-5 border-b-2 border-slate-800 pb-2 text-lg font-bold">بخش سوم: تعهدات تضمین کنندگان</h2>
+            <ol className="list-decimal space-y-3 pr-6 text-sm leading-8">
+              <li>تضمین هذا باید با حضور شخص تضمین کننده در مقابل کارمند مسئول در مدیریت جوازدهی آمریت عمومی نظارت از مؤسسات مالی غیر بانکی یا در مقابل کارمند مسئول در آمریت زون مربوط/مدیریت نمایندگی د افغانستان بانک در ولایات امضاء و شصت گذاری گردد. کارمند مسئول متذکره خود را مطمئین سازد که فورم تضمین هذا حسب اسناد و مدارک مربوط به تضمین کننده خانه پُری گردیده و توسط شخص خود تضمین کننده امضاء و شصت گذاری می گردد.</li>
+              <li>در صورتیکه تضمین کننده، ترک تضمین می‌نماید و یا نمی‌خواهد از مالک شرکت صرافی و خدمات پولی فوق الذکر تضمین نماید، نیاز است تا سهمدار/سهمداران شرکت صرافی و خدمات پولی، کتباً تضمین کننده جدید را به د افغانستان بانک معرفی نماید.</li>
+              <li>تضمین کنندگان الی معرفی تضمین کننده جدید توسط سهمدار/سهمداران شرکت صرافی و خدمات پولی، منحیث تضمین کننده نزد د افغانستان بانک قرار میداشته باشند.</li>
+              <li>هرگاه معلومات ضامن که در بخش اول این فورم ارائه گردیده تغییر نماید و یا تشبث و جواز فعالیت ضامن لغو گردد، تضمین کننده و سهمدار/سهمداران شرکت صرافی و خدمات پولی مکلف اند تا د افغانستان بانک را عندالموقع کتباً اطلاع دهد. در غیر آن مسئولیت بدوش ضامن و سهمدار/سهمداران شرکت می‌باشد.</li>
+              <li>تضمین متذکره صرف برای سه سال بوده و در زمان تمديد جواز فوق الذکر، ضمانت خط هذا تجديد می‌گردد.</li>
+              <li>تضمین کننده نمی‌تواند از جمله اقارب درجه اول (پدر، مادر، فرزند، همسر، برادر و خواهر) شخص تضمین شونده باشد.</li>
+            </ol>
+            <p className="mt-5 border-t pt-4 text-sm leading-7">عکس ها و مُهر شرکت در فورم هذا و نقل تذکره تابعیت با جواز قابل اعتبار به این تضمین خط ضمیمه گردیده و صحت است.</p>
+
+            <div className="mt-7 grid gap-5 md:grid-cols-3">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="break-inside-avoid border-2 border-slate-700 p-4 text-sm">
+                  <p>امضاء تضمین کننده:</p><div className="mt-8 border-b border-slate-700" />
+                  <p className="mt-6">شصت تضمین کننده:</p><div className="mt-8 border-b border-slate-700" />
+                </div>
+              ))}
             </div>
-            <div className="mt-4 max-w-sm"><Field label="تاریخ" value={date} onChange={setDate} /></div>
-          </div>
-
-          <div className="mt-6 border-t pt-4 text-xs leading-6 text-slate-600">
-            منبع رسمی: <a href={sourceUrl} target="_blank" rel="noreferrer" className="underline">فورم ضمانت صرافی — د افغانستان بانک</a>
-          </div>
+            <div className="mt-6 max-w-xs"><Field label="تاريخ" value={date} onChange={setDate} /></div>
+          </section>
 
           <div className="mt-5 flex flex-wrap gap-2 print:hidden">
             <button type="button" onClick={saveDraft} className="border bg-slate-900 px-5 py-2 text-white">ذخیره پیش‌نویس</button>
@@ -169,11 +169,12 @@ export default function DabFxGuaranteeForm() {
         </section>
       </div>
       <style jsx global>{`
-        @page { size: A4 portrait; margin: 12mm; }
+        @page { size: A4 portrait; margin: 10mm; }
         @media print {
           html, body { background: #fff !important; }
-          .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+          section, .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
           input, textarea { break-inside: avoid; page-break-inside: avoid; }
+          * { box-shadow: none !important; }
         }
       `}</style>
     </main>
