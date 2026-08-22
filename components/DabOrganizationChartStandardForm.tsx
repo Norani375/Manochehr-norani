@@ -6,20 +6,19 @@ type OrgNode = {
   id: string;
   title: string;
   name: string;
-  children?: string[];
 };
 
 const DEFAULT_NODES: OrgNode[] = [
-  { id: 'shareholders', title: 'سهمداران', name: 'نام سهمدار / سهمداران', children: ['board'] },
-  { id: 'board', title: 'هیأت نظار', name: 'بسم‌الله شیرزی', children: ['executive'] },
-  { id: 'executive', title: 'مسئول عملیاتی / مدیریت اجرائی', name: 'نام مسئول عملیاتی', children: ['finance', 'compliance', 'operations'] },
-  { id: 'finance', title: 'مالی و حسابداری', name: 'مسئول مالی / حسابدار', children: [] },
-  { id: 'compliance', title: 'نظارت و مطابقت / AML', name: 'مسئول مطابقت / AML', children: [] },
-  { id: 'operations', title: 'عملیات و نمایندگی‌ها', name: 'مسئول عملیات', children: ['branches'] },
-  { id: 'branches', title: 'نمایندگی‌ها / شعبات', name: 'فهرست نمایندگی‌ها', children: [] },
+  { id: 'shareholders', title: 'سهمداران', name: 'نام سهمدار / سهمداران' },
+  { id: 'board', title: 'هیأت نظار', name: 'بسم‌الله شیرزی' },
+  { id: 'executive', title: 'مسئول عملیاتی / مدیریت اجرائی', name: 'نام مسئول عملیاتی' },
+  { id: 'finance', title: 'مالی و حسابداری', name: 'نام مسئول مالی / حسابدار' },
+  { id: 'compliance', title: 'نظارت و مطابقت / AML', name: 'نام مسئول مطابقت / AML' },
+  { id: 'operations', title: 'عملیات و نمایندگی‌ها', name: 'نام مسئول عملیات' },
+  { id: 'branches', title: 'نمایندگی‌ها / شعبات', name: 'نام مسئول نمایندگی / شعبه' },
 ];
 
-const cloneNodes = () => DEFAULT_NODES.map((node) => ({ ...node, children: [...(node.children ?? [])] }));
+const cloneNodes = () => DEFAULT_NODES.map((node) => ({ ...node }));
 
 export default function DabOrganizationChartStandardForm({ companyId = 'default' }: { companyId?: string }) {
   const initial = useMemo(() => {
@@ -46,62 +45,46 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
     setSaved(true);
   };
 
+  const node = (id: string) => nodes.find((item) => item.id === id);
+
   return (
     <main dir="rtl" className="min-h-screen bg-slate-50 p-4 text-slate-900 print:bg-white print:p-0">
-      <section className="mx-auto max-w-7xl rounded-2xl border border-slate-200 bg-white shadow-sm print:border-0 print:shadow-none">
-        <header className="border-b border-slate-200 px-6 py-5 print:px-0">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-500">د افغانستان بانک</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight">چارت تشکیلات شرکت صرافی و خدمات پولی</h1>
-              <p className="mt-1 text-sm text-slate-500">ساختار سازمانی رسمی — قابل ویرایش، ذخیره و چاپ</p>
-            </div>
-            <div className="flex gap-2 print:hidden">
-              <button type="button" onClick={save} className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">ذخیره چارت</button>
-              <button type="button" onClick={() => window.print()} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50">چاپ</button>
-            </div>
-          </div>
-          {saved && <p className="mt-3 text-sm font-medium text-emerald-700">معلومات چارت ذخیره شد.</p>}
+      <section className="mx-auto max-w-6xl rounded-2xl border border-slate-200 bg-white shadow-sm print:border-0 print:shadow-none">
+        <header className="border-b border-slate-200 px-6 py-5 print:border-b-2 print:px-0">
+          <h1 className="text-center text-2xl font-bold">چارت تشکیلات شرکت صرافی و خدمات پولی</h1>
         </header>
 
         <div className="overflow-x-auto px-6 py-8 print:px-0">
-          <div className="mx-auto min-w-[900px] max-w-6xl">
-            <div className="mx-auto max-w-md">
-              <OrgCard node={nodes.find((node) => node.id === 'shareholders')} onChange={updateNode} emphasized />
+          <div className="mx-auto min-w-[760px] max-w-5xl">
+            <div className="mx-auto max-w-sm">
+              <OrgCard node={node('shareholders')} onChange={updateNode} emphasized />
+            </div>
+            <Connector />
+            <div className="mx-auto max-w-sm">
+              <OrgCard node={node('board')} onChange={updateNode} emphasized />
+            </div>
+            <Connector />
+            <div className="mx-auto max-w-sm">
+              <OrgCard node={node('executive')} onChange={updateNode} emphasized />
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-5">
+              <OrgCard node={node('finance')} onChange={updateNode} />
+              <OrgCard node={node('compliance')} onChange={updateNode} />
+              <OrgCard node={node('operations')} onChange={updateNode} />
             </div>
 
             <Connector />
-
-            <div className="mx-auto max-w-md">
-              <OrgCard node={nodes.find((node) => node.id === 'board')} onChange={updateNode} emphasized />
-            </div>
-
-            <Connector />
-
-            <div className="mx-auto max-w-md">
-              <OrgCard node={nodes.find((node) => node.id === 'executive')} onChange={updateNode} emphasized />
-            </div>
-
-            <div className="mt-8 grid grid-cols-3 gap-6">
-              <Branch node={nodes.find((node) => node.id === 'finance')} onChange={updateNode} />
-              <Branch node={nodes.find((node) => node.id === 'compliance')} onChange={updateNode} />
-              <Branch node={nodes.find((node) => node.id === 'operations')} onChange={updateNode} />
-            </div>
-
-            <Connector />
-
-            <div className="mx-auto max-w-md">
-              <Branch node={nodes.find((node) => node.id === 'branches')} onChange={updateNode} />
+            <div className="mx-auto max-w-sm">
+              <OrgCard node={node('branches')} onChange={updateNode} />
             </div>
           </div>
         </div>
 
-        <footer className="border-t border-slate-200 px-6 py-4 text-xs text-slate-500 print:px-0">
-          <div className="grid gap-2 sm:grid-cols-3">
-            <span>شماره سند: DAB-ORG-CHART</span>
-            <span>تاریخ: __________________</span>
-            <span>مهر و امضاء: __________________</span>
-          </div>
+        <footer className="flex items-center justify-center gap-3 border-t border-slate-200 px-6 py-4 print:hidden">
+          <button type="button" onClick={save} className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">ذخیره</button>
+          <button type="button" onClick={() => window.print()} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">چاپ</button>
+          {saved && <span className="text-sm text-emerald-700">ذخیره شد.</span>}
         </footer>
       </section>
     </main>
@@ -109,24 +92,15 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
 }
 
 function Connector() {
-  return <div className="mx-auto my-4 h-8 w-px bg-slate-300" aria-hidden="true" />;
+  return <div className="mx-auto my-3 h-7 w-px bg-slate-300" aria-hidden="true" />;
 }
 
 function OrgCard({ node, onChange, emphasized = false }: { node?: OrgNode; onChange: (id: string, field: 'title' | 'name', value: string) => void; emphasized?: boolean }) {
   if (!node) return null;
-  return <EditableCard node={node} onChange={onChange} emphasized={emphasized} />;
-}
-
-function Branch({ node, onChange }: { node?: OrgNode; onChange: (id: string, field: 'title' | 'name', value: string) => void }) {
-  if (!node) return null;
-  return <EditableCard node={node} onChange={onChange} />;
-}
-
-function EditableCard({ node, onChange, emphasized = false }: { node: OrgNode; onChange: (id: string, field: 'title' | 'name', value: string) => void; emphasized?: boolean }) {
   return (
-    <article className={`rounded-xl border bg-white p-4 shadow-sm ${emphasized ? 'border-slate-400 shadow-md' : 'border-slate-200'}`}>
-      <input aria-label="عنوان بست" value={node.title} onChange={(event) => onChange(node.id, 'title', event.target.value)} className="w-full border-0 bg-transparent text-center text-sm font-bold outline-none focus:ring-2 focus:ring-slate-200" />
-      <input aria-label="نام مسئول" value={node.name} onChange={(event) => onChange(node.id, 'name', event.target.value)} className="mt-2 w-full rounded-md border border-slate-200 px-3 py-2 text-center text-sm outline-none focus:border-slate-400" />
+    <article className={`rounded-xl border bg-white p-4 text-center shadow-sm ${emphasized ? 'border-slate-400 shadow-md' : 'border-slate-200'}`}>
+      <input aria-label="وظیفه" value={node.title} onChange={(event) => onChange(node.id, 'title', event.target.value)} className="w-full border-0 bg-transparent text-center text-sm font-bold outline-none" />
+      <input aria-label="نام" value={node.name} onChange={(event) => onChange(node.id, 'name', event.target.value)} className="mt-2 w-full border-0 bg-transparent text-center text-sm text-slate-700 outline-none" />
     </article>
   );
 }
