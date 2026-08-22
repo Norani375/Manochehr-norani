@@ -11,6 +11,7 @@ import { exportElementToPdf, exportElementToPng } from '@/lib/pdfExport';
 import { exportElementToWord } from '@/lib/wordExport';
 import { db, EmployeeRecord, subscribeEmployees } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import DabOfficialHeader from './DabOfficialHeader';
 
 export interface OrgChartNode {
   id: string;
@@ -160,19 +161,19 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
       name: 'عبدالعزیز مهرزاد',
       title: 'مسئول پیروی از قوانین (Compliance Officer)',
       bgType: 'dark',
-      phone: '',
-      email: '',
-      joinDate: '',
+      phone: '0799887766',
+      email: 'compliance@exchange.af',
+      joinDate: '1401/01/10',
       education: 'لیسانس اداره و تجارت',
       experience: 'مسئول مستقل پیروی از قوانین و مقررات و AML/CFT',
       tazkiraNo: '72198-0300-1401',
       location: 'دفتر مرکزی - واحد پیروی از قوانین و مقررات',
-      responsibilities: 'پایش معاملات مشکوک (STR/LCTR)، احراز هویت مشتریان (KYC) و گزارش‌دهی به د افغانستان بانک'
+      responsibilities: 'پایش معاملات مشکوک (STR/LCTR)، احراز هویت مشتریان (KYC) و گزارش‌دهی مستقیم به هیئت نظار و د افغانستان بانک'
     },
     {
       id: 'exec-2',
       name: 'صالح‌محمد',
-      title: 'مسئول عملیاتی (Operations Manager)',
+      title: 'مسئول اجرائیه / مدیر عملیاتی (Operations Manager)',
       bgType: 'dark',
       phone: '0790556070',
       email: 'operations@exchange.af',
@@ -182,6 +183,34 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
       tazkiraNo: '0098712-1203-65432',
       location: 'دفتر مرکزی - مدیریت عملیات',
       responsibilities: 'نظارت بر کلیه نمایندگی‌های ولایتی، کنترل نقدینگی و تسویه‌حساب‌های روزانه'
+    },
+    {
+      id: 'exec-3',
+      name: 'صدیق‌الله',
+      title: 'مدیر مالی و حسابداری (Finance Manager)',
+      bgType: 'dark',
+      phone: '0778899001',
+      email: 'finance@exchange.af',
+      joinDate: '1401/05/15',
+      education: 'فوق دیپلم محاسبات مالی و بانکی',
+      experience: '5 سال سابقه امور مالی و حسابداری صرافی',
+      tazkiraNo: '0043210-1401-98765',
+      location: 'دفتر مرکزی - مدیریت مالی',
+      responsibilities: 'تنظیم دفتر کل، صورت‌های مالی روزانه، ترازنامه و گزارش‌دهی مالی به د افغانستان بانک'
+    },
+    {
+      id: 'exec-4',
+      name: 'ریحان داخلی',
+      title: 'مدیر اداری و منابع بشری (Admin & HR Manager)',
+      bgType: 'dark',
+      phone: '0789012345',
+      email: 'hr@exchange.af',
+      joinDate: '1401/06/01',
+      education: 'لیسانس حقوق و علوم اداری',
+      experience: '4 سال مدیریت پرسنل و امور اداری',
+      tazkiraNo: '0056789-1102-34567',
+      location: 'دفتر مرکزی - مدیریت اداری',
+      responsibilities: 'تنظیم سوابق پرسنلی، قراردادهای کاری، مراسلات اداری و صیانت از اسناد شرکت'
     }
   ],
 
@@ -189,7 +218,7 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
     {
       id: 'br-1',
       name: 'نمایندگی کابل',
-      title: 'اجمل احمدی',
+      title: 'اجمل احمدی (مدیر نمایندگی)',
       staff: ['ریحان داخلی (خزانه‌دار)', 'صدیق‌الله (مسئول حواله‌جات)'],
       bgType: 'light',
       phone: '0700123456',
@@ -203,7 +232,7 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
     {
       id: 'br-2',
       name: 'نمایندگی تخار',
-      title: 'رحمت‌الله',
+      title: 'رحمت‌الله (مدیر نمایندگی)',
       staff: ['عبیدالله (متصدی خدمات)'],
       bgType: 'light',
       phone: '0701654321',
@@ -217,7 +246,7 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
     {
       id: 'br-3',
       name: 'نمایندگی کشم',
-      title: 'عتیق‌الله',
+      title: 'عتیق‌الله (مدیر نمایندگی)',
       staff: ['نورمحمد (همکار اداری)'],
       bgType: 'light',
       phone: '0702987654',
@@ -231,7 +260,7 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
     {
       id: 'br-4',
       name: 'نمایندگی امام صاحب',
-      title: 'محمد یوسف حیدری',
+      title: 'محمد یوسف حیدری (مدیر نمایندگی)',
       staff: ['عبدالمجید (خزانه‌دار)'],
       bgType: 'light',
       phone: '0703456789',
@@ -245,15 +274,16 @@ const DEFAULT_ORG_CHART_DATA: OrgChartData = {
   ],
 
   reportingRows: [
-    { unit: 'رئیس هیئت نظار', reportsTo: 'سهمدار / مجمع عمومی' },
-    { unit: 'عضو هیئت نظار', reportsTo: 'سهمدار / مجمع عمومی' },
-    { unit: 'مسئول عملیاتی', reportsTo: 'عضو هیئت نظار (برکت‌الله)' },
-    { unit: 'مسئول پیروی از قوانین', reportsTo: 'عضو هیئت نظار (برکت‌الله) — با استقلال انطباقی' },
-    { unit: 'نماینده‌ها و نمایندگی‌های ولایتی', reportsTo: 'مدیر / مسئول بخش عملیاتی (صالح‌محمد)' },
-    { unit: 'کارکنان و پرسنل نمایندگی‌ها', reportsTo: 'مسئول نماینده مربوطه (زیر نظر مدیر عملیاتی)' }
+    { unit: 'هیئت نظار (Board of Supervisors)', reportsTo: 'مجمع عمومی سهمداران / هیئت مدیره (نظارت عالیه و کنترل داخلی)' },
+    { unit: 'مدیر اجرائیه / مسئول عملیاتی', reportsTo: 'رئیس هیئت مدیره / سهمدار اصلی (رهبری اجرایی و مدیریت عملیات)' },
+    { unit: 'مسئول پیروی از قوانین (Compliance - AML/CFT)', reportsTo: 'هیئت نظار / هیئت مدیره (با استقلال انطباقی کامل طبق لایحه DAB)' },
+    { unit: 'مدیریت مالی و حسابداری', reportsTo: 'مدیر اجرائیه (گزارش‌دهی مالی، حسابداری و صورت‌های مالی)' },
+    { unit: 'مدیریت اداری و منابع بشری', reportsTo: 'مدیر اجرائیه (امور پرسنلی، مراسلات و صیانت از اسناد)' },
+    { unit: 'نماینده‌ها و مسئولین نمایندگی‌های ولایتی', reportsTo: 'مدیر عملیات و معاملات (اجرای روزمره صرافی و حواله‌جات)' },
+    { unit: 'کارکنان و خزانه‌داران شعب ولایتی', reportsTo: 'مسئول نمایندگی مربوطه' }
   ],
 
-  footerNote: '▸ هیئت نظار: نظارت بر عملکرد شرکت و تطبیق مقررات د افغانستان بانک (DAB).'
+  footerNote: '▸ نکته مقرراتی د افغانستان بانک: هیئت نظار متضمن کنترل داخلی، نظارت بر گزارش‌های مالی و تطبیق احکام مقرره لایحه صرافی‌ها و خدمات پولی می‌باشد. واحد پیروی از قوانین (Compliance) دارای استقلال کامل در گزارش‌دهی امور AML/CFT به د افغانستان بانک می‌باشد.'
 };
 
 interface OrgChartCanvasProps {
@@ -1408,40 +1438,20 @@ export default function OrgChartCanvas({
       >
         <div className="w-full max-w-6xl xl:max-w-7xl mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
           
-          {/* DAB Standard Form Header Banner - Soft Dignified Navy */}
-          <div className="bg-[#1e3a8a] text-white py-6 px-6 text-center space-y-2 relative shadow-md border-b-4 border-amber-500">
-            <div className="flex items-center justify-between border-b border-blue-800/80 pb-3 mb-2 text-[11px] text-blue-100 font-bold px-2">
-              <span className="flex items-center gap-1">
-                <span>🏛️ د افغانستان بانک</span>
-                <span className="opacity-75">| آمریت عمومی نظارت از مؤسسات مالی غیر بانکی</span>
-              </span>
-              <span className="bg-blue-950/90 text-amber-300 px-2.5 py-0.5 rounded-full border border-blue-700/80 font-mono text-[10px]">
-                کد فورمه: DAB-NBFI-EXC-FORM-04
-              </span>
-            </div>
-
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight drop-shadow-2xs">
-              {data.headerTitle}
-            </h1>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-amber-200">
-              {data.companyName}
-            </h2>
-            <p className="text-xs font-medium text-blue-200/90 font-sans tracking-wide">
-              {data.companySubEng}
-            </p>
-
-            {/* Official DAB Form Metadata Row */}
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-[11px] text-blue-100 font-bold border-t border-blue-800/60 mt-3">
-              <span className="bg-blue-900/60 px-3 py-1 rounded-md border border-blue-700/60">
-                شماره جواز: DAB/7-0965
-              </span>
-              <span className="bg-blue-900/60 px-3 py-1 rounded-md border border-blue-700/60">
-                نوعیت فعالیت: صرافی و خدمات پولی
-              </span>
-              <span className="bg-blue-900/60 px-3 py-1 rounded-md border border-blue-700/60">
-                تاریخ تنظیم: سال ۱۴۰۳ - ۱۴۰۴
-              </span>
-            </div>
+          {/* DAB Standard Official Header */}
+          <div className="bg-white dark:bg-slate-900 border-b-2 border-slate-200 dark:border-slate-800 p-4 sm:p-6">
+            <DabOfficialHeader
+              storageKey={`dab_org_chart_header_${companyId}`}
+              governmentTitle="امارت اسلامی افغانستان"
+              bankName="د افغانستان بانک"
+              department="آمریت عمومی نظارت از مؤسسات مالی غیر بانکی"
+              directorate="مدیریت جوازدهی صرافی‌ها و خدمات پولی"
+              formTitle={data.headerTitle}
+              formNumber="DAB-NBFI-EXC-FORM-04"
+              companyName={data.companyName}
+              licenseNo="DAB/7-0965"
+              isEditable={false}
+            />
           </div>
 
           {/* Org Tree Content Container */}
