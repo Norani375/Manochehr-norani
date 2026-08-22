@@ -44,5 +44,8 @@ jobs:
       - name: DAB route standardization check
         run: bun run verify:dab-routes
 
+      - name: Architecture verification
+        run: bun run verify:architecture
+
       - name: Production build
         run: bun run build
