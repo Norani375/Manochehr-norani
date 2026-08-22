@@ -38,5 +38,8 @@ jobs:
       - name: ESLint check
         run: bun run lint
 
+      - name: DAB form registry check
+        run: bun run verify:dab
+
       - name: Production build
         run: bun run build
