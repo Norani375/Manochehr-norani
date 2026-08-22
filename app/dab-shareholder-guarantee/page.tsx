@@ -1,5 +1,5 @@
-import DabShareholderGuaranteeForm from '@/components/DabShareholderGuaranteeForm';
+import DabStandardFormsWorkspace from '@/components/DabStandardFormsWorkspace';
 
 export default function DabShareholderGuaranteePage() {
-  return <DabShareholderGuaranteeForm />;
+  return <DabStandardFormsWorkspace />;
 }
