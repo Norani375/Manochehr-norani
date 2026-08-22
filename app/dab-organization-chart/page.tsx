@@ -1,5 +1,5 @@
-import DabOrganizationChart from '@/components/DabOrganizationChart';
+import DabStandardFormsWorkspace from '@/components/DabStandardFormsWorkspace';
 
 export default function DabOrganizationChartPage() {
-  return <DabOrganizationChart />;
+  return <DabStandardFormsWorkspace />;
 }
