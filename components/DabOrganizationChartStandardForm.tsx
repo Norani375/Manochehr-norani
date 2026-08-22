@@ -5,13 +5,13 @@ import { useMemo, useState } from 'react';
 type OrgNode = { id: string; title: string; name: string };
 
 const DEFAULT_NODES: OrgNode[] = [
-  { id: 'shareholders', title: 'سهمداران', name: 'نام سهمدار / سهمداران' },
-  { id: 'board', title: 'هیأت نظار', name: 'بسم‌الله شیرزی' },
-  { id: 'executive', title: 'مدیریت اجرائی', name: 'نام مسئول عملیاتی' },
-  { id: 'finance', title: 'مالی و حسابداری', name: 'نام مسئول مالی / حسابدار' },
-  { id: 'compliance', title: 'مطابقت و مبارزه با پول‌شویی', name: 'نام مسئول مطابقت / AML' },
-  { id: 'operations', title: 'عملیات', name: 'نام مسئول عملیات' },
-  { id: 'branches', title: 'نمایندگی‌ها و شعبات', name: 'نام مسئول نمایندگی / شعبه' },
+  { id: 'shareholders', title: 'سهمدار', name: 'نام سهمدار' },
+  { id: 'board', title: 'رئیس هیأت نظار', name: 'بسم‌الله شیرزی' },
+  { id: 'executive', title: 'مسئول عملیاتی', name: 'نام مسئول عملیاتی' },
+  { id: 'finance', title: 'مسئول مالی و حسابداری', name: 'نام مسئول مالی' },
+  { id: 'compliance', title: 'مسئول مطابقت و AML', name: 'نام مسئول مطابقت' },
+  { id: 'operations', title: 'مسئول عملیات', name: 'نام مسئول عملیات' },
+  { id: 'branches', title: 'مسئول نمایندگی‌ها و شعبات', name: 'نام مسئول' },
 ];
 
 export default function DabOrganizationChartStandardForm({ companyId = 'default' }: { companyId?: string }) {
@@ -39,7 +39,7 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
 
   return (
     <main dir="rtl" className="min-h-screen bg-slate-50 p-4 text-slate-900 print:min-h-0 print:bg-white print:p-0">
-      <section className="mx-auto max-w-6xl rounded-2xl border border-slate-200 bg-white shadow-sm print:m-0 print:w-full print:max-w-none print:rounded-none print:border-0 print:shadow-none">
+      <section className="mx-auto max-w-5xl rounded-2xl border border-slate-200 bg-white shadow-sm print:m-0 print:w-full print:max-w-none print:rounded-none print:border-0 print:shadow-none">
         <header className="border-b border-slate-200 px-6 py-4 print:px-0 print:py-2">
           <h1 className="text-center text-xl font-bold print:text-base">چارت تشکیلات شرکت صرافی و خدمات پولی</h1>
         </header>
