@@ -48,34 +48,34 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
   const node = (id: string) => nodes.find((item) => item.id === id);
 
   return (
-    <main dir="rtl" className="min-h-screen bg-slate-50 p-4 text-slate-900 print:bg-white print:p-0">
-      <section className="mx-auto max-w-6xl rounded-2xl border border-slate-200 bg-white shadow-sm print:border-0 print:shadow-none">
-        <header className="border-b border-slate-200 px-6 py-5 print:border-b-2 print:px-0">
-          <h1 className="text-center text-2xl font-bold">چارت تشکیلات شرکت صرافی و خدمات پولی</h1>
+    <main dir="rtl" className="min-h-screen bg-slate-50 p-4 text-slate-900 print:min-h-0 print:bg-white print:p-0">
+      <section className="mx-auto max-w-6xl rounded-2xl border border-slate-200 bg-white shadow-sm print:m-0 print:w-full print:max-w-none print:rounded-none print:border-0 print:shadow-none">
+        <header className="border-b border-slate-200 px-6 py-5 print:px-0 print:py-2">
+          <h1 className="text-center text-2xl font-bold print:text-xl">چارت تشکیلات شرکت صرافی و خدمات پولی</h1>
         </header>
 
-        <div className="overflow-x-auto px-6 py-8 print:px-0">
-          <div className="mx-auto min-w-[760px] max-w-5xl">
-            <div className="mx-auto max-w-sm">
+        <div className="overflow-x-auto px-6 py-8 print:overflow-visible print:px-0 print:py-3">
+          <div className="mx-auto min-w-[760px] max-w-5xl print:min-w-0 print:max-w-none">
+            <div className="mx-auto max-w-sm print:max-w-[260px]">
               <OrgCard node={node('shareholders')} onChange={updateNode} emphasized />
             </div>
             <Connector />
-            <div className="mx-auto max-w-sm">
+            <div className="mx-auto max-w-sm print:max-w-[260px]">
               <OrgCard node={node('board')} onChange={updateNode} emphasized />
             </div>
             <Connector />
-            <div className="mx-auto max-w-sm">
+            <div className="mx-auto max-w-sm print:max-w-[260px]">
               <OrgCard node={node('executive')} onChange={updateNode} emphasized />
             </div>
 
-            <div className="mt-8 grid grid-cols-3 gap-5">
+            <div className="mt-8 grid grid-cols-3 gap-5 print:mt-4 print:gap-3">
               <OrgCard node={node('finance')} onChange={updateNode} />
               <OrgCard node={node('compliance')} onChange={updateNode} />
               <OrgCard node={node('operations')} onChange={updateNode} />
             </div>
 
             <Connector />
-            <div className="mx-auto max-w-sm">
+            <div className="mx-auto max-w-sm print:max-w-[260px]">
               <OrgCard node={node('branches')} onChange={updateNode} />
             </div>
           </div>
@@ -87,20 +87,30 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
           {saved && <span className="text-sm text-emerald-700">ذخیره شد.</span>}
         </footer>
       </section>
+
+      <style jsx global>{`
+        @media print {
+          @page { size: A4 portrait; margin: 10mm; }
+          html, body { width: 210mm; min-height: 297mm; margin: 0; background: #fff !important; }
+          * { break-inside: avoid !important; page-break-inside: avoid !important; }
+          section, article, header, main { break-inside: avoid !important; page-break-inside: avoid !important; }
+          input { border: 0 !important; box-shadow: none !important; }
+        }
+      `}</style>
     </main>
   );
 }
 
 function Connector() {
-  return <div className="mx-auto my-3 h-7 w-px bg-slate-300" aria-hidden="true" />;
+  return <div className="mx-auto my-3 h-7 w-px bg-slate-300 print:my-1 print:h-4" aria-hidden="true" />;
 }
 
 function OrgCard({ node, onChange, emphasized = false }: { node?: OrgNode; onChange: (id: string, field: 'title' | 'name', value: string) => void; emphasized?: boolean }) {
   if (!node) return null;
   return (
-    <article className={`rounded-xl border bg-white p-4 text-center shadow-sm ${emphasized ? 'border-slate-400 shadow-md' : 'border-slate-200'}`}>
-      <input aria-label="وظیفه" value={node.title} onChange={(event) => onChange(node.id, 'title', event.target.value)} className="w-full border-0 bg-transparent text-center text-sm font-bold outline-none" />
-      <input aria-label="نام" value={node.name} onChange={(event) => onChange(node.id, 'name', event.target.value)} className="mt-2 w-full border-0 bg-transparent text-center text-sm text-slate-700 outline-none" />
+    <article className={`rounded-xl border bg-white p-4 text-center shadow-sm print:rounded-lg print:p-2 print:shadow-none ${emphasized ? 'border-slate-400 shadow-md' : 'border-slate-200'}`}>
+      <input aria-label="وظیفه" value={node.title} onChange={(event) => onChange(node.id, 'title', event.target.value)} className="w-full border-0 bg-transparent text-center text-sm font-bold outline-none print:text-xs" />
+      <input aria-label="نام" value={node.name} onChange={(event) => onChange(node.id, 'name', event.target.value)} className="mt-2 w-full border-0 bg-transparent text-center text-sm text-slate-700 outline-none print:mt-1 print:text-xs" />
     </article>
   );
 }
