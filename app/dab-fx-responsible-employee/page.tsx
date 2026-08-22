@@ -1,5 +1,5 @@
-import DabFxResponsibleEmployeeForm from '@/components/DabFxResponsibleEmployeeForm';
+import DabStandardFormsWorkspace from '@/components/DabStandardFormsWorkspace';
 
 export default function DabFxResponsibleEmployeePage() {
-  return <DabFxResponsibleEmployeeForm />;
+  return <DabStandardFormsWorkspace />;
 }
