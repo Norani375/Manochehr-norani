@@ -1290,13 +1290,6 @@ export default function OrgChartPage() {
                 <span className="text-slate-500 font-bold mt-1">Ref: DAB/7-0965/ORG</span>
                 <span className="text-blue-600/60 font-bold">ID: {activeBranchesCount}.{boardMembersCount}.{totalPersonnelCount}</span>
               </div>
-
-              <div className="hidden sm:flex flex-col items-center justify-center text-center p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800 min-w-[100px]">
-                <span className="font-bold text-slate-400 dark:text-slate-500 mb-1 text-[9px] uppercase tracking-tighter">Seal & Stamp</span>
-                <div className="w-full h-8 border border-dashed border-slate-300 dark:border-slate-700 rounded-lg flex items-center justify-center text-[9px] text-slate-300 dark:text-slate-600 italic">
-                  مهر رسمی
-                </div>
-              </div>
             </div>
           </div>
 
@@ -1618,25 +1611,6 @@ export default function OrgChartPage() {
                   </div>
                 </div>
 
-              </div>
-            </div>
-          </div>
-
-          {/* Standard Official Signature Area */}
-          <div className="mt-12 pt-8 border-t border-slate-300 flex items-end justify-between px-10">
-            <div className="text-center">
-              <div className="w-28 h-28 border-2 border-dashed border-slate-300 rounded-full flex flex-col items-center justify-center text-slate-400 text-[10px] font-bold p-3 text-center">
-                <span>محل مهر رسمی</span>
-                <span className="text-[9px] mt-1">DAB/7-0965</span>
-              </div>
-            </div>
-
-            <div className="text-center space-y-1.5 min-w-[240px]">
-              <div className="font-bold text-slate-700 text-sm">با احترام؛</div>
-              <div className="font-black text-lg text-slate-950">رئیس هیئت مدیره و مالک شرکت</div>
-              <div className="text-xs font-bold text-blue-900">شرکت صرافی و خدمات پولی</div>
-              <div className="pt-10 font-bold text-slate-600 text-xs border-t border-slate-300 mt-2">
-                امضاء و شصت
               </div>
             </div>
           </div>

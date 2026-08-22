@@ -473,31 +473,6 @@ export default function MeetingMinutes({
           {data.closingStatement}
         </div>
 
-        {/* Standard Official Signature & Stamp Area */}
-        <div className="pt-8 mt-6 border-t border-slate-300 flex items-start justify-between px-4">
-          <div className="text-center">
-            <div className="w-32 h-32 border-2 border-dashed border-slate-400 rounded-full flex flex-col items-center justify-center text-slate-500 text-[10px] font-bold p-3 text-center bg-slate-50/50">
-              <span className="mb-1">محل مهر رسمی شرکت</span>
-              <span className="font-mono text-[9px] text-slate-600 font-bold ltr inline-block">DAB/7-0965</span>
-              <div className="mt-2 text-[8px] text-slate-400 border-t border-slate-200 pt-1">
-                مصوبه مجمع عمومی
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-6 pr-8">
-            {data.participants.slice(0, 6).map((p) => (
-              <div key={p.id} className="text-center space-y-1 bg-slate-50/40 p-2 rounded-xl border border-slate-100">
-                <div className="text-[8.5px] font-bold text-slate-400 truncate">{p.position}</div>
-                <div className="font-black text-xs text-slate-950">{p.name}</div>
-                <div className="pt-6 font-bold text-slate-400 text-[9px] border-t border-slate-200 mt-2 mx-auto w-20">
-                  امضاء و شصت
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Footer */}
         <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400 font-black uppercase tracking-tighter">
           <div className="flex items-center gap-4">

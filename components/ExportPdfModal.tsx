@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, FileText, Check, X, ShieldCheck, Printer, Settings, Loader2, FileCode, Sparkles } from 'lucide-react';
-import { exportElementToPdf } from '@/lib/pdfExport';
+import { Download, FileText, Check, X, ShieldCheck, Printer, Settings, Loader2, FileCode, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { exportElementToPdf, exportElementToPng } from '@/lib/pdfExport';
 import { exportElementToWord } from '@/lib/wordExport';
 
 interface ExportPdfModalProps {
@@ -11,7 +11,7 @@ interface ExportPdfModalProps {
   targetElementId: string;
   defaultTitle?: string;
   defaultFilename?: string;
-  initialFormat?: 'pdf' | 'word';
+  initialFormat?: 'pdf' | 'word' | 'image';
 }
 
 export default function ExportPdfModal({
@@ -22,7 +22,7 @@ export default function ExportPdfModal({
   defaultFilename = 'سند_رسمی_صرافی.pdf',
   initialFormat = 'pdf',
 }: ExportPdfModalProps) {
-  const [exportFormat, setExportFormat] = useState<'pdf' | 'word'>(initialFormat);
+  const [exportFormat, setExportFormat] = useState<'pdf' | 'word' | 'image'>(initialFormat);
   const [paperSize, setPaperSize] = useState<'a4' | 'a3'>('a4');
   const [orientation, setOrientation] = useState<'landscape' | 'portrait'>('portrait');
   const [marginMm, setMarginMm] = useState<number>(10);
@@ -44,14 +44,21 @@ export default function ExportPdfModal({
     if (exportFormat === 'pdf') {
       success = await exportElementToPdf({
         elementId: targetElementId,
-        filename: defaultFilename.replace(/\.(doc|docx)$/i, '.pdf'),
+        filename: defaultFilename.replace(/\.(doc|docx|png)$/i, '.pdf'),
         paperSize,
         orientation,
         marginMm,
         qualityScale,
       });
+    } else if (exportFormat === 'image') {
+      const pngFilename = defaultFilename.replace(/\.(pdf|doc|docx)$/i, '.png');
+      success = await exportElementToPng({
+        elementId: targetElementId,
+        filename: pngFilename,
+        qualityScale,
+      });
     } else {
-      const wordFilename = defaultFilename.replace(/\.pdf$/i, '.doc');
+      const wordFilename = defaultFilename.replace(/\.(pdf|png)$/i, '.doc');
       success = await exportElementToWord({
         elementId: targetElementId,
         filename: wordFilename,
@@ -101,32 +108,44 @@ export default function ExportPdfModal({
         </div>
 
         {/* Format Selector Tabs */}
-        <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 flex gap-2">
+        <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setExportFormat('image')}
+            className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              exportFormat === 'image'
+                ? 'bg-purple-700 text-white shadow-md'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+            }`}
+          >
+            <ImageIcon className="w-4 h-4 text-purple-200" />
+            <span>تصویر (PNG)</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setExportFormat('word')}
-            className={`flex-1 py-2.5 px-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
               exportFormat === 'word'
                 ? 'bg-blue-800 text-white shadow-md'
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
             }`}
           >
             <FileCode className="w-4 h-4 text-blue-300" />
-            <span>خروجی ورد (Word .doc)</span>
-            <span className="text-[10px] bg-blue-700 text-white px-1.5 py-0.5 rounded-md font-normal">جدید</span>
+            <span>ورد (Word)</span>
           </button>
 
           <button
             type="button"
             onClick={() => setExportFormat('pdf')}
-            className={`flex-1 py-2.5 px-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
               exportFormat === 'pdf'
                 ? 'bg-emerald-700 text-white shadow-md'
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
             }`}
           >
             <Download className="w-4 h-4 text-emerald-300" />
-            <span>خروجی PDF (آماده چاپ)</span>
+            <span>فایل PDF</span>
           </button>
         </div>
 

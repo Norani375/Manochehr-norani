@@ -115,13 +115,7 @@ export default function DabOrganizationChart() {
         </section>
 
         <section className="mt-5 border-2 border-slate-700 bg-white p-5 print:break-inside-avoid">
-          <h2 className="mb-3 font-bold">تأیید و امضا</h2>
-          <div className="grid grid-cols-1 gap-0 md:grid-cols-3">
-            <div className="min-h-24 border p-4 text-sm">رئیس هیئت نظارتی<br /><br />امضا: __________________</div>
-            <div className="min-h-24 border p-4 text-sm">مدیر عمومی<br /><br />امضا: __________________</div>
-            <div className="min-h-24 border p-4 text-sm">مهر شرکت<br /><br />__________________</div>
-          </div>
-          <p className="mt-3 text-xs">تاریخ نافذ شدن: {effectiveDate || '__________________'}</p>
+          <p className="text-xs font-bold text-slate-700">تاریخ نافذ شدن: {effectiveDate || '__________________'}</p>
         </section>
 
         {selected ? (

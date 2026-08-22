@@ -297,14 +297,7 @@ export default function DabUnifiedOfficialFormsWorkspace({ companyId = 'default'
                 ))}
               </div>
 
-              <div className="mt-6 break-inside-avoid border-2 border-slate-700 p-4">
-                <h2 className="mb-3 font-bold">تأیید و امضا</h2>
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="min-h-24 break-inside-avoid border p-3">درخواست‌کننده<br /><br />امضا: __________________</div>
-                  <div className="min-h-24 break-inside-avoid border p-3">مسئول شرکت<br /><br />امضا: __________________</div>
-                  <div className="min-h-24 break-inside-avoid border p-3">مهر شرکت<br /><br />__________________</div>
-                </div>
-              </div>
+
 
               <div className="mt-5 break-inside-avoid border-t pt-4 text-xs leading-6 text-slate-600">{form.printNotice}</div>
 

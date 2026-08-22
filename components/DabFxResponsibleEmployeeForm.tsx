@@ -87,11 +87,7 @@ export default function DabFxResponsibleEmployeeForm() {
           <textarea value={values.attachments ?? ''} onChange={event => update('attachments', event.target.value)} rows={4} className="w-full border border-slate-400 p-2" placeholder="فهرست کاپی تذکره، اسناد تحصیلی، اسناد وظیفه و سایر ضمایم" />
         </section>
 
-        <section className="mt-5 grid gap-4 border-2 border-slate-800 p-5 md:grid-cols-3">
-          <div className="min-h-28 border p-3">نام و امضای کارمند مسئول<br /><br />__________________</div>
-          <div className="min-h-28 border p-3">امضای مسئول صرافی<br /><br />__________________</div>
-          <div className="min-h-28 border p-3">مهر صرافی<br /><br />__________________</div>
-        </section>
+
 
         <div className="mt-5 text-xs leading-6 text-slate-600">
           این نسخه دیجیتال برای ثبت معلومات و مدیریت دوسیه ساخته شده است. برای تسلیم به د افغانستان بانک، فورم چاپی باید با آخرین فایل رسمی DAB تطبیق نهایی شود.

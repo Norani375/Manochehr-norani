@@ -581,25 +581,6 @@ export default function DabLicenseRenewalLetter({ isEditMode = true, customLogo,
           {data.closingText}
         </div>
 
-        {/* Standard Official Signature & Stamp Area */}
-        <div className="pt-8 mt-6 border-t border-slate-300 flex items-end justify-between px-6">
-          <div className="text-center">
-            <div className="w-28 h-28 border-2 border-dashed border-slate-400 rounded-full flex flex-col items-center justify-center text-slate-500 text-[10px] font-bold p-2 text-center">
-              <span>محل مهر رسمی شرکت</span>
-              <span className="font-mono text-[9px] text-slate-400 mt-1">DAB/7-0965</span>
-            </div>
-          </div>
-
-          <div className="text-center space-y-1.5 min-w-[220px]">
-            <div className="font-bold text-slate-700 text-xs">با احترام؛</div>
-            <div className="font-black text-base text-slate-950">{data.signatoryName}</div>
-            <div className="text-xs font-bold text-blue-900">{data.signatoryTitle}</div>
-            <div className="pt-8 font-bold text-slate-600 text-xs border-t border-slate-400 mt-2">
-              امضاء و شصت
-            </div>
-          </div>
-        </div>
-
         {/* Footer info bar */}
         <div className="pt-4 border-t border-slate-300 text-center text-[10px] text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>آدرس: کندز، مومند مارکیت، دکان ۳۰۱</span>

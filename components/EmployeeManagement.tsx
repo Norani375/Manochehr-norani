@@ -32,6 +32,7 @@ import {
   DEFAULT_EMPLOYEES,
   seedEmployees 
 } from '@/lib/firebase';
+import { exportElementToPdf } from '@/lib/pdfExport';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -168,26 +169,29 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
   };
 
   const handleExportPdf = async () => {
-    if (!printableRef.current) return;
+    if (!editingEmployee) return;
     setIsExporting(true);
     
     try {
-      const canvas = await html2canvas(printableRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
+      const ok = await exportElementToPdf({
+        elementId: 'employee-management-cv-canvas',
+        filename: `خلص_سوانح_${editingEmployee.fullName ? editingEmployee.fullName.trim().replace(/\s+/g, '_') : 'پرسونل'}.pdf`,
+        paperSize: 'a4',
+        orientation: 'portrait',
+        marginMm: 6,
+        qualityScale: 2.5,
       });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Employee_${editingEmployee?.fullName || 'Form'}.pdf`);
+
+      if (ok) {
+        setToastMessage('فایل PDF خلص سوانح با موفقیت تولید و دانلود شد');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      } else {
+        alert('خطا در تولید فایل PDF. لطفاً مجدداً تلاش کنید.');
+      }
     } catch (error) {
       console.error('PDF Export failed:', error);
+      alert('خطا در دانلود فایل PDF');
     } finally {
       setIsExporting(false);
     }
@@ -432,126 +436,166 @@ export default function EmployeeManagement({ customLogo, isEditMode = true, comp
               </div>
 
               {/* Print Preview */}
-              <div className="bg-slate-100 dark:bg-slate-950/50 p-6 rounded-3xl overflow-y-auto max-h-[85vh] custom-scrollbar shadow-inner border border-slate-200/50 dark:border-slate-800">
+              <div className="bg-slate-100 dark:bg-slate-950/50 p-4 sm:p-6 rounded-3xl overflow-y-auto max-h-[85vh] custom-scrollbar shadow-inner border border-slate-200/50 dark:border-slate-800 flex flex-col items-center">
+                <div className="w-full flex items-center justify-between mb-4 px-2 print:hidden max-w-[210mm]">
+                  <span className="text-xs font-black text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-blue-500" />
+                    پیش‌نمایش فرم خلص سوانح (A4 رسمی)
+                  </span>
+                  <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full font-mono font-black">
+                    STANDARD DAB FORM
+                  </span>
+                </div>
+
                 <div 
                   id="employee-management-cv-canvas"
                   ref={printableRef}
-                  className="bg-white mx-auto w-[210mm] min-h-[297mm] p-12 text-slate-950 font-serif relative shadow-2xl origin-top scale-[0.6] sm:scale-[0.8] xl:scale-[0.5] 2xl:scale-[0.6] mb-[-250px] transition-transform"
+                  className="bg-white text-slate-900 font-serif relative shadow-2xl p-6 sm:p-10 w-full max-w-[210mm] min-h-[297mm] mx-auto border-2 border-slate-800 print:border-none print:shadow-none print:p-0 print:w-full"
                   style={{ direction: 'rtl' }}
                 >
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none w-2/3">
-                    <img src={customLogo || "/assets/dab_logo.png"} alt="Watermark" className="w-full" />
-                  </div>
-
-                  <div className="flex justify-between items-start mb-12 border-b-4 border-slate-900 pb-8 relative z-10">
-                    <div className="w-28 h-28 bg-white flex items-center justify-center">
-                      <img src={customLogo || "/assets/dab_logo.png"} alt="Logo" className="max-w-full max-h-full" />
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="text-xs font-black text-blue-900 tracking-wider mb-1">
-                        د افغانستان بانک
-                      </div>
-                      <h1 className="text-xl sm:text-2xl font-black mb-1 tracking-tight text-slate-950">
-                        شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)
-                      </h1>
-                      <p className="text-xs font-bold text-slate-700">جواز صرافی: <span className="font-mono font-bold inline-block">7-0965</span></p>
-                      <div className="mt-4 inline-block bg-slate-900 text-white px-8 py-2 rounded-full text-sm font-black shadow-xs">
-                        فورم خلص سوانح، مشخصات و سوابق پرسونل
-                      </div>
-                    </div>
-                    <div className="w-28 h-28 opacity-0">Logo Space</div>
-                  </div>
-
-                  <div className="grid grid-cols-12 gap-y-8 relative z-10 text-[15px]">
-                    <div className="col-span-3 flex justify-center items-start">
-                      <div className="w-36 h-44 border-4 border-slate-200 bg-slate-50 rounded-lg flex flex-col items-center justify-center text-slate-300 overflow-hidden">
-                        {editingEmployee.photo ? (
-                          <img src={editingEmployee.photo} alt="Employee" className="w-full h-full object-cover" />
-                        ) : (
-                          <>
-                            <User className="w-12 h-12 mb-3" />
-                            <p className="text-xs text-center px-4 font-bold">عکس کارمند</p>
-                          </>
-                        )}
-                      </div>
+                  {/* Outer Frame */}
+                  <div className="border-4 border-double border-slate-900 p-6 sm:p-8 bg-white relative min-h-[275mm] flex flex-col justify-between">
+                    
+                    {/* Background Watermark */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none w-2/3">
+                      <img src={customLogo || "/assets/dab_logo.png"} alt="Watermark" className="w-full object-contain" />
                     </div>
 
-                    <div className="col-span-9">
-                      <table className="w-full border-collapse">
-                        <tbody>
-                          <tr>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black w-36">اسم مکمل:</td>
-                            <td className="border-2 border-slate-900 p-3 font-bold text-lg">{editingEmployee.fullName}</td>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black w-32">نام پدر:</td>
-                            <td className="border-2 border-slate-900 p-3 font-bold">{editingEmployee.fatherName}</td>
-                          </tr>
-                          <tr>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black">نام پدر کلان:</td>
-                            <td className="border-2 border-slate-900 p-3 font-bold" colSpan={3}>{editingEmployee.grandfatherName}</td>
-                          </tr>
-                          <tr>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black">موقف وظیفوی:</td>
-                            <td className="border-2 border-slate-900 p-3 font-bold text-blue-900">{editingEmployee.position}</td>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black">نمبر تذکره:</td>
-                            <td className="border-2 border-slate-900 p-3 font-mono font-bold">{editingEmployee.tazkiraNo}</td>
-                          </tr>
-                          <tr>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black">تحصیلات:</td>
-                            <td className="border-2 border-slate-900 p-3 font-bold" colSpan={3}>{editingEmployee.education}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                    <div>
+                      {/* Document Header */}
+                      <div className="flex justify-between items-start mb-6 border-b-2 border-slate-900 pb-6 relative z-10">
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white flex items-center justify-center p-1.5 border border-slate-200 rounded-xl shadow-xs shrink-0">
+                          <img src={customLogo || "/assets/dab_logo.png"} alt="Logo" className="max-w-full max-h-full object-contain" />
+                        </div>
 
-                    <div className="col-span-12">
-                      <table className="w-full border-collapse">
-                        <tbody>
-                          <tr>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black w-36">شماره تماس:</td>
-                            <td className="border-2 border-slate-900 p-3 font-mono font-bold">{editingEmployee.phone}</td>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black w-36">نمبر تشخیصیه (TIN):</td>
-                            <td className="border-2 border-slate-900 p-3 font-mono font-bold">{editingEmployee.tin}</td>
-                          </tr>
-                          <tr>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black">ایمیل آدرس:</td>
-                            <td className="border-2 border-slate-900 p-3 font-mono font-bold" colSpan={3}>{editingEmployee.email}</td>
-                          </tr>
-                          <tr>
-                            <td className="border-2 border-slate-900 p-3 bg-slate-50 font-black align-top" rowSpan={3}>تجربه کاری:</td>
-                            <td className="border-2 border-slate-900 p-4 min-h-[120px] align-top" colSpan={3}>
-                              <p className="whitespace-pre-wrap leading-loose font-medium text-justify">{editingEmployee.experience}</p>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                        <div className="text-center flex-1 px-4">
+                          <div className="text-xs font-black text-blue-900 tracking-wider mb-1">
+                            د افغانستان بانک
+                          </div>
+                          <h1 className="text-base sm:text-xl font-black mb-1 tracking-tight text-slate-950">
+                            شرکت صرافی و خدمات پولی برکت‌الله غفوری (سهامی خاص)
+                          </h1>
+                          <p className="text-xs font-bold text-slate-700 mb-3">
+                            شماره جواز فعالیت: <span className="font-mono font-black text-slate-900">DAB/7-0965</span>
+                          </p>
+                          <div className="inline-block bg-slate-900 text-white px-6 py-1.5 rounded-full text-xs sm:text-sm font-black shadow-xs tracking-wide">
+                            فورم استاندارد خلص سوانح و مشخصات پرسونل
+                          </div>
+                        </div>
 
-                    <div className="col-span-12 mt-16 grid grid-cols-2 gap-16">
-                      <div className="border-t-2 border-slate-900 pt-6">
-                        <p className="font-black mb-6 text-lg">امضاء و اثر شصت کارمند:</p>
-                        <div className="h-32 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-100">
-                          {editingEmployee.signature && (
-                            <img src={editingEmployee.signature} alt="Sign" className="max-h-full max-w-full object-contain p-2" />
-                          )}
+                        <div className="text-left text-[10px] space-y-1 border-r border-slate-200 pr-3 font-bold text-slate-600 shrink-0 min-w-[110px]">
+                          <div>کد پرسونل:</div>
+                          <div className="font-mono text-xs font-black text-blue-900">EMP-{editingEmployee.id.substring(0, 6).toUpperCase()}</div>
+                          <div className="pt-2 border-t border-slate-200 mt-2">تاریخ تنظیم:</div>
+                          <div className="font-mono text-xs font-bold text-slate-900">{editingEmployee.formDate || '۱۴۰۳'}</div>
+                          <div className="text-[9px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-center mt-1">تأییدشده</div>
                         </div>
                       </div>
-                      <div className="border-t-2 border-slate-900 pt-6 flex flex-col justify-between">
-                        <div>
-                          <p className="font-black mb-4 text-lg">تاریخ منظوری و ثبت:</p>
-                          <p className="font-mono text-2xl font-black text-blue-900">{editingEmployee.formDate}</p>
+
+                      {/* Personal & Employment Details Grid */}
+                      <div className="grid grid-cols-12 gap-6 relative z-10 text-[13px] sm:text-[14px] mt-4">
+                        
+                        {/* Employee Photo Frame */}
+                        <div className="col-span-12 sm:col-span-3 flex flex-col items-center justify-start">
+                          <div className="w-32 h-40 border-2 border-slate-900 bg-slate-50 rounded-xl flex flex-col items-center justify-center text-slate-400 overflow-hidden shadow-sm relative">
+                            {editingEmployee.photo ? (
+                              <img src={editingEmployee.photo} alt="Employee" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="text-center p-2">
+                                <User className="w-10 h-10 mx-auto mb-1 text-slate-300" />
+                                <span className="text-[10px] font-bold text-slate-400">عکس ۳×۴ پرسنلی</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="mt-2 text-center text-[10px] font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 w-full">
+                            مشخصات هویت فردی
+                          </div>
                         </div>
-                        <div className="text-left text-[11px] text-slate-400 font-mono font-bold">
-                          INTERNAL_REF: {editingEmployee.id}
+
+                        {/* Details Table */}
+                        <div className="col-span-12 sm:col-span-9">
+                          <table className="w-full border-collapse border-2 border-slate-900 text-right">
+                            <tbody>
+                              <tr>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black w-32 text-slate-800">اسم مکمل:</td>
+                                <td className="border border-slate-900 p-2.5 font-bold text-base text-slate-950">{editingEmployee.fullName || '---'}</td>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black w-24 text-slate-800">نام پدر:</td>
+                                <td className="border border-slate-900 p-2.5 font-bold text-slate-950">{editingEmployee.fatherName || '---'}</td>
+                              </tr>
+                              <tr>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black text-slate-800">نام پدرکلان:</td>
+                                <td className="border border-slate-900 p-2.5 font-bold text-slate-950">{editingEmployee.grandfatherName || '---'}</td>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black text-slate-800">موقف وظیفوی:</td>
+                                <td className="border border-slate-900 p-2.5 font-black text-blue-900 text-sm">{editingEmployee.position || '---'}</td>
+                              </tr>
+                              <tr>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black text-slate-800">شماره تذکره:</td>
+                                <td className="border border-slate-900 p-2.5 font-mono font-bold text-slate-950">{editingEmployee.tazkiraNo || '---'}</td>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black text-slate-800">تحصیلات:</td>
+                                <td className="border border-slate-900 p-2.5 font-bold text-slate-950">{editingEmployee.education || '---'}</td>
+                              </tr>
+                              <tr>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black text-slate-800">شماره تماس:</td>
+                                <td className="border border-slate-900 p-2.5 font-mono font-bold text-slate-950">{editingEmployee.phone || '---'}</td>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black text-slate-800">نمبر TIN:</td>
+                                <td className="border border-slate-900 p-2.5 font-mono font-bold text-slate-950">{editingEmployee.tin || '---'}</td>
+                              </tr>
+                              <tr>
+                                <td className="border border-slate-900 p-2.5 bg-slate-100 font-black text-slate-800">ایمیل آدرس:</td>
+                                <td className="border border-slate-900 p-2.5 font-mono font-bold text-slate-950" colSpan={3}>{editingEmployee.email || '---'}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* Experience and Skills Box */}
+                      <div className="mt-6 relative z-10">
+                        <div className="bg-slate-900 text-white px-4 py-2 font-black text-xs sm:text-sm rounded-t-lg border-2 border-b-0 border-slate-900 flex items-center justify-between">
+                          <span>سوابق کاری، تجارب و مهارت‌های تخصصی</span>
+                          <span className="text-[11px] font-normal opacity-80">ثبت رسمی در پرونده پرسنلی</span>
+                        </div>
+                        <div className="border-2 border-slate-900 p-4 bg-slate-50/60 rounded-b-lg min-h-[140px] text-xs sm:text-sm font-medium leading-relaxed text-justify whitespace-pre-wrap break-words text-slate-900">
+                          {editingEmployee.experience || 'اطلاعات سوابق کاری و تجارب کاری در سیستم ثبت نشده است.'}
                         </div>
                       </div>
                     </div>
 
-                    <div className="col-span-12 mt-24 text-center border-t-2 border-slate-200 pt-8">
-                      <p className="text-[12px] text-slate-500 font-bold leading-relaxed">
-                        این سند به عنوان خلص سوانح رسمی در آرشیف شرکت محفوظ می‌باشد.<br/>
-                        تائید کننده: بخش منابع انسانی و مدیریت عملیاتی
-                      </p>
+                    {/* Footer Declaration & Signatures */}
+                    <div>
+                      <div className="mt-6 pt-4 border-t-2 border-slate-900 grid grid-cols-2 gap-8 relative z-10">
+                        <div className="space-y-2">
+                          <p className="font-black text-slate-900 text-xs sm:text-sm">تأییدیه و امضاء کارمند:</p>
+                          <p className="text-[10px] text-slate-600 font-medium leading-normal">
+                            صحت تمام معلومات فوق مورد تأیید اینجانب می‌باشد.
+                          </p>
+                          <div className="h-24 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center p-2">
+                            {editingEmployee.signature ? (
+                              <img src={editingEmployee.signature} alt="Signature" className="max-h-full max-w-full object-contain" />
+                            ) : (
+                              <span className="text-xs text-slate-400 font-bold">محل امضاء و اثر شصت کارمند</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 text-right">
+                          <p className="font-black text-slate-900 text-xs sm:text-sm">تأییدیه مدیریت منابع انسانی و اداره:</p>
+                          <div className="text-right space-y-1 text-xs">
+                            <p className="font-bold text-slate-800">تاریخ منظوری: <span className="font-mono text-blue-900 font-black">{editingEmployee.formDate || '۱۴۰۳'}</span></p>
+                            <p className="text-[10px] text-slate-600 font-medium">کد بایگانی رسمی: <span className="font-mono font-bold text-slate-950">DAB-EMP-{editingEmployee.id.substring(0,8).toUpperCase()}</span></p>
+                          </div>
+                          <div className="h-24 bg-slate-50 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-center p-2 text-xs font-bold text-slate-700">
+                            <span>آمریت منابع انسانی و اجراآت</span>
+                            <span className="text-[10px] text-slate-500 font-normal mt-0.5">شرکت صرافی و خدمات پولی برکت‌الله غفوری</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 text-center border-t border-slate-300 pt-3 text-[10px] text-slate-500 font-medium">
+                        این سند بر اساس مقررات د افغانستان بانک تنظیم گردیده و به عنوان خلص سوانح رسمی در بایگانی شرکت محفوظ است.
+                      </div>
                     </div>
+
                   </div>
                 </div>
               </div>

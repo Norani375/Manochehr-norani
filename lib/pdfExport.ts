@@ -366,6 +366,62 @@ export async function exportElementToPdf({
   }
 }
 
+export interface ImageExportOptions {
+  elementId: string;
+  filename?: string;
+  qualityScale?: number;
+  backgroundColor?: string;
+}
+
+export async function exportElementToPng({
+  elementId,
+  filename = 'chart.png',
+  qualityScale = 3.0,
+  backgroundColor = '#ffffff',
+}: ImageExportOptions): Promise<boolean> {
+  try {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      console.error(`Element with id "${elementId}" not found for PNG export.`);
+      return false;
+    }
+
+    sanitizeDocumentColors(document);
+
+    const canvas = await html2canvas(element, {
+      scale: qualityScale,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: backgroundColor,
+      logging: false,
+      windowWidth: Math.max(element.scrollWidth, 1200),
+      onclone: (clonedDoc) => {
+        sanitizeDocumentColors(clonedDoc);
+        const clonedElement = clonedDoc.getElementById(elementId);
+        if (clonedElement) {
+          clonedElement.style.padding = '24px';
+          clonedElement.style.backgroundColor = backgroundColor;
+          clonedElement.style.color = '#0f172a';
+          clonedElement.style.boxShadow = 'none';
+          clonedElement.style.borderRadius = '0px';
+        }
+      },
+    });
+
+    const dataUrl = canvas.toDataURL('image/png', 1.0);
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return true;
+  } catch (err) {
+    console.error('Failed to export PNG:', err);
+    return false;
+  }
+}
+
 export interface BatchDocumentItem {
   id: string;
   elementId: string;

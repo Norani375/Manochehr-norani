@@ -5,9 +5,9 @@ import {
   Building2, Edit3, Save, RotateCcw, Download, Printer, ShieldCheck, Briefcase, 
   Users, UserCheck, Plus, Trash2, Check, FileSpreadsheet, Layers, Filter, CheckCircle2, 
   Search, FileCode, Loader2, Phone, Mail, Calendar, GraduationCap, IdCard, MapPin, 
-  ChevronDown, ChevronUp, Maximize2, Minimize2, Database, Sparkles, Copy, ExternalLink, GitBranch
+  ChevronDown, ChevronUp, Maximize2, Minimize2, Database, Sparkles, Copy, ExternalLink, GitBranch, AlertTriangle, Image as ImageIcon
 } from 'lucide-react';
-import { exportElementToPdf } from '@/lib/pdfExport';
+import { exportElementToPdf, exportElementToPng } from '@/lib/pdfExport';
 import { exportElementToWord } from '@/lib/wordExport';
 import { db, EmployeeRecord, subscribeEmployees } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
@@ -317,6 +317,7 @@ export default function OrgChartCanvas({
 
   const [pdfQualityScale, setPdfQualityScale] = useState<number>(3.5); // Default high resolution Ultra (DPI ~350)
   const [paperSizeOption, setPaperSizeOption] = useState<'a4' | 'a3'>('a3'); // Default A3 for wide org charts
+  const [staffCapacityThreshold, setStaffCapacityThreshold] = useState<number>(3); // Configurable branch staff capacity limit
   const [isSaved, setIsSaved] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [internalSearchTerm, setInternalSearchTerm] = useState('');
@@ -484,6 +485,29 @@ export default function OrgChartCanvas({
     }
   };
 
+  const handleImageExport = async () => {
+    const previousCollapsed = { ...collapsedBranches };
+    setCollapsedBranches({}); // Expand all branches for full export
+    setIsExporting(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const ok = await exportElementToPng({
+        elementId: 'org-chart-export-canvas',
+        filename: `چارت_سازمانی_شرکت_صرافی_DPI${Math.round(pdfQualityScale * 96)}.png`,
+        qualityScale: pdfQualityScale
+      });
+      if (!ok) {
+        alert('خطا در دانلود تصویر PNG.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('خطا در دانلود تصویر PNG.');
+    } finally {
+      setCollapsedBranches(previousCollapsed);
+      setIsExporting(false);
+    }
+  };
+
   const handlePdfExport = async () => {
     const previousCollapsed = { ...collapsedBranches };
     setCollapsedBranches({}); // Expand all branches for full export
@@ -569,6 +593,30 @@ export default function OrgChartCanvas({
       (node.staff && node.staff.length > 0)
     );
 
+    const staffCount = node.staff?.length || 0;
+    const isOverCapacity = staffCount > staffCapacityThreshold;
+    const isNearCapacity = staffCount === staffCapacityThreshold && staffCapacityThreshold > 0;
+
+    let badgeBgClasses = "bg-slate-900/85 text-white border-white/25 shadow-xs";
+    let topBadgeIcon = <Users className="w-2.5 h-2.5 text-blue-200" />;
+    let bodyBadgeIcon = <Users className="w-3 h-3 text-blue-200" />;
+    let topBadgeText = `پرسنل: ${staffCount} نفر`;
+    let bodyBadgeText = `ظرفیت پرسنل: ${staffCount} نفر`;
+
+    if (isOverCapacity) {
+      badgeBgClasses = "bg-rose-900/95 text-rose-100 border-rose-400/80 shadow-md shadow-rose-950/40 ring-2 ring-rose-500/50";
+      topBadgeIcon = <AlertTriangle className="w-2.5 h-2.5 text-rose-300 animate-pulse" />;
+      bodyBadgeIcon = <AlertTriangle className="w-3 h-3 text-rose-300 animate-bounce" />;
+      topBadgeText = `هشدار مازاد: ${staffCount}/${staffCapacityThreshold} نفر`;
+      bodyBadgeText = `مازاد بر سقف مجاز (${staffCount}/${staffCapacityThreshold} نفر)`;
+    } else if (isNearCapacity) {
+      badgeBgClasses = "bg-amber-900/95 text-amber-100 border-amber-400/80 shadow-xs ring-1 ring-amber-400/40";
+      topBadgeIcon = <Users className="w-2.5 h-2.5 text-amber-300" />;
+      bodyBadgeIcon = <Users className="w-3 h-3 text-amber-300" />;
+      topBadgeText = `تکمیل ظرفیت: ${staffCount}/${staffCapacityThreshold} نفر`;
+      bodyBadgeText = `سقف ظرفیت تکمیل شد (${staffCount}/${staffCapacityThreshold} نفر)`;
+    }
+
     return (
       <div 
         id={`org-node-${node.id}`}
@@ -587,6 +635,59 @@ export default function OrgChartCanvas({
           ${customClass}
         `}
       >
+        {/* Custom Hover Tooltip (reveals employee ID, phone & email on hover without cluttering main chart) */}
+        <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-64 p-3 bg-slate-900/95 dark:bg-slate-950/95 text-white rounded-2xl shadow-2xl border border-slate-700/80 backdrop-blur-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:-translate-y-1 transition-all duration-200 pointer-events-none z-50 text-right dir-rtl print:hidden">
+          {/* Tooltip Arrow */}
+          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900/95 border-b border-r border-slate-700/80 rotate-45" />
+
+          <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-slate-800">
+            <div className="flex items-center gap-1.5 text-blue-400 font-bold text-[11px]">
+              <IdCard className="w-3.5 h-3.5 text-blue-400" />
+              <span>مشخصات تماس و پرسنلی</span>
+            </div>
+            <span className="text-[10px] font-mono bg-blue-950/80 text-blue-200 px-2 py-0.5 rounded-full border border-blue-800">
+              کد: {node.id}
+            </span>
+          </div>
+
+          <div className="space-y-1.5 text-[11px]">
+            <div className="font-black text-white text-xs truncate">{node.name}</div>
+            <div className="text-slate-300 text-[10px] truncate">{subtitleOverride || node.title}</div>
+
+            <div className="pt-2 space-y-1.5 border-t border-slate-800/80 text-[10px]">
+              <div className="flex items-center justify-between gap-2 text-slate-300">
+                <span className="text-slate-400 flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-amber-400" />
+                  <span>شماره تماس:</span>
+                </span>
+                <span className="font-mono dir-ltr font-bold text-slate-100">
+                  {enriched.phone || 'ثبت نشده'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 text-slate-300">
+                <span className="text-slate-400 flex items-center gap-1">
+                  <Mail className="w-3 h-3 text-sky-400" />
+                  <span>پست الکترونیک:</span>
+                </span>
+                <span className="font-mono dir-ltr text-slate-100 truncate max-w-[130px]">
+                  {enriched.email || 'ثبت نشده'}
+                </span>
+              </div>
+
+              {(enriched.tazkiraNo || enriched.tin) && (
+                <div className="flex items-center justify-between gap-2 text-slate-300 pt-1 border-t border-slate-800/50">
+                  <span className="text-slate-400 flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                    <span>تذکره / کد مالیاتی:</span>
+                  </span>
+                  <span className="font-mono text-slate-100">{enriched.tazkiraNo || enriched.tin}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Top Floating Badge for Database Sync or Role */}
         <div className="absolute -top-3 left-4 flex items-center gap-1.5 z-10">
           {enriched.hasDbMatch && (
@@ -613,11 +714,11 @@ export default function OrgChartCanvas({
         {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
           <div className="absolute -top-3 right-4 flex items-center gap-1.5 z-10">
             <span 
-              className="inline-flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs transition-all duration-300 animate-in fade-in ease-out"
-              title={`تعداد پرسنل اختصاص‌یافته به این نمایندگی: ${node.staff?.length || 0} نفر`}
+              className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-md border transition-all duration-300 animate-in fade-in ease-out group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:shadow-md ${badgeBgClasses}`}
+              title={`تعداد پرسنل: ${staffCount} نفر (سقف مجاز: ${staffCapacityThreshold} نفر)`}
             >
-              <Users className="w-2.5 h-2.5 text-blue-200" />
-              <span>پرسنل: {node.staff?.length || 0} نفر</span>
+              {topBadgeIcon}
+              <span>{topBadgeText}</span>
             </span>
           </div>
         )}
@@ -655,11 +756,11 @@ export default function OrgChartCanvas({
           {(variant === 'branch' || (node.staff && node.staff.length > 0)) && (
             <div className="mt-2 flex justify-center">
               <span 
-                className="inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-0.5 rounded-full bg-slate-900/85 text-white backdrop-blur-md border border-white/25 shadow-xs transition-all duration-300 animate-in fade-in ease-out"
+                className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-0.5 rounded-full backdrop-blur-md border transition-all duration-300 animate-in fade-in ease-out group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:shadow-md ${badgeBgClasses}`}
                 title="برنامه‌ریزی ظرفیت نیروی انسانی نمایندگی"
               >
-                <Users className="w-3 h-3 text-blue-200" />
-                <span>ظرفیت پرسنل: {node.staff?.length || 0} نفر</span>
+                {bodyBadgeIcon}
+                <span>{bodyBadgeText}</span>
               </span>
             </div>
           )}
@@ -1008,6 +1109,24 @@ export default function OrgChartCanvas({
             <span>{isExporting ? 'در حال خروجی...' : 'دانلود Word'}</span>
           </button>
 
+          {/* Configurable Staff Capacity Threshold Selector */}
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700" title="تنظیم سقف پرسنل جهت مدیریت منابع و هشدار ظرفیت نمایندگی‌ها">
+            <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 mr-1 hidden sm:inline" />
+            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 hidden sm:inline">سقف پرسنل:</span>
+            <select
+              value={staffCapacityThreshold}
+              onChange={(e) => setStaffCapacityThreshold(parseInt(e.target.value, 10))}
+              className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs font-bold py-1 px-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value={2}>سقف: ۲ نفر</option>
+              <option value={3}>سقف: ۳ نفر (پیش‌فرض)</option>
+              <option value={4}>سقف: ۴ نفر</option>
+              <option value={5}>سقف: ۵ نفر</option>
+              <option value={8}>سقف: ۸ نفر</option>
+              <option value={10}>سقف: ۱۰ نفر</option>
+            </select>
+          </div>
+
           {/* Quality DPI & Paper Size Selector */}
           <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 pr-1.5 hidden sm:inline">کیفیت:</span>
@@ -1032,6 +1151,16 @@ export default function OrgChartCanvas({
               <option value="a4">کاغذ A4 افقی</option>
             </select>
           </div>
+
+          <button
+            onClick={handleImageExport}
+            disabled={isExporting}
+            className="px-3.5 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-60 cursor-pointer"
+            title="دانلود تصویر چارت با کیفیت بالا (PNG)"
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span>{isExporting ? 'در حال خروجی...' : 'دانلود تصویر (PNG)'}</span>
+          </button>
 
           <button
             onClick={handlePdfExport}
@@ -1218,51 +1347,52 @@ export default function OrgChartCanvas({
           <div className="space-y-2 pt-2 border-t border-blue-200">
             <label className="font-bold block text-slate-800 dark:text-slate-200">نمایندگی‌ها:</label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {data.branches.map((br, idx) => (
-                <div key={br.id} className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border space-y-1.5">
+              {(data.branches || []).map((br, idx) => (
+                <div key={br.id} className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border space-y-1.5 shadow-2xs">
                   <input
                     type="text"
                     value={br.name}
                     placeholder="نام نمایندگی"
                     onChange={(e) => {
-                      const updated = [...data.branches];
+                      const updated = [...(data.branches || [])];
                       updated[idx].name = e.target.value;
                       setData({ ...data, branches: updated });
                     }}
-                    className="w-full p-1.5 border rounded font-bold text-xs text-blue-900"
+                    className="w-full p-1.5 border rounded font-bold text-xs text-blue-900 dark:text-blue-200 dark:bg-slate-800"
                   />
                   <input
                     type="text"
                     value={br.title}
                     placeholder="مسئول نمایندگی"
                     onChange={(e) => {
-                      const updated = [...data.branches];
+                      const updated = [...(data.branches || [])];
                       updated[idx].title = e.target.value;
                       setData({ ...data, branches: updated });
                     }}
-                    className="w-full p-1 border rounded text-xs"
+                    className="w-full p-1 border rounded text-xs dark:bg-slate-800 dark:text-slate-200"
                   />
                   <input
                     type="text"
                     value={br.phone || ''}
                     placeholder="شماره تماس نمایندگی"
                     onChange={(e) => {
-                      const updated = [...data.branches];
+                      const updated = [...(data.branches || [])];
                       updated[idx].phone = e.target.value;
                       setData({ ...data, branches: updated });
                     }}
-                    className="w-full p-1 border rounded text-xs font-mono"
+                    className="w-full p-1 border rounded text-xs font-mono dark:bg-slate-800 dark:text-slate-200"
                   />
                   <input
                     type="text"
-                    value={br.staff ? br.staff.join(' · ') : ''}
-                    placeholder="سایر کارمندان"
+                    value={br.staff ? br.staff.join(' ، ') : ''}
+                    placeholder="سایر کارمندان (با ویرگول جدا کنید)"
                     onChange={(e) => {
-                      const updated = [...data.branches];
-                      updated[idx].staff = [e.target.value];
+                      const updated = [...(data.branches || [])];
+                      const val = e.target.value;
+                      updated[idx].staff = val ? val.split(/[,،·\n]/).map(s => s.trim()).filter(Boolean) : [];
                       setData({ ...data, branches: updated });
                     }}
-                    className="w-full p-1 border rounded text-xs text-slate-500"
+                    className="w-full p-1 border rounded text-xs text-slate-700 dark:text-slate-300 dark:bg-slate-800"
                   />
                 </div>
               ))}
@@ -1274,9 +1404,9 @@ export default function OrgChartCanvas({
       {/* Main Org Chart Canvas matching exact uploaded image */}
       <div 
         id="org-chart-export-canvas"
-        className="bg-slate-50 dark:bg-slate-950 p-4 sm:p-8 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl print:shadow-none print:border-none print:p-0 print:bg-white text-slate-900 dark:text-slate-100 dir-rtl"
+        className="bg-slate-50 dark:bg-slate-950 p-2 sm:p-6 md:p-8 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl print:shadow-none print:border-none print:p-0 print:bg-white text-slate-900 dark:text-slate-100 dir-rtl overflow-x-auto"
       >
-        <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="w-full max-w-6xl xl:max-w-7xl mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
           
           {/* DAB Standard Form Header Banner - Soft Dignified Navy */}
           <div className="bg-[#1e3a8a] text-white py-6 px-6 text-center space-y-2 relative shadow-md border-b-4 border-amber-500">
@@ -1315,7 +1445,7 @@ export default function OrgChartCanvas({
           </div>
 
           {/* Org Tree Content Container */}
-          <div className="p-6 sm:p-10 space-y-10">
+          <div className="p-4 sm:p-8 space-y-10 overflow-x-auto min-w-full">
             
             {/* LEVEL 1: President Box (Centered Dark Blue Box) */}
             <div className="flex flex-col items-center relative">
@@ -1329,7 +1459,7 @@ export default function OrgChartCanvas({
                   hasSubBranches: true,
                   isSubBranchCollapsed: !!collapsedBranches['president'],
                   onToggleSubBranch: () => toggleBranchCollapse('president'),
-                  subBranchCount: data.boardMembers.length + data.executives.length + data.branches.length,
+                  subBranchCount: (data.boardMembers?.length || 0) + (data.executives?.length || 0) + (data.branches?.length || 0),
                   subBranchLabel: 'زیرمجموعه‌های رئیس'
                 })}
               </div>
@@ -1344,21 +1474,21 @@ export default function OrgChartCanvas({
                     className="group px-5 py-3 bg-amber-500/10 dark:bg-amber-500/20 hover:bg-amber-500/20 border-2 border-dashed border-amber-500/80 text-amber-900 dark:text-amber-300 rounded-2xl text-xs font-black flex items-center gap-2.5 shadow-sm transition-all cursor-pointer print:hidden"
                   >
                     <Layers className="w-4 h-4 text-amber-600 animate-pulse" />
-                    <span>تمام شاخه‌های زیرمجموعه بسته‌شده‌اند ({data.boardMembers.length + data.executives.length + data.branches.length} پست تشکیلاتی) — جهت باز کردن کلیک کنید</span>
+                    <span>تمام شاخه‌های زیرمجموعه بسته‌شده‌اند ({(data.boardMembers?.length || 0) + (data.executives?.length || 0) + (data.branches?.length || 0)} پست تشکیلاتی) — جهت باز کردن کلیک کنید</span>
                     <ChevronDown className="w-4 h-4 text-amber-600" />
                   </button>
                 </div>
               ) : (
                 <>
                   {/* Automatic Connector to Level 2 */}
-                  <TreeConnectors count={data.boardMembers.length} />
+                  <TreeConnectors count={data.boardMembers?.length || 0} />
 
                   {/* LEVEL 2: Board of Supervisors (Dynamic count) */}
                   <div className="w-full space-y-4">
                     {/* Level 2 Section Bar */}
                     <div className="flex items-center justify-between px-2 print:hidden">
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <span>سطح ۲: هیئت نظار ({data.boardMembers.length} عضو)</span>
+                        <span>سطح ۲: هیئت نظار ({(data.boardMembers || []).length} عضو)</span>
                       </span>
                       <button
                         type="button"
@@ -1369,24 +1499,26 @@ export default function OrgChartCanvas({
                       </button>
                     </div>
 
-                    <div 
-                      className="grid gap-4 sm:gap-6 mx-auto items-start justify-center"
-                      style={{ 
-                        gridTemplateColumns: `repeat(${data.boardMembers.length || 1}, minmax(0, 1fr))`,
-                        maxWidth: `${Math.max(data.boardMembers.length * 300, 300)}px`
-                      }}
-                    >
-                      {data.boardMembers.map((bm) => (
-                        <div key={bm.id}>
-                          {renderInteractiveNodeCard({
-                            node: bm,
-                            variant: 'board',
-                            isDark: bm.title.includes('رئیس'),
-                            badgeText: bm.title.includes('رئیس') ? 'رئیس نظار' : 'هیئت نظار',
-                            customClass: bm.title.includes('رئیس') ? 'transform sm:-translate-y-1' : ''
-                          })}
-                        </div>
-                      ))}
+                    <div className="w-full overflow-x-auto pb-2">
+                      <div 
+                        className="grid gap-4 sm:gap-6 mx-auto items-start justify-center"
+                        style={{ 
+                          gridTemplateColumns: `repeat(${(data.boardMembers || []).length || 1}, minmax(260px, 320px))`,
+                          maxWidth: `${Math.max((data.boardMembers || []).length * 320, 320)}px`
+                        }}
+                      >
+                        {(data.boardMembers || []).map((bm) => (
+                          <div key={bm.id}>
+                            {renderInteractiveNodeCard({
+                              node: bm,
+                              variant: 'board',
+                              isDark: bm.title.includes('رئیس'),
+                              badgeText: bm.title.includes('رئیس') ? 'رئیس نظار' : 'هیئت نظار',
+                              customClass: bm.title.includes('رئیس') ? 'transform sm:-translate-y-1' : ''
+                            })}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -1400,20 +1532,20 @@ export default function OrgChartCanvas({
                         className="group px-5 py-2.5 bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 border-2 border-dashed border-blue-400 text-[#1e3a8a] dark:text-blue-200 rounded-2xl text-xs font-black flex items-center gap-2 shadow-sm transition-all cursor-pointer print:hidden"
                       >
                         <GitBranch className="w-4 h-4 text-blue-600" />
-                        <span>شاخه‌های کادر اجرایی و نمایندگی‌ها بسته‌شده‌اند ({data.executives.length + data.branches.length} واحد) — جهت باز کردن کلیک کنید</span>
+                        <span>شاخه‌های کادر اجرایی و نمایندگی‌ها بسته‌شده‌اند ({(data.executives?.length || 0) + (data.branches?.length || 0)} واحد) — جهت باز کردن کلیک کنید</span>
                         <ChevronDown className="w-4 h-4 text-blue-600" />
                       </button>
                     </div>
                   ) : (
                     <>
                       {/* Automatic Connector down to Executives */}
-                      <TreeConnectors count={data.executives.length} />
+                      <TreeConnectors count={(data.executives || []).length} />
 
                       {/* LEVEL 3: Executive Managers (Dynamic count) */}
                       <div className="w-full space-y-4">
                         <div className="flex items-center justify-between px-2 print:hidden">
                           <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                            سطح ۳: کادر اجرایی و مدیریت ارشد ({data.executives.length} مسئول)
+                            سطح ۳: کادر اجرایی و مدیریت ارشد ({(data.executives || []).length} مسئول)
                           </span>
                           <button
                             type="button"
@@ -1424,33 +1556,35 @@ export default function OrgChartCanvas({
                           </button>
                         </div>
 
-                        <div 
-                          className="grid gap-6 mx-auto items-start justify-center"
-                          style={{ 
-                            gridTemplateColumns: `repeat(${data.executives.length || 1}, minmax(0, 1fr))`,
-                            maxWidth: `${Math.max(data.executives.length * 300, 300)}px`
-                          }}
-                        >
-                          {data.executives.map((exec) => (
-                            <div key={exec.id}>
-                              {renderInteractiveNodeCard({
-                                node: exec,
-                                variant: 'executive',
-                                isDark: true,
-                                badgeText: exec.title.includes('پیروی') ? 'AML/CFT Compliance' : 'کادر اجرایی',
-                                hasSubBranches: exec.title.includes('عملیاتی') || exec.id === 'exec-2',
-                                isSubBranchCollapsed: !!collapsedBranches['branches'],
-                                onToggleSubBranch: () => toggleBranchCollapse('branches'),
-                                subBranchCount: data.branches.length,
-                                subBranchLabel: 'نمایندگی‌های ولایتی'
-                              })}
-                            </div>
-                          ))}
+                        <div className="w-full overflow-x-auto pb-2">
+                          <div 
+                            className="grid gap-4 sm:gap-6 mx-auto items-start justify-center"
+                            style={{ 
+                              gridTemplateColumns: `repeat(${(data.executives || []).length || 1}, minmax(260px, 340px))`,
+                              maxWidth: `${Math.max((data.executives || []).length * 340, 340)}px`
+                            }}
+                          >
+                            {(data.executives || []).map((exec) => (
+                              <div key={exec.id}>
+                                {renderInteractiveNodeCard({
+                                  node: exec,
+                                  variant: 'executive',
+                                  isDark: true,
+                                  badgeText: exec.title.includes('پیروی') ? 'AML/CFT Compliance' : 'کادر اجرایی',
+                                  hasSubBranches: exec.title.includes('عملیاتی') || exec.id === 'exec-2',
+                                  isSubBranchCollapsed: !!collapsedBranches['branches'],
+                                  onToggleSubBranch: () => toggleBranchCollapse('branches'),
+                                  subBranchCount: (data.branches || []).length,
+                                  subBranchLabel: 'نمایندگی‌های ولایتی'
+                                })}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
 
                       {/* LEVEL 4: Provincial Branches under Operational Manager */}
-                      {data.branches.length > 0 && (
+                      {(data.branches || []).length > 0 && (
                         <>
                           {collapsedBranches['branches'] ? (
                             <div className="flex flex-col items-center py-6 animate-in fade-in">
@@ -1461,7 +1595,7 @@ export default function OrgChartCanvas({
                                 className="group px-5 py-2.5 bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 border-2 border-dashed border-indigo-400 text-indigo-900 dark:text-indigo-200 rounded-2xl text-xs font-black flex items-center gap-2 shadow-sm transition-all cursor-pointer print:hidden"
                               >
                                 <Building2 className="w-4 h-4 text-indigo-600" />
-                                <span>شاخه نمایندگی‌های ولایتی فشرده شده است ({data.branches.length} نمایندگی) — جهت باز کردن کلیک کنید</span>
+                                <span>شاخه نمایندگی‌های ولایتی فشرده شده است ({(data.branches || []).length} نمایندگی) — جهت باز کردن کلیک کنید</span>
                                 <ChevronDown className="w-4 h-4 text-indigo-600" />
                               </button>
                             </div>
@@ -1475,34 +1609,36 @@ export default function OrgChartCanvas({
                               </div>
 
                               {/* Clean automatic connector down to Provincial Branches */}
-                              <TreeConnectors count={data.branches.length} />
+                              <TreeConnectors count={(data.branches || []).length} />
 
-                              <div 
-                                className="grid gap-4 sm:gap-6 items-start mx-auto justify-center"
-                                style={{
-                                  gridTemplateColumns: `repeat(${data.branches.length || 1}, minmax(0, 1fr))`,
-                                  maxWidth: `${Math.max(data.branches.length * 280, 280)}px`
-                                }}
-                              >
-                                {data.branches.map((br) => {
-                                  const isStaffCollapsed = !!collapsedBranches[`staff-${br.id}`];
-                                  return (
-                                    <div key={br.id} className="space-y-2">
-                                      {renderInteractiveNodeCard({
-                                        node: br,
-                                        variant: 'branch',
-                                        isDark: false,
-                                        badgeText: 'نمایندگی رسمی',
-                                        subtitleOverride: br.title,
-                                        hasSubBranches: !!(br.staff && br.staff.length > 0),
-                                        isSubBranchCollapsed: isStaffCollapsed,
-                                        onToggleSubBranch: () => toggleBranchCollapse(`staff-${br.id}`),
-                                        subBranchCount: br.staff?.length,
-                                        subBranchLabel: 'کارکنان'
-                                      })}
-                                    </div>
-                                  );
-                                })}
+                              <div className="w-full overflow-x-auto pb-2">
+                                <div 
+                                  className="grid gap-4 sm:gap-6 items-start mx-auto justify-center"
+                                  style={{
+                                    gridTemplateColumns: `repeat(${(data.branches || []).length || 1}, minmax(250px, 300px))`,
+                                    maxWidth: `${Math.max((data.branches || []).length * 300, 300)}px`
+                                  }}
+                                >
+                                  {(data.branches || []).map((br) => {
+                                    const isStaffCollapsed = !!collapsedBranches[`staff-${br.id}`];
+                                    return (
+                                      <div key={br.id} className="space-y-2">
+                                        {renderInteractiveNodeCard({
+                                          node: br,
+                                          variant: 'branch',
+                                          isDark: false,
+                                          badgeText: 'نمایندگی رسمی',
+                                          subtitleOverride: br.title,
+                                          hasSubBranches: !!(br.staff && br.staff.length > 0),
+                                          isSubBranchCollapsed: isStaffCollapsed,
+                                          onToggleSubBranch: () => toggleBranchCollapse(`staff-${br.id}`),
+                                          subBranchCount: br.staff?.length,
+                                          subBranchLabel: 'کارکنان'
+                                        })}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             </>
                           )}
@@ -1558,7 +1694,7 @@ export default function OrgChartCanvas({
               </div>
             </div>
 
-            {/* Official DAB Approval & Seal Section (استندرد فورمه‌های رسمی د افغانستان بانک) */}
+            {/* Official DAB Approval Section */}
             <div className="pt-8 border-t-2 border-slate-300 dark:border-slate-700 space-y-4">
               <div className="text-center mb-2">
                 <span className="text-xs font-black text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-4 py-1 rounded-full border border-slate-300 dark:border-slate-700">
@@ -1576,9 +1712,6 @@ export default function OrgChartCanvas({
                     <p>نام و تخلص: {data.president.name}</p>
                     <p className="text-[11px] text-slate-500">شماره تذکره / کارت: ثبت شده</p>
                   </div>
-                  <div className="pt-4 border-t border-dashed border-slate-300 dark:border-slate-700 text-slate-400 text-[11px]">
-                    امضاء و اثر انگشت: ______________
-                  </div>
                 </div>
 
                 {/* Column 2: Executive Director Approval */}
@@ -1590,18 +1723,12 @@ export default function OrgChartCanvas({
                     <p>نام مسئول: {data.executives[0]?.name || 'مدیر اجرائیه'}</p>
                     <p className="text-[11px] text-slate-500">پست: {data.executives[0]?.title || 'مدیر عملیاتی'}</p>
                   </div>
-                  <div className="pt-4 border-t border-dashed border-slate-300 dark:border-slate-700 text-slate-400 text-[11px]">
-                    امضاء و اثر انگشت: ______________
-                  </div>
                 </div>
 
-                {/* Column 3: Official Seal & DAB Verification */}
-                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-4 space-y-3">
+                {/* Column 3: Registration Status */}
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-4 space-y-3 flex flex-col justify-center">
                   <div className="font-black text-slate-900 dark:text-slate-100 border-b pb-2 border-slate-200 dark:border-slate-800">
-                    مهر شرکت و ثبت د افغانستان بانک
-                  </div>
-                  <div className="h-12 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg flex items-center justify-center text-slate-400 text-[11px]">
-                    [ محل مهر رسمی شرکت ]
+                    ثبت د افغانستان بانک
                   </div>
                   <div className="text-[10px] text-slate-500 font-bold pt-1">
                     تاریخ ثبت: _____ / _____ / ۱۴۰۳
