@@ -379,7 +379,7 @@ export default function DabGuaranteeForm({
       </div>
 
       {/* Official Form Printable Canvas */}
-      <div id="dab-official-form" className="bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0">
+      <div id="dab-guarantee-form-canvas" data-export-id="dab-official-form" className="dab-official-form dab-form-document bg-white p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-sm text-sm print:border-none print:shadow-none print:p-0 print:m-0">
         
         {/* Official Header */}
         <DabOfficialHeader
