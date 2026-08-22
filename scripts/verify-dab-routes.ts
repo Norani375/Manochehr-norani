@@ -5,6 +5,7 @@ const ROOT = join(process.cwd(), 'app');
 const CANONICAL_IMPORTS = new Set([
   '@/components/DabStandardFormsWorkspace',
   '@/components/DabShareholderGuaranteeStandardForm',
+  '@/components/DabLicenseRenewalOfficialForm',
 ]);
 
 function collectPageFiles(directory: string): string[] {
