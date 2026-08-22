@@ -1,5 +1,5 @@
-import DabLicenseRenewalForm1 from '@/components/DabLicenseRenewalForm1';
+import DabStandardFormsWorkspace from '@/components/DabStandardFormsWorkspace';
 
 export default function DabLicenseRenewalForm1Page() {
-  return <DabLicenseRenewalForm1 />;
+  return <DabStandardFormsWorkspace />;
 }
