@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 const ROOT = join(process.cwd(), 'app');
 const CANONICAL_IMPORT = '@/components/DabStandardFormsWorkspace';
+const CANONICAL_SHAREHOLDER_IMPORT = '@/components/DabShareholderGuaranteeStandardForm';
 
 function collectPageFiles(directory: string): string[] {
   if (!existsSync(directory)) return [];
@@ -21,13 +22,17 @@ const violations: string[] = [];
 
 for (const file of dabPages) {
   const source = readFileSync(file, 'utf8');
-  const isDabRoute = file.includes('/dab-');
-  if (!isDabRoute) continue;
-
   const importsLegacyDabForm = /from ['\"]@\/components\/Dab[A-Za-z0-9]+Form['\"]/.test(source);
   const usesCanonicalWorkspace = source.includes(CANONICAL_IMPORT);
+  const usesCanonicalShareholderForm = source.includes(CANONICAL_SHAREHOLDER_IMPORT);
 
-  if (importsLegacyDabForm && !usesCanonicalWorkspace) {
+  // The shareholder guarantee form is a dedicated canonical renderer.
+  // It is allowed to bypass the generic workspace because it is itself
+  // the canonical implementation for shareholder-guarantee.
+  const isShareholderGuaranteeRoute = file.includes('/dab-shareholder-guarantee/');
+  const hasApprovedCanonicalRenderer = usesCanonicalWorkspace || (isShareholderGuaranteeRoute && usesCanonicalShareholderForm);
+
+  if (importsLegacyDabForm && !hasApprovedCanonicalRenderer) {
     violations.push(file.replace(`${process.cwd()}/`, ''));
   }
 }
