@@ -2,16 +2,20 @@
 
 import { useMemo, useState } from 'react';
 
-type OrgNode = { id: string; title: string; name: string };
+type OrgNode = {
+  id: string;
+  role: string;
+  name: string;
+};
 
 const DEFAULT_NODES: OrgNode[] = [
-  { id: 'shareholders', title: 'سهمدار', name: 'نام سهمدار' },
-  { id: 'board', title: 'رئیس هیأت نظار', name: 'بسم‌الله شیرزی' },
-  { id: 'executive', title: 'مسئول عملیاتی', name: 'نام مسئول عملیاتی' },
-  { id: 'finance', title: 'مسئول مالی و حسابداری', name: 'نام مسئول مالی' },
-  { id: 'compliance', title: 'مسئول مطابقت و AML', name: 'نام مسئول مطابقت' },
-  { id: 'operations', title: 'مسئول عملیات', name: 'نام مسئول عملیات' },
-  { id: 'branches', title: 'مسئول نمایندگی‌ها و شعبات', name: 'نام مسئول' },
+  { id: 'shareholders', role: 'سهمدار', name: 'نام سهمدار' },
+  { id: 'board', role: 'رئیس هیأت نظار', name: 'بسم‌الله شیرزی' },
+  { id: 'management', role: 'مدیر اجرائی', name: 'نام مدیر اجرائی' },
+  { id: 'finance', role: 'مسئول مالی و حسابداری', name: 'نام مسئول مالی' },
+  { id: 'compliance', role: 'مسئول مطابقت و AML', name: 'نام مسئول مطابقت' },
+  { id: 'operations', role: 'مسئول عملیات', name: 'نام مسئول عملیات' },
+  { id: 'branches', role: 'مسئول نمایندگی‌ها و شعبات', name: 'نام مسئول' },
 ];
 
 export default function DabOrganizationChartStandardForm({ companyId = 'default' }: { companyId?: string }) {
@@ -27,74 +31,76 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
 
   const [nodes, setNodes] = useState<OrgNode[]>(initial);
   const [saved, setSaved] = useState(false);
-  const node = (id: string) => nodes.find((item) => item.id === id);
-  const updateNode = (id: string, field: 'title' | 'name', value: string) => {
+
+  const updateNode = (id: string, field: 'role' | 'name', value: string) => {
     setNodes((current) => current.map((item) => item.id === id ? { ...item, [field]: value } : item));
     setSaved(false);
   };
+
   const save = () => {
     window.localStorage.setItem(`dab-org-chart:${companyId}`, JSON.stringify(nodes));
     setSaved(true);
   };
 
+  const get = (id: string) => nodes.find((item) => item.id === id);
+
   return (
-    <main dir="rtl" className="min-h-screen bg-slate-50 p-4 text-slate-900 print:min-h-0 print:bg-white print:p-0">
-      <section className="mx-auto max-w-5xl rounded-2xl border border-slate-200 bg-white shadow-sm print:m-0 print:w-full print:max-w-none print:rounded-none print:border-0 print:shadow-none">
-        <header className="border-b border-slate-200 px-6 py-4 print:px-0 print:py-2">
-          <h1 className="text-center text-xl font-bold print:text-base">چارت تشکیلات شرکت صرافی و خدمات پولی</h1>
+    <main dir="rtl" className="min-h-screen bg-slate-50 p-6 text-slate-900 print:bg-white print:p-0">
+      <section className="mx-auto max-w-5xl bg-white print:w-full print:max-w-none">
+        <header className="mb-8 text-center print:mb-5">
+          <h1 className="text-2xl font-bold print:text-lg">چارت تشکیلات</h1>
         </header>
 
-        <div className="px-6 py-6 print:px-0 print:py-2">
-          <div className="mx-auto max-w-4xl">
-            <ChartCard node={node('shareholders')} onChange={updateNode} primary />
-            <Connector />
-            <ChartCard node={node('board')} onChange={updateNode} primary />
-            <Connector />
-            <ChartCard node={node('executive')} onChange={updateNode} primary />
+        <div className="mx-auto max-w-4xl">
+          <ChartCard node={get('shareholders')} onChange={updateNode} />
+          <VerticalLine />
+          <ChartCard node={get('board')} onChange={updateNode} />
+          <VerticalLine />
+          <ChartCard node={get('management')} onChange={updateNode} />
 
-            <div className="relative mt-8 border-t border-slate-300 pt-6 print:mt-4 print:pt-4">
-              <div className="absolute right-1/2 top-0 h-4 w-px -translate-y-4 bg-slate-300 print:h-3 print:-translate-y-3" />
-              <div className="grid grid-cols-3 gap-5 print:gap-3">
-                <ChartCard node={node('finance')} onChange={updateNode} />
-                <ChartCard node={node('compliance')} onChange={updateNode} />
-                <ChartCard node={node('operations')} onChange={updateNode} />
-              </div>
+          <div className="relative mt-10 pt-8 print:mt-6 print:pt-6">
+            <div className="absolute left-1/2 top-0 h-8 w-px bg-slate-400 print:h-6" />
+            <div className="absolute left-[16.666%] right-[16.666%] top-8 h-px bg-slate-400 print:top-6" />
+            <div className="grid grid-cols-3 gap-6 print:gap-3">
+              <ChartCard node={get('finance')} onChange={updateNode} />
+              <ChartCard node={get('compliance')} onChange={updateNode} />
+              <ChartCard node={get('operations')} onChange={updateNode} />
             </div>
-
-            <Connector />
-            <ChartCard node={node('branches')} onChange={updateNode} />
           </div>
+
+          <div className="mx-auto h-6 w-px bg-slate-400 print:h-4" aria-hidden="true" />
+          <ChartCard node={get('branches')} onChange={updateNode} />
         </div>
 
-        <footer className="flex justify-center gap-3 border-t border-slate-200 px-6 py-3 print:hidden">
-          <button type="button" onClick={save} className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">ذخیره</button>
-          <button type="button" onClick={() => window.print()} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">چاپ</button>
-          {saved && <span className="self-center text-sm text-emerald-700">ذخیره شد.</span>}
+        <footer className="mt-8 flex justify-center gap-3 print:hidden">
+          <button type="button" onClick={save} className="rounded-md bg-slate-900 px-5 py-2 text-sm font-semibold text-white">ذخیره</button>
+          <button type="button" onClick={() => window.print()} className="rounded-md border border-slate-300 px-5 py-2 text-sm font-semibold">چاپ</button>
+          {saved && <span className="self-center text-sm text-slate-600">ذخیره شد</span>}
         </footer>
       </section>
 
       <style jsx global>{`
         @media print {
-          @page { size: A4 portrait; margin: 10mm; }
-          html, body { width: 210mm; margin: 0; background: #fff !important; }
-          * { break-inside: avoid !important; page-break-inside: avoid !important; }
-          input { border: 0 !important; box-shadow: none !important; }
+          @page { size: A4 portrait; margin: 12mm; }
+          html, body { width: 210mm; margin: 0; background: white !important; }
+          *, *::before, *::after { break-inside: avoid !important; page-break-inside: avoid !important; }
+          input { border: 0 !important; outline: none !important; box-shadow: none !important; }
         }
       `}</style>
     </main>
   );
 }
 
-function Connector() {
-  return <div className="mx-auto my-2 h-6 w-px bg-slate-300 print:my-1 print:h-3" aria-hidden="true" />;
+function VerticalLine() {
+  return <div className="mx-auto h-8 w-px bg-slate-400 print:h-5" aria-hidden="true" />;
 }
 
-function ChartCard({ node, onChange, primary = false }: { node?: OrgNode; onChange: (id: string, field: 'title' | 'name', value: string) => void; primary?: boolean }) {
+function ChartCard({ node, onChange }: { node?: OrgNode; onChange: (id: string, field: 'role' | 'name', value: string) => void }) {
   if (!node) return null;
   return (
-    <article className={`mx-auto w-full max-w-sm rounded-lg border bg-white px-4 py-3 text-center print:max-w-none print:px-2 print:py-1.5 ${primary ? 'border-slate-400' : 'border-slate-300'}`}>
-      <input aria-label="وظیفه" value={node.title} onChange={(event) => onChange(node.id, 'title', event.target.value)} className="w-full border-0 bg-transparent text-center text-sm font-bold outline-none print:text-[11px]" />
-      <input aria-label="نام" value={node.name} onChange={(event) => onChange(node.id, 'name', event.target.value)} className="mt-1 w-full border-0 bg-transparent text-center text-sm text-slate-700 outline-none print:text-[10px]" />
+    <article className="mx-auto w-full max-w-sm border border-slate-400 bg-white px-4 py-3 text-center print:px-3 print:py-2">
+      <input value={node.role} aria-label="وظیفه" onChange={(event) => onChange(node.id, 'role', event.target.value)} className="block w-full border-0 bg-transparent text-center text-sm font-bold outline-none print:text-[11px]" />
+      <input value={node.name} aria-label="نام" onChange={(event) => onChange(node.id, 'name', event.target.value)} className="mt-1 block w-full border-0 bg-transparent text-center text-sm outline-none print:text-[10px]" />
     </article>
   );
 }
