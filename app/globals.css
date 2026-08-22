@@ -57,9 +57,9 @@ main header img[alt="لوگوی شرکت"] {
   display: none !important;
 }
 
-/* Organization chart: compact official view. Each chart card shows only name and role. */
-#org-chart-export-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"]],
-#org-chart-exact-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"]],
+/* Organization chart: official compact view. Cards show only name and role. */
+#org-chart-export-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"],
 #org-chart-export-canvas [id^="org-node-"] > div[class*="pt-2.5"][class*="px-4"],
 #org-chart-exact-canvas [id^="org-node-"] > div[class*="pt-2.5"][class*="px-4"],
 #org-chart-export-canvas [id^="org-node-"] > div[class*="border-t"][class*="py-4"],
@@ -76,24 +76,107 @@ main header img[alt="لوگوی شرکت"] {
 /* Keep the chart compact and aligned across all hierarchy levels. */
 #org-chart-export-canvas [id^="org-node-"],
 #org-chart-exact-canvas [id^="org-node-"] {
-  min-width: 190px;
-  max-width: 260px;
-  min-height: 92px;
+  width: clamp(150px, 18vw, 220px) !important;
+  min-width: 150px !important;
+  max-width: 220px !important;
+  min-height: 78px !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  transition: width 180ms ease, max-width 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease !important;
 }
 
 #org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"],
 #org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] {
-  padding: 0.85rem 1rem !important;
+  padding: 0.65rem 0.75rem !important;
 }
 
+/* Remove visual crowding. Keep only the name and the job title. */
 #org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child,
 #org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child {
-  margin-bottom: 0.15rem !important;
+  margin: 0 !important;
+}
+
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > div:first-child,
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > div:first-child {
+  display: none !important;
+}
+
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > button,
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > button {
+  display: none !important;
 }
 
 #org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > div:nth-child(2),
 #org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div:first-child > div:nth-child(2) {
   width: 100% !important;
+  text-align: center !important;
+  font-size: clamp(0.78rem, 1.2vw, 0.98rem) !important;
+  line-height: 1.35 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+#org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"] > div:nth-child(2),
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] > div:nth-child(2) {
+  margin-top: 0.2rem !important;
+  font-size: clamp(0.68rem, 1vw, 0.82rem) !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* Remove hover tooltip and expanded details from the compact chart view. */
+#org-chart-export-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="bottom-[calc(100%+12px)"],
+#org-chart-export-canvas [id^="org-node-"] > div[class*="border-t"][class*="px-4"],
+#org-chart-exact-canvas [id^="org-node-"] > div[class*="border-t"][class*="px-4"] {
+  display: none !important;
+}
+
+/* Responsive chart colors. Keep the hierarchy accents but reduce visual noise. */
+#org-chart-export-canvas [id^="org-node-"]:hover,
+#org-chart-exact-canvas [id^="org-node-"]:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+
+@media (max-width: 900px) {
+  #org-chart-export-canvas [id^="org-node-"],
+  #org-chart-exact-canvas [id^="org-node-"] {
+    width: 170px !important;
+    min-width: 170px !important;
+    max-width: 170px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  #org-chart-export-canvas [id^="org-node-"],
+  #org-chart-exact-canvas [id^="org-node-"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+    min-height: 70px !important;
+  }
+
+  #org-chart-export-canvas [id^="org-node-"] > div[class*="p-4"],
+  #org-chart-exact-canvas [id^="org-node-"] > div[class*="p-4"] {
+    padding: 0.55rem !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #org-chart-export-canvas [id^="org-node-"],
+  #org-chart-exact-canvas [id^="org-node-"] {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+  }
+
+  #org-chart-export-canvas [id^="org-node-"]:hover,
+  #org-chart-exact-canvas [id^="org-node-"]:hover {
+    background: #172033 !important;
+    border-color: #64748b !important;
+  }
 }
 
 @layer utilities {
@@ -340,25 +423,8 @@ main header img[alt="لوگوی شرکت"] {
       display: none !important;
     }
 
-    /* Print-only CSS labels that appear on card edges when printing */
     #org-chart-export-canvas .print-reports-to-label {
-      display: flex !important;
-      position: absolute !important;
-      top: -11px !important;
-      right: 10px !important;
-      background-color: #1e3a8a !important;
-      color: #ffffff !important;
-      border: 1.5px solid #1d4ed8 !important;
-      border-radius: 6px !important;
-      padding: 2px 8px !important;
-      font-size: 9px !important;
-      font-weight: 800 !important;
-      z-index: 50 !important;
-      white-space: nowrap !important;
-      direction: rtl !important;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
+      display: none !important;
     }
   }
 }
