@@ -42,26 +42,26 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
   const get = (id: string) => nodes.find((item) => item.id === id);
 
   return (
-    <main dir="rtl" className="min-h-screen bg-white p-4 text-slate-900 print:p-0">
-      <section className="mx-auto w-full max-w-5xl print:w-full print:max-w-none">
-        <div className="mx-auto max-w-4xl">
+    <main dir="rtl" className="min-h-screen bg-slate-50 px-3 py-5 text-slate-900 sm:px-5 print:bg-white print:p-0">
+      <section className="mx-auto w-full max-w-6xl print:w-full print:max-w-none">
+        <div className="mx-auto max-w-5xl">
           <ChartCard node={get('shareholders')} onChange={updateNode} />
           <VerticalLine />
           <ChartCard node={get('board')} onChange={updateNode} />
           <VerticalLine />
           <ChartCard node={get('management')} onChange={updateNode} />
 
-          <div className="relative mt-8 pt-6 print:mt-5 print:pt-5">
-            <div className="absolute left-1/2 top-0 h-6 w-px bg-slate-400 print:h-5" aria-hidden="true" />
-            <div className="absolute left-[16.666%] right-[16.666%] top-6 h-px bg-slate-400 print:top-5" aria-hidden="true" />
-            <div className="grid grid-cols-3 gap-4 print:gap-3">
+          <div className="relative mt-7 pt-6 sm:mt-8 print:mt-5 print:pt-5">
+            <div className="absolute left-1/2 top-0 h-6 w-px bg-slate-300 print:h-5" aria-hidden="true" />
+            <div className="absolute left-[16.666%] right-[16.666%] top-6 h-px bg-slate-300 print:top-5" aria-hidden="true" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 print:grid-cols-3 print:gap-3">
               <ChartCard node={get('finance')} onChange={updateNode} />
               <ChartCard node={get('compliance')} onChange={updateNode} />
               <ChartCard node={get('operations')} onChange={updateNode} />
             </div>
           </div>
 
-          <div className="mx-auto h-5 w-px bg-slate-400 print:h-4" aria-hidden="true" />
+          <div className="mx-auto h-5 w-px bg-slate-300 print:h-4" aria-hidden="true" />
           <ChartCard node={get('branches')} onChange={updateNode} />
         </div>
       </section>
@@ -79,25 +79,25 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
 }
 
 function VerticalLine() {
-  return <div className="mx-auto h-6 w-px bg-slate-400 print:h-5" aria-hidden="true" />;
+  return <div className="mx-auto h-6 w-px bg-slate-300 print:h-5" aria-hidden="true" />;
 }
 
 function ChartCard({ node, onChange }: { node?: OrgNode; onChange: (id: string, field: 'role' | 'name', value: string) => void }) {
   if (!node) return null;
 
   return (
-    <article className="mx-auto w-full max-w-sm border border-slate-400 bg-white px-4 py-3 text-center print:px-3 print:py-2">
+    <article className="mx-auto flex min-h-[82px] w-full max-w-sm flex-col justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-center shadow-sm transition-shadow hover:shadow-md sm:min-h-[88px] print:min-h-0 print:rounded-none print:border-slate-300 print:px-3 print:py-2 print:shadow-none">
       <input
         value={node.name}
-        aria-label="نام"
+        aria-label="نام و تخلص"
         onChange={(event) => onChange(node.id, 'name', event.target.value)}
-        className="block w-full border-0 bg-transparent text-center text-sm font-bold outline-none print:text-[11px]"
+        className="block w-full truncate border-0 bg-transparent text-center text-sm font-bold leading-6 text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-base print:text-[11px] print:leading-4"
       />
       <input
         value={node.role}
         aria-label="وظیفه"
         onChange={(event) => onChange(node.id, 'role', event.target.value)}
-        className="mt-1 block w-full border-0 bg-transparent text-center text-sm outline-none print:text-[10px]"
+        className="mt-0.5 block w-full truncate border-0 bg-transparent text-center text-xs font-medium leading-5 text-slate-500 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-sm print:text-[10px] print:leading-4"
       />
     </article>
   );
