@@ -2,11 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-type OrgNode = {
-  id: string;
-  role: string;
-  name: string;
-};
+type OrgNode = { id: string; role: string; name: string };
 
 const DEFAULT_NODES: OrgNode[] = [
   { id: 'shareholders', role: 'سهمدار', name: 'نام سهمدار' },
@@ -35,9 +31,7 @@ export default function DabOrganizationChartStandardForm({ companyId = 'default'
 
   const updateNode = (id: string, field: 'role' | 'name', value: string) => {
     setNodes((current) => {
-      const next = current.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item,
-      );
+      const next = current.map((item) => item.id === id ? { ...item, [field]: value } : item);
       window.localStorage.setItem(`dab-org-chart:${companyId}`, JSON.stringify(next));
       return next;
     });
@@ -86,29 +80,13 @@ function VerticalLine() {
   return <div className="mx-auto h-6 w-px bg-slate-400 sm:h-7 print:h-5" aria-hidden="true" />;
 }
 
-function ChartCard({
-  node,
-  onChange,
-}: {
-  node?: OrgNode;
-  onChange: (id: string, field: 'role' | 'name', value: string) => void;
-}) {
+function ChartCard({ node, onChange }: { node?: OrgNode; onChange: (id: string, field: 'role' | 'name', value: string) => void }) {
   if (!node) return null;
 
   return (
     <article className="mx-auto flex min-h-[86px] w-full max-w-sm flex-col justify-center border border-slate-300 bg-white px-4 py-3 text-center shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-colors hover:border-slate-400 hover:bg-slate-50 sm:min-h-[92px] sm:px-5 print:min-h-0 print:border-slate-400 print:bg-white print:px-3 print:py-2 print:shadow-none">
-      <input
-        value={node.name}
-        aria-label="نام"
-        onChange={(event) => onChange(node.id, 'name', event.target.value)}
-        className="block w-full truncate border-0 bg-transparent text-center text-[15px] font-bold leading-7 text-slate-950 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-base print:text-[11px] print:leading-4"
-      />
-      <input
-        value={node.role}
-        aria-label="وظیفه"
-        onChange={(event) => onChange(node.id, 'role', event.target.value)}
-        className="mt-0.5 block w-full truncate border-0 bg-transparent text-center text-[13px] font-medium leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-sm print:text-[10px] print:leading-4"
-      />
+      <input value={node.name} aria-label="نام" onChange={(event) => onChange(node.id, 'name', event.target.value)} className="block w-full truncate border-0 bg-transparent text-center text-[15px] font-bold leading-7 text-slate-950 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-base print:text-[11px] print:leading-4" />
+      <input value={node.role} aria-label="وظیفه" onChange={(event) => onChange(node.id, 'role', event.target.value)} className="mt-0.5 block w-full truncate border-0 bg-transparent text-center text-[13px] font-medium leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0 sm:text-sm print:text-[10px] print:leading-4" />
     </article>
   );
 }
